@@ -1960,11 +1960,19 @@ export class AIEngine {
       return;
     }
 
-    let targetType: 'stick' | 'stone' | 'flint' = canGatherWood ? 'stick' : 'stone';
+    const needsWood = canGatherWood && getInventoryCount(agent, 'stick') < 4;
+    const needsStone = canGatherStone && getInventoryCount(agent, 'stone') < 3;
+    const needsFlint = canGatherFlint && getInventoryCount(agent, 'flint') < 2;
 
-    if (canGatherWood && getInventoryCount(agent, 'stick') < 4) targetType = 'stick';
-    else if (canGatherStone && getInventoryCount(agent, 'stone') < 3) targetType = 'stone';
-    else if (canGatherFlint && getInventoryCount(agent, 'flint') < 2) targetType = 'flint';
+    if (!needsWood && !needsStone && !needsFlint) {
+      this.wanderNearOrigin(agent);
+      return;
+    }
+
+    let targetType: 'stick' | 'stone' | 'flint' = 'stick';
+    if (needsWood) targetType = 'stick';
+    else if (needsStone) targetType = 'stone';
+    else if (needsFlint) targetType = 'flint';
 
     const tile = this.findNearestTileMatching(agent.x, agent.y, 16, (t) => {
       if (targetType === 'stick') return (t.type === 'sparse_trees' || t.type === 'dense_forest') && t.resourceAmount > 0;
