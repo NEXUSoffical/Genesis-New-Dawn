@@ -1075,33 +1075,38 @@ export class AIEngine {
       return false;
     }
 
-    // Active fishing: if hungry or needing food provisions
-    if (agent.needs.hunger < 85 || getInventoryCount(agent, 'fresh_fish') < 2) {
-      const waterTile = this.findNearestTileMatching(agent.x, agent.y, 14, (t) => t.type === 'water');
-      if (waterTile) {
-        const dist = Math.hypot(waterTile.x - agent.x, waterTile.y - agent.y);
-        if (dist <= 1.6) {
-          agent.activeTask = {
-            name: 'Spearfishing trout in riverbank',
-            type: 'foraging',
-            progress: 0,
-            duration: 7.0,
-            targetX: waterTile.x,
-            targetY: waterTile.y,
-          };
-          agent.currentAction = 'Spearfishing in shallow river water';
-          if (this.soundEngine && (this.soundEngine as any).playRiverFishing) {
-            (this.soundEngine as any).playRiverFishing();
-          }
-          addItem(agent, 'fresh_fish', 1);
-          this.economy.registerSupply('fresh_fish', 1);
-          return true;
-        } else {
-          agent.currentGoal = 'Approach river to catch fish';
-          agent.currentAction = 'Walking to riverbank';
-          this.setAgentMoveTarget(agent, waterTile.x, waterTile.y);
-          return true;
+    // Don't start another fishing task if already actively fishing
+    if (agent.activeTask?.type === 'foraging') return false;
+
+    // Only fish when genuinely hungry (below 55%) AND not already carrying 3+ fish
+    const fishHeld = getInventoryCount(agent, 'fresh_fish');
+    if (agent.needs.hunger > 55 && fishHeld >= 3) return false;
+    if (agent.needs.hunger > 70) return false; // Well fed, do something else
+
+    const waterTile = this.findNearestTileMatching(agent.x, agent.y, 14, (t) => t.type === 'water');
+    if (waterTile) {
+      const dist = Math.hypot(waterTile.x - agent.x, waterTile.y - agent.y);
+      if (dist <= 1.6) {
+        agent.activeTask = {
+          name: 'Spearfishing trout in riverbank',
+          type: 'foraging',
+          progress: 0,
+          duration: 7.0,
+          targetX: waterTile.x,
+          targetY: waterTile.y,
+        };
+        agent.currentAction = 'Spearfishing in shallow river water';
+        if (this.soundEngine && (this.soundEngine as any).playRiverFishing) {
+          (this.soundEngine as any).playRiverFishing();
         }
+        addItem(agent, 'fresh_fish', 1);
+        this.economy.registerSupply('fresh_fish', 1);
+        return true;
+      } else {
+        agent.currentGoal = 'Approach river to catch fish';
+        agent.currentAction = 'Walking to riverbank';
+        this.setAgentMoveTarget(agent, waterTile.x, waterTile.y);
+        return true;
       }
     }
     return false;
