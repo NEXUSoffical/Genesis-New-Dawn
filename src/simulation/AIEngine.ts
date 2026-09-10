@@ -419,6 +419,10 @@ export class AIEngine {
         addItem(agent, 'stick', 2);
         agent.currentAction = 'Collected dry kindling';
         this.economy.registerSupply('stick', 2);
+      } else if (task.name.includes('Chopping fallen timber')) {
+        addItem(agent, 'wood_log', 1);
+        agent.currentAction = 'Gathered timber logs';
+        this.economy.registerSupply('wood_log', 1);
       } else if (task.name.includes('river stones')) {
         addItem(agent, 'stone', 1);
         if (agent.knowledge.has('discovery_flint') && Math.random() < 0.5) addItem(agent, 'flint', 1);
@@ -1960,22 +1964,24 @@ export class AIEngine {
       return;
     }
 
-    const needsWood = canGatherWood && getInventoryCount(agent, 'stick') < 4;
-    const needsStone = canGatherStone && getInventoryCount(agent, 'stone') < 3;
-    const needsFlint = canGatherFlint && getInventoryCount(agent, 'flint') < 2;
+    const needsWood = canGatherWood && getInventoryCount(agent, 'stick') < 12;
+    const needsLog = canGatherWood && getInventoryCount(agent, 'wood_log') < 6;
+    const needsStone = canGatherStone && getInventoryCount(agent, 'stone') < 10;
+    const needsFlint = canGatherFlint && getInventoryCount(agent, 'flint') < 4;
 
-    if (!needsWood && !needsStone && !needsFlint) {
+    if (!needsWood && !needsLog && !needsStone && !needsFlint) {
       this.wanderNearOrigin(agent);
       return;
     }
 
-    let targetType: 'stick' | 'stone' | 'flint' = 'stick';
-    if (needsWood) targetType = 'stick';
+    let targetType: 'stick' | 'wood_log' | 'stone' | 'flint' = 'stick';
+    if (needsLog) targetType = 'wood_log';
+    else if (needsWood) targetType = 'stick';
     else if (needsStone) targetType = 'stone';
     else if (needsFlint) targetType = 'flint';
 
     const tile = this.findNearestTileMatching(agent.x, agent.y, 16, (t) => {
-      if (targetType === 'stick') return (t.type === 'sparse_trees' || t.type === 'dense_forest') && t.resourceAmount > 0;
+      if (targetType === 'stick' || targetType === 'wood_log') return (t.type === 'sparse_trees' || t.type === 'dense_forest') && t.resourceAmount > 0;
       if (targetType === 'stone' || targetType === 'flint') return (t.type === 'stone_hill' || t.type === 'grass') && t.resourceAmount > 0;
       return false;
     });
@@ -1983,11 +1989,15 @@ export class AIEngine {
     if (tile) {
       const dist = Math.hypot(tile.x - agent.x, tile.y - agent.y);
       if (dist <= 1.2) {
+        let taskName = 'Examining river stones';
+        if (targetType === 'stick') taskName = 'Searching brush for dry sticks';
+        if (targetType === 'wood_log') taskName = 'Chopping fallen timber for logs';
+
         agent.activeTask = {
-          name: targetType === 'stick' ? 'Searching brush for dry sticks' : 'Examining river stones',
+          name: taskName,
           type: 'foraging',
           progress: 0,
-          duration: 10.0,
+          duration: targetType === 'wood_log' ? 14.0 : 10.0,
           targetX: tile.x,
           targetY: tile.y,
         };
