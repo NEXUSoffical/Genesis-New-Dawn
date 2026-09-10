@@ -147,6 +147,11 @@ export class AIEngine {
       agent.huntCooldown = Math.max(0, agent.huntCooldown - deltaSec);
     }
 
+    // Fish cooldown decay
+    if ((agent as any).fishCooldown && (agent as any).fishCooldown > 0) {
+      (agent as any).fishCooldown = Math.max(0, (agent as any).fishCooldown - deltaSec);
+    }
+
     // Lifespan: real-time aging and life stage transitions
     agent.age += (deltaSec / 14400);
     const newStage = determineLifeStage(agent.age);
@@ -518,8 +523,8 @@ export class AIEngine {
       return;
     }
 
-    // 2. CRITICAL: EAT IF HUNGRY (Only if berries have been discovered as edible)
-    if (agent.needs.hunger < 45) {
+    // 2. CRITICAL: EAT IF HUNGRY — triggers at 65% so pioneers eat proactively, not just when starving
+    if (agent.needs.hunger < 65) {
       if (this.tryEatFoodFromInventory(agent)) {
         return;
       }
@@ -1078,10 +1083,13 @@ export class AIEngine {
     // Don't start another fishing task if already actively fishing
     if (agent.activeTask?.type === 'foraging') return false;
 
-    // Only fish when genuinely hungry (below 55%) AND not already carrying 3+ fish
+    // Cooldown after last fish catch — prevents back-to-back fishing
+    if ((agent as any).fishCooldown && (agent as any).fishCooldown > 0) return false;
+
+    // Only fish when genuinely hungry (below 60%) AND not carrying 2+ fish already
     const fishHeld = getInventoryCount(agent, 'fresh_fish');
-    if (agent.needs.hunger > 55 && fishHeld >= 3) return false;
-    if (agent.needs.hunger > 70) return false; // Well fed, do something else
+    if (fishHeld >= 2) return false; // Already has fish — go eat them first!
+    if (agent.needs.hunger > 60) return false; // Full enough, do something else
 
     const waterTile = this.findNearestTileMatching(agent.x, agent.y, 14, (t) => t.type === 'water');
     if (waterTile) {
@@ -1099,8 +1107,15 @@ export class AIEngine {
         if (this.soundEngine && (this.soundEngine as any).playRiverFishing) {
           (this.soundEngine as any).playRiverFishing();
         }
+        // Add fish to inventory
         addItem(agent, 'fresh_fish', 1);
         this.economy.registerSupply('fresh_fish', 1);
+        // Immediately consume one fish to replenish hunger (eating on the spot)
+        removeItem(agent, 'fresh_fish', 1);
+        agent.needs.hunger = Math.min(100, agent.needs.hunger + 35);
+        agent.currentAction = 'Eating fresh catch by the riverbank';
+        // 30-second cooldown before fishing again
+        (agent as any).fishCooldown = 30.0;
         return true;
       } else {
         agent.currentGoal = 'Approach river to catch fish';
