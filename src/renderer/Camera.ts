@@ -45,24 +45,40 @@ export class Camera {
       this.isDragging = false;
     });
 
-    // Touch support for mobile / trackpads
+    // Touch support for mobile / trackpads with prevention of browser pull-to-refresh
     let initialPinchDist = 0;
+    let touchStartTime = 0;
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let didMoveSignificantly = false;
+
     this.canvas.addEventListener('touchstart', (e) => {
+      e.preventDefault();
       if (e.touches.length === 1) {
         this.isDragging = true;
         this.lastMouseX = e.touches[0].clientX;
         this.lastMouseY = e.touches[0].clientY;
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+        touchStartTime = performance.now();
+        didMoveSignificantly = false;
         this.followTarget = undefined;
       } else if (e.touches.length === 2) {
+        this.isDragging = false;
+        didMoveSignificantly = true;
         initialPinchDist = Math.hypot(
           e.touches[0].clientX - e.touches[1].clientX,
           e.touches[0].clientY - e.touches[1].clientY
         );
       }
-    });
+    }, { passive: false });
 
     this.canvas.addEventListener('touchmove', (e) => {
+      e.preventDefault();
       if (e.touches.length === 1 && this.isDragging) {
+        const moveDist = Math.hypot(e.touches[0].clientX - touchStartX, e.touches[0].clientY - touchStartY);
+        if (moveDist > 8) didMoveSignificantly = true;
+
         const dx = (e.touches[0].clientX - this.lastMouseX) / (32 * this.zoom);
         const dy = (e.touches[0].clientY - this.lastMouseY) / (32 * this.zoom);
         this.x -= dx;
@@ -70,6 +86,7 @@ export class Camera {
         this.lastMouseX = e.touches[0].clientX;
         this.lastMouseY = e.touches[0].clientY;
       } else if (e.touches.length === 2) {
+        didMoveSignificantly = true;
         const dist = Math.hypot(
           e.touches[0].clientX - e.touches[1].clientX,
           e.touches[0].clientY - e.touches[1].clientY
@@ -80,12 +97,30 @@ export class Camera {
           initialPinchDist = dist;
         }
       }
-    });
+    }, { passive: false });
 
-    this.canvas.addEventListener('touchend', () => {
+    this.canvas.addEventListener('touchend', (e) => {
+      if (this.isDragging && !didMoveSignificantly && e.changedTouches.length === 1) {
+        const elapsed = performance.now() - touchStartTime;
+        if (elapsed < 350 && this.onTap) {
+          const tapPos = this.screenToWorld(e.changedTouches[0].clientX, e.changedTouches[0].clientY, 32);
+          this.onTap(tapPos.x, tapPos.y);
+        }
+      }
       this.isDragging = false;
-    });
+      initialPinchDist = 0;
+    }, { passive: false });
   }
+
+  public zoomIn(): void {
+    this.targetZoom = Math.min(3.5, this.targetZoom * 1.35);
+  }
+
+  public zoomOut(): void {
+    this.targetZoom = Math.max(0.6, this.targetZoom * 0.74);
+  }
+
+  public onTap?: (worldX: number, worldY: number) => void;
 
   public update(deltaSec: number): void {
     // Smooth zoom interpolation

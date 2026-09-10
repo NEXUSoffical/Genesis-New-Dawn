@@ -166,6 +166,10 @@ export class HUD {
 
       <!-- Left Panel: Agent Inspector -->
       <aside id="agent-inspector" class="glass-panel">
+        <div class="mobile-inspector-bar">
+          <div class="mobile-drag-pill"></div>
+          <button id="btn-close-mobile-inspector" class="mobile-inspector-close-btn">✕ Close</button>
+        </div>
         <div class="section-label" style="display: flex; justify-content: space-between; align-items: center;">
           <span>CITIZENS OF THE EXPEDITION</span>
           <button id="btn-quick-spawn-inspector" class="quick-spawn-btn" title="Spawn a new pioneer">➕ Spawn</button>
@@ -406,6 +410,24 @@ export class HUD {
       <div id="cinematic-overlay" class="cinematic-overlay">
         <div id="cinematic-exit-pill" class="cinematic-exit-pill">🎥 Cinematic Terrarium • Press 'C' or Esc to Exit</div>
       </div>
+
+      <!-- Mobile Floating Quick Controls -->
+      <div id="mobile-floating-controls">
+        <button id="btn-toggle-inspector-mobile" class="mobile-float-btn" title="Inspect Pioneer">
+          <span>👤</span>
+          <span class="mobile-btn-label">Pioneer</span>
+        </button>
+        <button id="btn-mobile-minimap-toggle" class="mobile-float-btn" title="Toggle Radar">
+          <span>🗺️</span>
+          <span class="mobile-btn-label">Radar</span>
+        </button>
+      </div>
+
+      <!-- Mobile On-Screen Zoom Controls -->
+      <div id="mobile-zoom-controls">
+        <button id="btn-mobile-zoom-in" class="mobile-zoom-btn" title="Zoom In">➕</button>
+        <button id="btn-mobile-zoom-out" class="mobile-zoom-btn" title="Zoom Out">➖</button>
+      </div>
     `;
   }
 
@@ -594,6 +616,32 @@ export class HUD {
         }
       });
     }
+
+    // Mobile UI Event Listeners
+    const inspector = document.getElementById('agent-inspector');
+    document.getElementById('btn-toggle-inspector-mobile')?.addEventListener('click', () => {
+      this.toggleTab('none');
+      inspector?.classList.toggle('mobile-open');
+    });
+    document.getElementById('btn-close-mobile-inspector')?.addEventListener('click', () => {
+      inspector?.classList.remove('mobile-open');
+    });
+
+    // Mobile Zoom Buttons
+    document.getElementById('btn-mobile-zoom-in')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.camera?.zoomIn();
+    });
+    document.getElementById('btn-mobile-zoom-out')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.camera?.zoomOut();
+    });
+
+    // Mobile Minimap Toggle
+    const minimap = document.getElementById('minimap-panel');
+    document.getElementById('btn-mobile-minimap-toggle')?.addEventListener('click', () => {
+      minimap?.classList.toggle('mobile-open');
+    });
   }
 
   public toggleCinematicMode(): void {
@@ -607,6 +655,10 @@ export class HUD {
 
   private toggleTab(tab: 'none' | 'codex' | 'economy' | 'chronicles' | 'dynasty' | 'spawn'): void {
     this.openTab = this.openTab === tab ? 'none' : tab;
+
+    if (this.openTab !== 'none') {
+      document.getElementById('agent-inspector')?.classList.remove('mobile-open');
+    }
 
     // Reset modals
     document.getElementById('spawn-modal')?.classList.remove('open');

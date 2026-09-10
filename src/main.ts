@@ -172,6 +172,25 @@ class GenesisGame {
   }
 
   private setupCanvasInteractions(canvas: HTMLCanvasElement): void {
+    const handleSelectAt = (worldX: number, worldY: number) => {
+      for (const agent of this.agents) {
+        const dist = Math.hypot(agent.x + 0.5 - worldX, agent.y + 0.5 - worldY);
+        if (dist <= 1.3) {
+          this.hud.setSelectedAgentId(agent.id);
+          this.camera.followTarget = agent;
+          const inspector = document.getElementById('agent-inspector');
+          if (inspector && window.innerWidth <= 768) {
+            inspector.classList.add('mobile-open');
+          }
+          return;
+        }
+      }
+    };
+
+    this.camera.onTap = (worldX, worldY) => {
+      handleSelectAt(worldX, worldY);
+    };
+
     canvas.addEventListener('click', (e) => {
       if (this.camera.isDragging) return;
 
@@ -179,16 +198,7 @@ class GenesisGame {
       const clickX = e.clientX - rect.left;
       const clickY = e.clientY - rect.top;
       const worldPos = this.camera.screenToWorld(clickX, clickY, 32);
-
-      // Check if clicked an agent
-      for (const agent of this.agents) {
-        const dist = Math.hypot(agent.x + 0.5 - worldPos.x, agent.y + 0.5 - worldPos.y);
-        if (dist <= 1.0) {
-          this.hud.setSelectedAgentId(agent.id);
-          this.camera.followTarget = agent;
-          return;
-        }
-      }
+      handleSelectAt(worldPos.x, worldPos.y);
     });
   }
 
