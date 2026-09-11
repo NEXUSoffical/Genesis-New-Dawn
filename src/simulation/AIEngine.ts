@@ -1154,8 +1154,8 @@ export class AIEngine {
 
     if (agent.knowledge.has('bridge_engineering') && hasItem(agent, 'wood_log', 2) && hasItem(agent, 'stick', 3)) {
       // Priority fix: Do not build bridges if we don't even have a campfire and shelter yet!
-      const hasCampfire = Array.from(this.world.buildings.values()).some((b) => b.type === 'campfire' && b.ownerId === agent.id);
-      const hasShelter = Array.from(this.world.buildings.values()).some((b) => ['lean_to', 'mud_hut', 'timber_house', 'stone_well'].includes(b.type) && b.ownerId === agent.id);
+      const hasCampfire = Array.from(this.world.buildings.values()).some((b) => b.type === 'campfire' && b.builderId === agent.id);
+      const hasShelter = Array.from(this.world.buildings.values()).some((b) => ['lean_to', 'mud_hut', 'timber_house', 'stone_well'].includes(b.type) && b.builderId === agent.id);
       
       if (!hasCampfire || !hasShelter) {
         return false;
