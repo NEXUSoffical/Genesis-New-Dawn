@@ -1,23 +1,12 @@
+import { supabase } from '../backend/supabase';
+
 export class AuthManager {
-  private static USER_KEY = 'genesis_current_user';
-
-  static getCurrentUser(): string | null {
-    try {
-      return localStorage.getItem(this.USER_KEY);
-    } catch {
-      return null;
-    }
+  static async getCurrentUser(): Promise<string | null> {
+    const { data: { session } } = await supabase.auth.getSession();
+    return session?.user?.email || null;
   }
 
-  static setCurrentUser(username: string): void {
-    try {
-      localStorage.setItem(this.USER_KEY, username);
-    } catch {}
-  }
-
-  static logout(): void {
-    try {
-      localStorage.removeItem(this.USER_KEY);
-    } catch {}
+  static async logout(): Promise<void> {
+    await supabase.auth.signOut();
   }
 }

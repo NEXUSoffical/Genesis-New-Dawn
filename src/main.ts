@@ -12,6 +12,7 @@ import { FaunaManager } from './simulation/Fauna';
 import { SoundEngine } from './audio/SoundEngine';
 import { AuthManager } from './auth/AuthManager';
 import { LoginModal } from './ui/LoginModal';
+import { HomePage } from './ui/HomePage';
 
 class GenesisGame {
   private world: WorldManager;
@@ -325,15 +326,21 @@ class GenesisGame {
 
 // Start game when DOM is loaded
 window.addEventListener('DOMContentLoaded', () => {
-  const currentUser = AuthManager.getCurrentUser();
-  if (!currentUser) {
-    const login = new LoginModal();
-    login.onLogin = (username) => {
-      AuthManager.setCurrentUser(username);
+  const startApp = async () => {
+    const currentUser = await AuthManager.getCurrentUser();
+    if (!currentUser) {
+      const login = new LoginModal();
+      login.onLogin = (username) => {
+        new GenesisGame();
+      };
+      login.show();
+    } else {
       new GenesisGame();
-    };
-    login.show();
-  } else {
-    new GenesisGame();
-  }
+    }
+  };
+
+  const homePage = new HomePage(() => {
+    startApp();
+  });
+  homePage.mount();
 });
