@@ -10,6 +10,8 @@ import { HUD } from './ui/HUD';
 import { PersistenceManager } from './simulation/Persistence';
 import { FaunaManager } from './simulation/Fauna';
 import { SoundEngine } from './audio/SoundEngine';
+import { AuthManager } from './auth/AuthManager';
+import { LoginModal } from './ui/LoginModal';
 
 class GenesisGame {
   private world: WorldManager;
@@ -299,6 +301,7 @@ class GenesisGame {
 
     this.agents.push(newAgent);
     (window as any).agents = this.agents;
+    PersistenceManager.saveState(this.world, this.economy, this.aiEngine, this.agents, this.fauna.animals, this.hasSpawnedCustomCharacter);
 
     // Follow new pioneer with camera & select in inspector
     if (this.camera) {
@@ -322,5 +325,15 @@ class GenesisGame {
 
 // Start game when DOM is loaded
 window.addEventListener('DOMContentLoaded', () => {
-  new GenesisGame();
+  const currentUser = AuthManager.getCurrentUser();
+  if (!currentUser) {
+    const login = new LoginModal();
+    login.onLogin = (username) => {
+      AuthManager.setCurrentUser(username);
+      new GenesisGame();
+    };
+    login.show();
+  } else {
+    new GenesisGame();
+  }
 });

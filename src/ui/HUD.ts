@@ -6,6 +6,7 @@ import { TECHNOLOGIES } from '../simulation/Inventions';
 import { Camera } from '../renderer/Camera';
 import { PersistenceManager } from '../simulation/Persistence';
 import { SoundEngine } from '../audio/SoundEngine';
+import { AuthManager } from '../auth/AuthManager';
 
 export class HUD {
   private container: HTMLElement;
@@ -86,6 +87,7 @@ export class HUD {
 
       <!-- Top Navigation Bar -->
       <header id="top-bar" class="glass-panel">
+        <button id="btn-logout" class="nav-tab-btn" title="Logout" style="margin-left: auto; padding: 4px 10px; font-size: 11px;">🚪 Logout</button>
         <div class="brand-section">
           <div class="brand-logo">🌍</div>
           <div>
@@ -433,6 +435,10 @@ export class HUD {
 
   private bindEvents(): void {
     // Speed buttons
+    document.getElementById('btn-logout')?.addEventListener('click', () => {
+      AuthManager.logout();
+      window.location.reload();
+    });
     const speedButtons = document.querySelectorAll('.speed-btn');
     speedButtons.forEach((btn) => {
       btn.addEventListener('click', (e) => {

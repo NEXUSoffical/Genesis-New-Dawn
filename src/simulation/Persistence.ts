@@ -3,6 +3,7 @@ import { WorldManager } from './World';
 import { EconomyEngine } from './Economy';
 import { AIEngine } from './AIEngine';
 import { TECHNOLOGIES } from './Inventions';
+import { AuthManager } from '../auth/AuthManager';
 
 export interface SerializedAgent extends Omit<Agent, 'knowledge'> {
   knowledge: string[];
@@ -41,15 +42,17 @@ export interface GenesisSaveState {
   hasSpawnedCustomCharacter?: boolean;
 }
 
-const STORAGE_KEY = 'genesis_world_save_v1';
-
 export class PersistenceManager {
+  private static getStorageKey(): string {
+    const user = AuthManager.getCurrentUser() || 'guest';
+    return `genesis_world_save_${user}_v1`;
+  }
   private autoSaveTimer: number = 0;
   private readonly AUTO_SAVE_INTERVAL = 15; // Save every 15 seconds
 
   public static hasSaveData(): boolean {
     try {
-      return localStorage.getItem(STORAGE_KEY) !== null;
+      return localStorage.getItem(PersistenceManager.getStorageKey()) !== null;
     } catch {
       return false;
     }
@@ -136,7 +139,7 @@ export class PersistenceManager {
         hasSpawnedCustomCharacter,
       };
 
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      localStorage.setItem(PersistenceManager.getStorageKey(), JSON.stringify(payload));
       return true;
     } catch (err) {
       console.warn('Failed to save game state to localStorage:', err);
@@ -150,7 +153,7 @@ export class PersistenceManager {
     aiEngine: AIEngine
   ): { agents: Agent[]; animals?: Animal[]; elapsedSeconds: number; hasSpawnedCustomCharacter: boolean } | null {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      const raw = localStorage.getItem(PersistenceManager.getStorageKey());
       if (!raw) return null;
 
       const data: GenesisSaveState = JSON.parse(raw);
@@ -261,7 +264,7 @@ export class PersistenceManager {
     hasSpawnedCustomCharacter: boolean = false
   ): void {
     this.saveState(world, economy, aiEngine, agents, animals, hasSpawnedCustomCharacter);
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(PersistenceManager.getStorageKey());
     if (!raw) return;
 
     const blob = new Blob([raw], { type: 'application/json' });
@@ -287,7 +290,7 @@ export class PersistenceManager {
           onError('Invalid Genesis world file format.');
           return;
         }
-        localStorage.setItem(STORAGE_KEY, text);
+        localStorage.setItem(PersistenceManager.getStorageKey(), text);
         onSuccess();
       } catch (err: any) {
         onError(`Corrupted save file: ${err?.message || 'unknown error'}`);
