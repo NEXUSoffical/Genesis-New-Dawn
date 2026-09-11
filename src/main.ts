@@ -325,22 +325,20 @@ class GenesisGame {
 }
 
 // Start game when DOM is loaded
-window.addEventListener('DOMContentLoaded', () => {
-  const startApp = async () => {
-    const currentUser = await AuthManager.getCurrentUser();
-    if (!currentUser) {
-      const login = new LoginModal();
-      login.onLogin = (username) => {
-        new GenesisGame();
-      };
-      login.show();
-    } else {
+const startApp = async () => {
+  const currentUser = await AuthManager.getCurrentUser();
+  if (!currentUser) {
+    const login = new LoginModal();
+    login.onLogin = () => {
       new GenesisGame();
-    }
-  };
+    };
+    login.show();
+  } else {
+    new GenesisGame();
+  }
+};
 
-  const homePage = new HomePage(() => {
-    startApp();
-  });
-  homePage.mount();
+const homePage = new HomePage(() => {
+  startApp();
 });
+homePage.mount();
