@@ -4,6 +4,7 @@ import { EconomyEngine } from './Economy';
 import { AIEngine } from './AIEngine';
 import { TECHNOLOGIES } from './Inventions';
 import { AuthManager } from '../auth/AuthManager';
+import { supabase } from '../backend/supabase';
 
 export interface SerializedAgent extends Omit<Agent, 'knowledge'> {
   knowledge: string[];
@@ -58,6 +59,52 @@ export class PersistenceManager {
     }
   }
 
+  /**
+   * Fetches the latest save from Supabase and overwrites local storage if the cloud version is newer.
+   * This should be called once before the game starts.
+   */
+  public static async syncCloudSave(): Promise<void> {
+    const user = AuthManager.getCachedUser();
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('user_saves')
+        .select('save_state, updated_at')
+        .eq('user_id', user)
+        .single();
+
+      if (error || !data) {
+        console.log('No cloud save found or error fetching:', error);
+        return;
+      }
+
+      const cloudSave: GenesisSaveState = data.save_state;
+      const localRaw = localStorage.getItem(PersistenceManager.getStorageKey());
+      
+      let shouldOverwriteLocal = true;
+      if (localRaw) {
+        try {
+          const localSave: GenesisSaveState = JSON.parse(localRaw);
+          if (localSave.timestamp >= cloudSave.timestamp) {
+            shouldOverwriteLocal = false; // Local is newer or same
+          }
+        } catch (e) {
+          // If local save is corrupted, we overwrite it.
+        }
+      }
+
+      if (shouldOverwriteLocal) {
+        console.log('Cloud save is newer, syncing to local storage...');
+        localStorage.setItem(PersistenceManager.getStorageKey(), JSON.stringify(cloudSave));
+      } else {
+        console.log('Local save is up to date with cloud.');
+      }
+    } catch (e) {
+      console.error('Failed to sync cloud save:', e);
+    }
+  }
+
   public static saveState(
     world: WorldManager,
     economy: EconomyEngine,
@@ -100,25 +147,19 @@ export class PersistenceManager {
         knowledge: Array.from(a.knowledge),
       }));
 
-      // 4. Serialize Tech progress
-      const serializedTechs = TECHNOLOGIES.map((t) => ({
+      // 4. Gather technologies
+      const techState = TECHNOLOGIES.map((t) => ({
         id: t.id,
         discovered: t.discovered,
-        researchProgress: t.researchProgress || 0,
+        researchProgress: t.researchProgress,
         discoveredBy: t.discoveredBy,
         discoveredAtDay: t.discoveredAtDay,
       }));
 
-      // 5. Serialize Economy
-      const serializedEconomy = {
-        items: Array.from(economy.items.entries()),
-        treasuryCoins: economy.treasuryCoins,
-        totalGdp: economy.totalGdp,
-        transactionCount: economy.transactionCount,
-        isCurrencyUnlocked: economy.isCurrencyUnlocked,
-      };
+      // 5. Gather economy items
+      const economyItems = Array.from(economy.items.entries());
 
-      const payload: GenesisSaveState = {
+      const state: GenesisSaveState = {
         version: 1,
         timestamp: Date.now(),
         world: {
@@ -129,20 +170,43 @@ export class PersistenceManager {
           weather: world.weather,
           buildings,
           revealedCoords,
-          modifiedTiles,
+          modifiedTiles
         },
         agents: serializedAgents,
-        animals,
-        technologies: serializedTechs,
-        economy: serializedEconomy,
-        chronicles: aiEngine.chronicles.slice(0, 80),
-        hasSpawnedCustomCharacter,
+        animals: animals,
+        technologies: techState,
+        economy: {
+          items: economyItems,
+          treasuryCoins: economy.treasuryCoins,
+          totalGdp: economy.totalGdp,
+          transactionCount: economy.transactionCount,
+          isCurrencyUnlocked: economy.isCurrencyUnlocked,
+        },
+        chronicles: aiEngine.chronicles,
+        hasSpawnedCustomCharacter
       };
 
-      localStorage.setItem(PersistenceManager.getStorageKey(), JSON.stringify(payload));
+      const serialized = JSON.stringify(state);
+      
+      // 1. Save locally (synchronous)
+      localStorage.setItem(PersistenceManager.getStorageKey(), serialized);
+
+      // 2. Save to cloud (fire-and-forget asynchronous)
+      const user = AuthManager.getCachedUser();
+      if (user) {
+        supabase.from('user_saves').upsert({
+          user_id: user,
+          save_state: state
+        }).then(({ error }) => {
+          if (error) {
+            console.warn('Failed to upload save to cloud:', error.message);
+          }
+        });
+      }
+
       return true;
-    } catch (err) {
-      console.warn('Failed to save game state to localStorage:', err);
+    } catch (e) {
+      console.error('Failed to save simulation state:', e);
       return false;
     }
   }

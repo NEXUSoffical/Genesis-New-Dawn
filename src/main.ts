@@ -328,11 +328,13 @@ const startApp = async () => {
   const currentUser = await AuthManager.getCurrentUser();
   if (!currentUser) {
     const login = new LoginModal();
-    login.onLogin = () => {
+    login.onLogin = async () => {
+      await PersistenceManager.syncCloudSave();
       new GenesisGame();
     };
     login.show();
   } else {
+    await PersistenceManager.syncCloudSave();
     new GenesisGame();
   }
 };
