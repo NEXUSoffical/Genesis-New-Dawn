@@ -58,6 +58,11 @@ export class LoginModal {
       errorDiv.textContent = 'Please enter both email and password.';
       return;
     }
+    
+    if (!email.includes('@')) {
+      errorDiv.textContent = 'Invalid credentials. You must use a full Email Address (e.g. name@example.com).';
+      return;
+    }
 
     errorDiv.textContent = 'Authenticating...';
 

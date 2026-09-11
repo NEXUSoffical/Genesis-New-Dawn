@@ -197,7 +197,7 @@ body, html {
 .agent-selector-pills {
   display: flex;
   gap: 6px;
-  overflow-x: auto;
+  flex-wrap: wrap;
   padding-bottom: 4px;
 }
 
@@ -1169,9 +1169,12 @@ body, html {
 
 /* Desktop defaults: hide mobile-only elements */
 .mobile-inspector-bar,
-#mobile-floating-controls,
 #mobile-zoom-controls {
   display: none;
+}
+
+#mobile-floating-controls {
+  display: none !important;
 }
 
 /* Tablet & Mobile Breakpoint (<= 768px) */
@@ -1374,7 +1377,7 @@ body, html {
 
   /* Floating Bottom Controls for Phone */
   #mobile-floating-controls {
-    display: flex;
+    display: flex !important;
     position: fixed;
     bottom: 54px;
     left: 10px;
