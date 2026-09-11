@@ -1153,8 +1153,20 @@ export class AIEngine {
     }
 
     if (agent.knowledge.has('bridge_engineering') && hasItem(agent, 'wood_log', 2) && hasItem(agent, 'stick', 3)) {
+      // Priority fix: Do not build bridges if we don't even have a campfire and shelter yet!
+      const hasCampfire = Array.from(this.world.buildings.values()).some((b) => b.type === 'campfire' && b.ownerId === agent.id);
+      const hasShelter = Array.from(this.world.buildings.values()).some((b) => ['lean_to', 'mud_hut', 'timber_house', 'stone_well'].includes(b.type) && b.ownerId === agent.id);
+      
+      if (!hasCampfire || !hasShelter) {
+        return false;
+      }
+
       const waterTile = this.findNearestTileMatching(agent.x, agent.y, 12, (t) => t.type === 'water' && !t.building);
       if (waterTile) {
+        // Prevent bridge spam: Don't build if there's already a bridge very close by
+        const nearbyBridge = Array.from(this.world.buildings.values()).find(b => b.type === 'wooden_bridge' && Math.hypot(b.x - waterTile.x, b.y - waterTile.y) < 8);
+        if (nearbyBridge) return false;
+
         const dist = Math.hypot(waterTile.x - agent.x, waterTile.y - agent.y);
         if (dist <= 1.8) {
           const bridge = this.world.placeBuilding('wooden_bridge', waterTile.x, waterTile.y, agent.id);
