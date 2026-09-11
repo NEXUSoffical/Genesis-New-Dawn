@@ -33,7 +33,7 @@ export class HomePage {
           left: 0;
           width: 100vw;
           height: 100vh;
-          background-image: url('/background.jpg');
+          background-image: url('/Genesis-New-Dawn/background.jpg');
           background-size: cover;
           background-position: center;
           z-index: 9999;

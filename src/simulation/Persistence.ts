@@ -44,7 +44,7 @@ export interface GenesisSaveState {
 
 export class PersistenceManager {
   private static getStorageKey(): string {
-    const user = AuthManager.getCurrentUser() || 'guest';
+    const user = AuthManager.getCachedUser() || 'guest';
     return `genesis_world_save_${user}_v1`;
   }
   private autoSaveTimer: number = 0;
