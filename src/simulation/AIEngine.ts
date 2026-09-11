@@ -1792,6 +1792,7 @@ export class AIEngine {
         // Grounded, gradual research accumulation calibrated for long-term progression
         const researchGain = 2.5 + Math.random() * 2.0;
         tech.researchProgress = (tech.researchProgress || 0) + researchGain;
+        agent.needs.curiosity = Math.max(0, agent.needs.curiosity - 20);
 
         if (tech.researchProgress >= tech.requiredResearch) {
           tech.discovered = true;
