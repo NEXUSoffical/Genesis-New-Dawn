@@ -301,7 +301,7 @@ export function createCustomPioneer(options: {
     curiosity: 65 + Math.floor(Math.random() * 35),
     health: 95 + Math.floor(Math.random() * 5),
   };
-  const maxCarryWeight = 26 + Math.floor(Math.random() * 14);
+  const maxCarryWeight = 45 + Math.floor(Math.random() * 20);
 
   // 6. Personality & First Impression Thoughts: randomly simulated
   const thoughtPool = [

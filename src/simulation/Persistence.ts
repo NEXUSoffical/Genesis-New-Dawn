@@ -226,10 +226,14 @@ export class PersistenceManager {
       }
 
       // 5. Restore Agents
-      const restoredAgents: Agent[] = data.agents.map((sa) => ({
-        ...sa,
-        knowledge: new Set(sa.knowledge || []),
-      }));
+      const restoredAgents: Agent[] = data.agents.map((sa) => {
+        const baseWeight = sa.maxCarryWeight || 30;
+        return {
+          ...sa,
+          knowledge: new Set(sa.knowledge || []),
+          maxCarryWeight: Math.max(baseWeight, 45 + Math.floor(Math.random() * 20)),
+        };
+      });
 
       // 6. Restore Animals
       const restoredAnimals: Animal[] = data.animals || [];

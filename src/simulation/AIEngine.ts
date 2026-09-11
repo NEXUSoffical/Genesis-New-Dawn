@@ -1964,6 +1964,12 @@ export class AIEngine {
       return;
     }
 
+    const currentTotal = Object.values(agent.inventory).reduce((acc, c) => acc + (c || 0), 0);
+    if (currentTotal + 2 > agent.maxCarryWeight) {
+      this.wanderNearOrigin(agent);
+      return;
+    }
+
     const needsWood = canGatherWood && getInventoryCount(agent, 'stick') < 12;
     const needsLog = canGatherWood && getInventoryCount(agent, 'wood_log') < 6;
     const needsStone = canGatherStone && getInventoryCount(agent, 'stone') < 10;
