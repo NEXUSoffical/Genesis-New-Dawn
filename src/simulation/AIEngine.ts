@@ -219,8 +219,8 @@ export class AIEngine {
   }
 
   private generateContextualThought(agent: Agent): void {
-    if (agent.currentTask) {
-      const type = agent.currentTask.type;
+    if (agent.activeTask) {
+      const type = agent.activeTask.type;
       const taskThoughts: Record<string, string[]> = {
         foraging: ["I must gather what I can.", "The earth provides.", "So much to find here."],
         chopping: ["Wood for the fire.", "Swing hard, cut deep.", "This tree will serve us well."],
