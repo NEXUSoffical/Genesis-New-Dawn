@@ -1145,7 +1145,7 @@ export class AIEngine {
       return false;
     }
 
-    if (hasItem(agent, 'wood_log', 2) && hasItem(agent, 'stick', 3)) {
+    if (agent.knowledge.has('bridge_engineering') && hasItem(agent, 'wood_log', 2) && hasItem(agent, 'stick', 3)) {
       const waterTile = this.findNearestTileMatching(agent.x, agent.y, 12, (t) => t.type === 'water' && !t.building);
       if (waterTile) {
         const dist = Math.hypot(waterTile.x - agent.x, waterTile.y - agent.y);
