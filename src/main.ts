@@ -119,7 +119,6 @@ class GenesisGame {
       this.economy,
       this.aiEngine,
       undefined,
-      (speed) => this.simSpeed = speed,
       this.soundEngine,
       () => {
         // Awaken Next Generation after 48h natural passing

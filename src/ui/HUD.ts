@@ -6,7 +6,6 @@ import { TECHNOLOGIES } from '../simulation/Inventions';
 import { Camera } from '../renderer/Camera';
 import { PersistenceManager } from '../simulation/Persistence';
 import { SoundEngine } from '../audio/SoundEngine';
-import { AuthManager } from '../auth/AuthManager';
 
 export class HUD {
   private container: HTMLElement;
@@ -22,7 +21,6 @@ export class HUD {
     private economy: EconomyEngine,
     private aiEngine: AIEngine,
     private camera?: Camera,
-    private onSpeedChange?: (speed: number) => void,
     private soundEngine?: SoundEngine,
     private onAwakenDynasty?: () => void,
     private onSpawnCharacter?: (name?: string) => void,

@@ -219,35 +219,42 @@ export class AIEngine {
   }
 
   private generateContextualThought(agent: Agent): void {
+    if (agent.currentTask) {
+      const type = agent.currentTask.type;
+      const taskThoughts: Record<string, string[]> = {
+        foraging: ["I must gather what I can.", "The earth provides.", "So much to find here."],
+        chopping: ["Wood for the fire.", "Swing hard, cut deep.", "This tree will serve us well."],
+        striking_fire: ["Come on, catch a spark...", "We need warmth.", "Fire... dance for me."],
+        building: ["Laying the foundation.", "It takes shape, slowly.", "A shelter for the nights ahead."],
+        researching: ["There is so much to understand...", "Ah, I see how it works now.", "Knowledge is our greatest tool."],
+        crafting: ["My hands weave the materials.", "Careful focus.", "This will be useful."],
+        resting: ["Finally, some rest.", "The ground is hard, but sleep is sweet.", "I must recover my strength."],
+        socializing: ["It is good to not be alone.", "We share our burdens.", "Together, we endure."],
+      };
+      
+      const thoughts = taskThoughts[type] || ["I must focus on my task.", "Work must be done."];
+      agent.activeThought = thoughts[Math.floor(Math.random() * thoughts.length)];
+      return;
+    }
+
     const hasWood = agent.knowledge.has('discovery_wood');
     const hasStone = agent.knowledge.has('discovery_stone');
     const hasFire = agent.knowledge.has('discovery_fire');
     const time = this.world.timeOfDay;
 
-    if (!hasWood) {
-      agent.activeThought = 'What are these tall living pillars stretching to the sky? Can their fallen limbs be held?';
-      return;
-    }
-    if (!hasStone) {
-      agent.activeThought = 'The grey pebbles along the water... they are smooth and heavy. What are they?';
-      return;
-    }
-    if (!hasFire && time >= 18.0) {
-      agent.activeThought = 'The shadows lengthen and the night air turns cold. Is there no warmth to drive back the darkness?';
-      return;
-    }
-    if (hasFire) {
-      agent.activeThought = 'Fire... a sacred dancing spirit. It eats dry wood and gives us light and warmth.';
-      return;
-    }
-
     const thoughts = [
       `The earth is vast and pristine. We must observe and understand its nature.`,
       `Every stone and branch holds a purpose if we look with patience.`,
-      `Eve and I walk with bare feet upon a world that has never known footsteps.`,
+      `I walk with bare feet upon a world that has never known footsteps.`,
       `The rhythm of sunrise and sunset teaches us when to work and when to rest.`,
       `Nature provides all we need, if only our minds can perceive it.`,
     ];
+
+    if (!hasWood) thoughts.push('What are these tall living pillars stretching to the sky? Can their fallen limbs be held?');
+    if (!hasStone) thoughts.push('The grey pebbles along the water... they are smooth and heavy. What are they?');
+    if (!hasFire && time >= 18.0) thoughts.push('The shadows lengthen and the night air turns cold. Is there no warmth to drive back the darkness?');
+    if (hasFire) thoughts.push('Fire... a sacred dancing spirit. It eats dry wood and gives us light and warmth.');
+
     agent.activeThought = thoughts[Math.floor(Math.random() * thoughts.length)];
   }
 
