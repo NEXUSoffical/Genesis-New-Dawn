@@ -108,14 +108,6 @@ export class HUD {
             <span style="color: var(--text-muted);">|</span>
             <span id="temp-display" style="color: #38bdf8; font-weight: 600;">🌡️ 18°C</span>
           </div>
-
-          <div class="speed-controls">
-            <button class="speed-btn" data-speed="0">⏸</button>
-            <button class="speed-btn active" data-speed="1">1x Real-Time</button>
-            <button class="speed-btn" data-speed="5">5x</button>
-            <button class="speed-btn" data-speed="20">20x</button>
-            <button class="speed-btn" data-speed="60">60x</button>
-          </div>
         </div>
 
         <div class="stats-section">
@@ -434,22 +426,10 @@ export class HUD {
   }
 
   private bindEvents(): void {
-    // Speed buttons
     document.getElementById('btn-logout')?.addEventListener('click', () => {
-      AuthManager.logout();
-      window.location.reload();
-    });
-    const speedButtons = document.querySelectorAll('.speed-btn');
-    speedButtons.forEach((btn) => {
-      btn.addEventListener('click', (e) => {
-        const target = e.currentTarget as HTMLElement;
-        const speed = parseFloat(target.dataset.speed || '1');
-        speedButtons.forEach((b) => b.classList.remove('active'));
-        target.classList.add('active');
-        this.simSpeed = speed;
-        if (this.onSpeedChange) {
-          this.onSpeedChange(speed);
-        }
+      import('../auth/AuthManager').then(m => {
+        m.AuthManager.logout();
+        window.location.reload();
       });
     });
 
