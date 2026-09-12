@@ -383,38 +383,38 @@ export class HUD {
       </div>
 
       <!-- Premium Token Shop Modal -->
-      <div id="shop-modal" class="drawer-modal glass-panel">
+      <div id="shop-modal" class="fullscreen-modal glass-panel">
         <div class="modal-header">
-          <div class="modal-title" style="background: linear-gradient(135deg, #14F195, #9945FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🛒 COSMETICS & SUPPORTER STORE</div>
-          <button class="close-btn" data-close="shop">✕</button>
+          <div class="modal-title" style="background: linear-gradient(135deg, #14F195, #9945FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 24px;">🛒 COSMETICS & SUPPORTER STORE</div>
+          <button class="close-btn" data-close="shop" style="font-size: 24px; padding: 10px;">✕</button>
         </div>
-        <p style="font-size: 12px; color: var(--text-muted); line-height: 1.5; margin-bottom: 12px;">
+        <p style="font-size: 16px; color: var(--text-muted); line-height: 1.5; margin-bottom: 24px; text-align: center; max-width: 600px; margin-left: auto; margin-right: auto;">
           Burn <strong style="color: #9945FF;">$GENESIS</strong> to unlock exclusive visual themes and supporter perks. All items are purely cosmetic and do not affect the autonomous simulation math.
         </p>
-        <div class="shop-grid" style="display: flex; flex-direction: column; gap: 12px;">
+        <div class="shop-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; padding: 20px;">
           
-          <div class="shop-item" style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; border: 1px solid rgba(153, 69, 255, 0.3); display: flex; justify-content: space-between; align-items: center;">
+          <div class="shop-item" style="background: rgba(255,255,255,0.05); padding: 24px; border-radius: 12px; border: 1px solid rgba(153, 69, 255, 0.3); display: flex; flex-direction: column; justify-content: space-between; align-items: center; text-align: center; gap: 16px;">
             <div>
-              <div style="font-size: 14px; font-weight: 700; color: #f8fafc;">🎨 Cyberpunk HUD Theme</div>
-              <div style="font-size: 11px; color: var(--text-muted);">Reskin your game UI with neon scanlines.</div>
+              <div style="font-size: 18px; font-weight: 700; color: #f8fafc; margin-bottom: 8px;">🎨 Cyberpunk HUD Theme</div>
+              <div style="font-size: 14px; color: var(--text-muted);">Reskin your game UI with neon scanlines.</div>
             </div>
-            <button class="btn-buy-premium" style="background: rgba(20, 241, 149, 0.1); color: #14F195; border: 1px solid #14F195; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">50M $GENESIS</button>
+            <button class="btn-buy-premium" style="background: rgba(20, 241, 149, 0.1); color: #14F195; border: 1px solid #14F195; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 700; width: 100%;">50M $GENESIS</button>
           </div>
 
-          <div class="shop-item" style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; border: 1px solid rgba(153, 69, 255, 0.3); display: flex; justify-content: space-between; align-items: center;">
+          <div class="shop-item" style="background: rgba(255,255,255,0.05); padding: 24px; border-radius: 12px; border: 1px solid rgba(153, 69, 255, 0.3); display: flex; flex-direction: column; justify-content: space-between; align-items: center; text-align: center; gap: 16px;">
             <div>
-              <div style="font-size: 14px; font-weight: 700; color: #f8fafc;">🦅 Eagle-Eye Camera</div>
-              <div style="font-size: 11px; color: var(--text-muted);">Unlock ultra-wide zoom-out from the clouds.</div>
+              <div style="font-size: 18px; font-weight: 700; color: #f8fafc; margin-bottom: 8px;">🦅 Eagle-Eye Camera</div>
+              <div style="font-size: 14px; color: var(--text-muted);">Unlock ultra-wide zoom-out from the clouds.</div>
             </div>
-            <button class="btn-buy-premium" style="background: rgba(20, 241, 149, 0.1); color: #14F195; border: 1px solid #14F195; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">100M $GENESIS</button>
+            <button class="btn-buy-premium" style="background: rgba(20, 241, 149, 0.1); color: #14F195; border: 1px solid #14F195; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 700; width: 100%;">100M $GENESIS</button>
           </div>
 
-          <div class="shop-item" style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; border: 1px solid rgba(153, 69, 255, 0.3); display: flex; justify-content: space-between; align-items: center;">
+          <div class="shop-item" style="background: rgba(255,255,255,0.05); padding: 24px; border-radius: 12px; border: 1px solid rgba(153, 69, 255, 0.3); display: flex; flex-direction: column; justify-content: space-between; align-items: center; text-align: center; gap: 16px;">
             <div>
-              <div style="font-size: 14px; font-weight: 700; color: #f8fafc;">👑 Supporter Halo</div>
-              <div style="font-size: 11px; color: var(--text-muted);">A golden halo over your custom pioneers.</div>
+              <div style="font-size: 18px; font-weight: 700; color: #f8fafc; margin-bottom: 8px;">👑 Supporter Halo</div>
+              <div style="font-size: 14px; color: var(--text-muted);">A golden halo over your custom pioneers.</div>
             </div>
-            <button class="btn-buy-premium" style="background: rgba(20, 241, 149, 0.1); color: #14F195; border: 1px solid #14F195; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">50M $GENESIS</button>
+            <button class="btn-buy-premium" style="background: rgba(20, 241, 149, 0.1); color: #14F195; border: 1px solid #14F195; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 700; width: 100%;">50M $GENESIS</button>
           </div>
 
         </div>
