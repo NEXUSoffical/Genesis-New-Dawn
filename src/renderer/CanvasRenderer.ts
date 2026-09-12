@@ -164,9 +164,11 @@ export class CanvasRenderer {
   public triggerGodInteractionAt(worldX: number, worldY: number, agents: Agent[]): void {
     const tileX = Math.floor(worldX);
     const tileY = Math.floor(worldY);
+    console.log(`[GodMode] Clicked at worldX: ${worldX}, worldY: ${worldY}. TileX: ${tileX}, TileY: ${tileY}`);
 
     for (const agent of agents) {
       if (Math.hypot(agent.x + 0.5 - worldX, agent.y + 0.5 - worldY) <= 1.3) {
+        console.log(`[GodMode] Agent ${agent.name} clicked! Waving!`);
         this.godInteractions.push({ x: agent.x, y: agent.y, timer: 1.5, type: 'wave', agentId: agent.id });
         return;
       }
@@ -174,11 +176,14 @@ export class CanvasRenderer {
 
     const tile = this.world.getTile(tileX, tileY);
     if (tile) {
+      console.log(`[GodMode] Tile clicked type: ${tile.type}`);
       if (tile.type === 'water' || tile.type === 'deep_water') {
         this.godInteractions.push({ x: tile.x, y: tile.y, timer: 0.5, type: 'splash' });
       } else if (tile.type === 'dense_forest' || tile.type === 'sparse_trees') {
         this.godInteractions.push({ x: tile.x, y: tile.y, timer: 0.8, type: 'wiggle' });
       }
+    } else {
+      console.log(`[GodMode] No tile found at ${tileX}, ${tileY}`);
     }
   }
 

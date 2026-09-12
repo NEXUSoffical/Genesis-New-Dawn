@@ -179,7 +179,7 @@ export class HomePage {
         this.activeUsersCount = count;
         this.updateActiveUsersDisplay();
       })
-      .subscribe(async (status) => {
+      .subscribe(async (status: any) => {
         if (status === 'SUBSCRIBED' && this.presenceChannel) {
           await this.presenceChannel.track({
             online_at: new Date().toISOString(),

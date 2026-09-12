@@ -197,7 +197,7 @@ export class PersistenceManager {
         supabase.from('user_saves').upsert({
           user_id: user,
           save_state: state
-        }).then(({ error }) => {
+        }).then(({ error }: any) => {
           if (error) {
             console.warn('Failed to upload save to cloud:', error.message);
           }

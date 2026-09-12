@@ -39,7 +39,7 @@ export class SoundEngine {
       this.setupWindAmbient();
       this.setupRainAmbient();
       this.setupCampfireAmbient();
-      this.setupNightCricketsAmbient();
+      // this.setupNightCricketsAmbient(); // Muted: sounds like an annoying beep
     } catch (err) {
       console.warn('Web Audio API not supported or blocked:', err);
     }
