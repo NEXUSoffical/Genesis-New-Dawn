@@ -227,8 +227,8 @@ class GenesisGame {
       this.fauna.update(deltaSec, this.agents);
 
       // 3. Update World Day/Night & Weather
-      // True Real-time: At 1x speed, 1 real second = 1 simulation second!
-      const deltaMinutes = deltaSec / 60;
+      // Simulation Time: 1 real second = 1 simulation minute (24 minutes per full day)
+      const deltaMinutes = deltaSec * 1.0;
       this.world.updateTimeAndWeather(deltaMinutes);
 
       // 4. Economy market update (every 10 seconds of simulation time)
