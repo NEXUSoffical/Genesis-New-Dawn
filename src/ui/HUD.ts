@@ -465,15 +465,16 @@ export class HUD {
 
   private bindEvents(): void {
     document.getElementById('btn-logout')?.addEventListener('click', () => {
-      localStorage.removeItem('sb-ntxmsikwzifpgycbnepq-auth-token');
-      window.location.reload();
+      import('../auth/AuthManager').then(m => {
+        m.AuthManager.logout();
+        window.location.reload();
+      });
     });
 
     document.getElementById('btn-premium-shop')?.addEventListener('click', () => {
       this.toggleTab('shop');
     });
 
-    // Mock Buy Button Handlers
     document.querySelectorAll('.btn-buy-premium').forEach((btn) => {
       btn.addEventListener('click', () => {
         alert("The token has not been minted yet! Minting soon...");
@@ -506,7 +507,6 @@ export class HUD {
     document.getElementById('tab-economy-btn')?.addEventListener('click', () => this.toggleTab('economy'));
     document.getElementById('tab-chronicles-btn')?.addEventListener('click', () => this.toggleTab('chronicles'));
     document.getElementById('tab-dynasty-btn')?.addEventListener('click', () => this.toggleTab('dynasty'));
-    document.getElementById('tab-shop-btn')?.addEventListener('click', () => this.toggleTab('shop'));
     document.getElementById('tab-cinematic-btn')?.addEventListener('click', () => this.toggleCinematicMode());
     document.getElementById('cinematic-exit-pill')?.addEventListener('click', () => this.toggleCinematicMode());
     document.getElementById('view-chronicles-btn')?.addEventListener('click', () => this.toggleTab('chronicles'));
@@ -728,7 +728,6 @@ export class HUD {
     document.getElementById('tab-economy-btn')?.classList.remove('active');
     document.getElementById('tab-chronicles-btn')?.classList.remove('active');
     document.getElementById('tab-dynasty-btn')?.classList.remove('active');
-    document.getElementById('tab-shop-btn')?.classList.remove('active');
 
     if (this.openTab === 'spawn') {
       if (this.hasSpawnedCharacter) {
@@ -768,7 +767,6 @@ export class HUD {
       this.renderDynastyTree((window as any).agents || []);
     } else if (this.openTab === 'shop') {
       document.getElementById('shop-modal')?.classList.add('open');
-      document.getElementById('tab-shop-btn')?.classList.add('active');
     }
   }
 
@@ -830,9 +828,6 @@ export class HUD {
     const gazeVal = document.getElementById('gaze-timer-val');
     if (passingBanner) {
       passingBanner.style.display = allDeceased ? 'block' : 'none';
-    }
-    if (document.getElementById('shop-modal')) {
-      document.getElementById('shop-modal')!.style.display = this.openTab === 'shop' ? 'block' : 'none';
     }
     if (gazeVal) {
       if (allDeceased) {
