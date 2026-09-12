@@ -86,6 +86,7 @@ export class HUD {
       <!-- Top Navigation Bar -->
       <header id="top-bar" class="glass-panel">
         <button id="btn-logout" class="nav-tab-btn" title="Logout" style="margin-left: auto; padding: 4px 10px; font-size: 11px;">🚪 Logout</button>
+        <button id="btn-connect-wallet" class="nav-tab-btn" title="Connect Wallet" style="margin-left: 8px; padding: 4px 10px; font-size: 11px; background: #9945FF; color: white;">🪙 Connect Solana</button>
         <div class="brand-section">
           <div class="brand-logo">🌍</div>
           <div>
@@ -429,6 +430,26 @@ export class HUD {
         m.AuthManager.logout();
         window.location.reload();
       });
+    });
+
+    document.getElementById('btn-connect-wallet')?.addEventListener('click', async () => {
+      try {
+        const provider = (window as any).solana;
+        if (provider && provider.isPhantom) {
+          const resp = await provider.connect();
+          const btn = document.getElementById('btn-connect-wallet');
+          if (btn) {
+            btn.textContent = `🪙 ${resp.publicKey.toString().slice(0, 4)}...${resp.publicKey.toString().slice(-4)}`;
+            btn.style.background = '#14F195'; // Solana green
+            btn.style.color = '#000';
+          }
+          console.log('Connected to Solana:', resp.publicKey.toString());
+        } else {
+          window.open('https://phantom.app/', '_blank');
+        }
+      } catch (err) {
+        console.error('Wallet connection failed:', err);
+      }
     });
 
     // Right tabs
