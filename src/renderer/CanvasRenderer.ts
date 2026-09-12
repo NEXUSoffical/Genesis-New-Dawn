@@ -13,10 +13,19 @@ interface Particle {
   size: number;
 }
 
+export interface GodInteraction {
+  x: number;
+  y: number;
+  timer: number;
+  type: 'wiggle' | 'splash' | 'wave';
+  agentId?: string;
+}
+
 export class CanvasRenderer {
   private ctx: CanvasRenderingContext2D;
   private particles: Particle[] = [];
   private animTimer: number = 0;
+  private godInteractions: GodInteraction[] = [];
 
   constructor(
     private canvas: HTMLCanvasElement,
@@ -54,6 +63,9 @@ export class CanvasRenderer {
 
   public render(agents: Agent[], selectedAgentId?: string, deltaSec = 0.016, animals: Animal[] = []): void {
     this.animTimer += deltaSec;
+    for (const gi of this.godInteractions) gi.timer -= deltaSec;
+    this.godInteractions = this.godInteractions.filter(gi => gi.timer > 0);
+
     const ctx = this.ctx;
     const width = this.canvas.width;
     const height = this.canvas.height;
@@ -149,6 +161,27 @@ export class CanvasRenderer {
     }
   }
 
+  public triggerGodInteractionAt(worldX: number, worldY: number, agents: Agent[]): void {
+    const tileX = Math.floor(worldX);
+    const tileY = Math.floor(worldY);
+
+    for (const agent of agents) {
+      if (Math.hypot(agent.x + 0.5 - worldX, agent.y + 0.5 - worldY) <= 1.3) {
+        this.godInteractions.push({ x: agent.x, y: agent.y, timer: 1.5, type: 'wave', agentId: agent.id });
+        return;
+      }
+    }
+
+    const tile = this.world.getTile(tileX, tileY);
+    if (tile) {
+      if (tile.type === 'water' || tile.type === 'deep_water') {
+        this.godInteractions.push({ x: tile.x, y: tile.y, timer: 0.5, type: 'splash' });
+      } else if (tile.type === 'dense_forest' || tile.type === 'sparse_trees') {
+        this.godInteractions.push({ x: tile.x, y: tile.y, timer: 0.8, type: 'wiggle' });
+      }
+    }
+  }
+
   // --- REALISTIC TERRAIN BASE ---
   private renderTerrainBase(
     ctx: CanvasRenderingContext2D,
@@ -218,6 +251,17 @@ export class CanvasRenderer {
         Math.PI * 2
       );
       ctx.fill();
+
+      // God Mode Splash Effect
+      const splash = this.godInteractions.find(gi => gi.type === 'splash' && gi.x === tile.x && gi.y === tile.y);
+      if (splash) {
+        const p = splash.timer / 0.5; // 1 to 0
+        ctx.strokeStyle = `rgba(255, 255, 255, ${p})`;
+        ctx.lineWidth = 2 + (1-p) * 4;
+        ctx.beginPath();
+        ctx.arc(sx + size * 0.5, sy + size * 0.5, size * 0.1 + (1-p) * size * 0.4, 0, Math.PI * 2);
+        ctx.stroke();
+      }
       return;
     }
 
@@ -411,7 +455,9 @@ export class CanvasRenderer {
         return;
       }
 
-      const windSway = Math.sin(this.animTimer * 1.8 + tile.x * 0.6) * size * 0.04;
+      const wiggle = this.godInteractions.find(gi => gi.type === 'wiggle' && gi.x === tile.x && gi.y === tile.y);
+      const wiggleSway = wiggle ? Math.sin(wiggle.timer * 35) * size * 0.12 * (wiggle.timer / 0.8) : 0;
+      const windSway = Math.sin(this.animTimer * 1.8 + tile.x * 0.6) * size * 0.04 + wiggleSway;
 
       // Color selection by season
       let lowerColor = '#1c4521';
@@ -1196,8 +1242,15 @@ export class CanvasRenderer {
       const armSwing = isMoving ? -walkCycle * 4 * scale : 0;
       // Left arm
       ctx.fillRect(cx - 8.5 * scale, cy - 3 * scale + armSwing - bob, 2.8 * scale, 8 * scale);
-      // Right arm (holds tool or walking staff)
-      ctx.fillRect(cx + 5.7 * scale, cy - 3 * scale - armSwing - bob, 2.8 * scale, 8 * scale);
+      // Right arm (holds tool or walking staff, or waves!)
+      const wave = this.godInteractions.find(gi => gi.type === 'wave' && gi.agentId === agent.id);
+      if (wave) {
+        // Wave arm up and down
+        const waveRot = Math.sin(wave.timer * 25) * 1.5 * scale;
+        ctx.fillRect(cx + 5.7 * scale, cy - 8 * scale - waveRot - bob, 2.8 * scale, 8 * scale);
+      } else {
+        ctx.fillRect(cx + 5.7 * scale, cy - 3 * scale - armSwing - bob, 2.8 * scale, 8 * scale);
+      }
 
       // Elder walking staff
       if (isElder) {

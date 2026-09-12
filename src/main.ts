@@ -175,6 +175,9 @@ class GenesisGame {
 
   private setupCanvasInteractions(canvas: HTMLCanvasElement): void {
     const handleSelectAt = (worldX: number, worldY: number) => {
+      // Trigger God Mode interaction (wiggle, splash, wave)
+      this.renderer.triggerGodInteractionAt(worldX, worldY, this.agents);
+
       for (const agent of this.agents) {
         const dist = Math.hypot(agent.x + 0.5 - worldX, agent.y + 0.5 - worldY);
         if (dist <= 1.3) {
