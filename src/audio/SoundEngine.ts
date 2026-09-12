@@ -163,31 +163,6 @@ export class SoundEngine {
     fireSource.start();
   }
 
-  // 4. Night Crickets Ambient
-  private setupNightCricketsAmbient(): void {
-    if (!this.ctx || !this.masterGain) return;
-
-    const cricketOsc = this.ctx.createOscillator();
-    cricketOsc.type = 'sine';
-    cricketOsc.frequency.setValueAtTime(4500, this.ctx.currentTime);
-
-    // Amplitude modulation for rhythmic cricket chirps
-    const modOsc = this.ctx.createOscillator();
-    modOsc.frequency.setValueAtTime(5.5, this.ctx.currentTime); // 5.5 Hz pulses
-    const modGain = this.ctx.createGain();
-    modGain.gain.setValueAtTime(0.5, this.ctx.currentTime);
-    modOsc.connect(modGain.gain);
-
-    this.nightCricketsGain = this.ctx.createGain();
-    this.nightCricketsGain.gain.setValueAtTime(0.0, this.ctx.currentTime);
-
-    cricketOsc.connect(modGain);
-    modGain.connect(this.nightCricketsGain);
-    this.nightCricketsGain.connect(this.masterGain);
-
-    cricketOsc.start();
-    modOsc.start();
-  }
 
   // --- FRAME UPDATE FOR DYNAMIC AMBIENCE ---
   public update(world: WorldManager, cameraX: number, cameraY: number, deltaSec: number, animals: Animal[] = []): void {
