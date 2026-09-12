@@ -10,7 +10,7 @@ import { SoundEngine } from '../audio/SoundEngine';
 export class HUD {
   private container: HTMLElement;
   private selectedAgentId: string = 'agent_adam';
-  private openTab: 'none' | 'codex' | 'economy' | 'chronicles' | 'dynasty' | 'spawn' = 'none';
+  private openTab: 'none' | 'codex' | 'economy' | 'chronicles' | 'dynasty' | 'spawn' | 'shop' = 'none';
   private simSpeed: number = 1.0;
   private isCinematic: boolean = false;
   private isMinimapDragging: boolean = false;
@@ -86,6 +86,7 @@ export class HUD {
       <!-- Top Navigation Bar -->
       <header id="top-bar" class="glass-panel">
         <button id="btn-logout" class="nav-tab-btn" title="Logout" style="margin-left: auto; padding: 4px 10px; font-size: 11px;">🚪 Logout</button>
+        <button id="btn-premium-shop" class="nav-tab-btn" title="Cosmetics Store" style="margin-left: 8px; padding: 4px 10px; font-size: 11px; background: linear-gradient(135deg, #14F195, #9945FF); color: black; font-weight: bold;">🛒 Premium Store</button>
         <button id="btn-connect-wallet" class="nav-tab-btn" title="Connect Wallet" style="margin-left: 8px; padding: 4px 10px; font-size: 11px; background: #9945FF; color: white;">🪙 Connect Solana</button>
         <div class="brand-section">
           <div class="brand-logo">🌍</div>
@@ -381,6 +382,44 @@ export class HUD {
         <div id="dynasty-tree-container" class="dynasty-tree-container"></div>
       </div>
 
+      <!-- Premium Token Shop Modal -->
+      <div id="shop-modal" class="drawer-modal glass-panel">
+        <div class="modal-header">
+          <div class="modal-title" style="background: linear-gradient(135deg, #14F195, #9945FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🛒 COSMETICS & SUPPORTER STORE</div>
+          <button class="close-btn" data-close="shop">✕</button>
+        </div>
+        <p style="font-size: 12px; color: var(--text-muted); line-height: 1.5; margin-bottom: 12px;">
+          Burn <strong style="color: #9945FF;">$GENESIS</strong> to unlock exclusive visual themes and supporter perks. All items are purely cosmetic and do not affect the autonomous simulation math.
+        </p>
+        <div class="shop-grid" style="display: flex; flex-direction: column; gap: 12px;">
+          
+          <div class="shop-item" style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; border: 1px solid rgba(153, 69, 255, 0.3); display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-size: 14px; font-weight: 700; color: #f8fafc;">🎨 Cyberpunk HUD Theme</div>
+              <div style="font-size: 11px; color: var(--text-muted);">Reskin your game UI with neon scanlines.</div>
+            </div>
+            <button class="btn-buy-premium" style="background: rgba(20, 241, 149, 0.1); color: #14F195; border: 1px solid #14F195; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">50M $GENESIS</button>
+          </div>
+
+          <div class="shop-item" style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; border: 1px solid rgba(153, 69, 255, 0.3); display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-size: 14px; font-weight: 700; color: #f8fafc;">🦅 Eagle-Eye Camera</div>
+              <div style="font-size: 11px; color: var(--text-muted);">Unlock ultra-wide zoom-out from the clouds.</div>
+            </div>
+            <button class="btn-buy-premium" style="background: rgba(20, 241, 149, 0.1); color: #14F195; border: 1px solid #14F195; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">100M $GENESIS</button>
+          </div>
+
+          <div class="shop-item" style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; border: 1px solid rgba(153, 69, 255, 0.3); display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-size: 14px; font-weight: 700; color: #f8fafc;">👑 Supporter Halo</div>
+              <div style="font-size: 11px; color: var(--text-muted);">A golden halo over your custom pioneers.</div>
+            </div>
+            <button class="btn-buy-premium" style="background: rgba(20, 241, 149, 0.1); color: #14F195; border: 1px solid #14F195; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">50M $GENESIS</button>
+          </div>
+
+        </div>
+      </div>
+
       <!-- Bottom Chronicles Active Ticker -->
       <footer id="chronicles-bar" class="glass-panel">
         <div class="chronicle-active-entry">
@@ -426,9 +465,18 @@ export class HUD {
 
   private bindEvents(): void {
     document.getElementById('btn-logout')?.addEventListener('click', () => {
-      import('../auth/AuthManager').then(m => {
-        m.AuthManager.logout();
-        window.location.reload();
+      localStorage.removeItem('sb-ntxmsikwzifpgycbnepq-auth-token');
+      window.location.reload();
+    });
+
+    document.getElementById('btn-premium-shop')?.addEventListener('click', () => {
+      this.toggleTab('shop');
+    });
+
+    // Mock Buy Button Handlers
+    document.querySelectorAll('.btn-buy-premium').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        alert("The token has not been minted yet! Minting soon...");
       });
     });
 
@@ -458,6 +506,7 @@ export class HUD {
     document.getElementById('tab-economy-btn')?.addEventListener('click', () => this.toggleTab('economy'));
     document.getElementById('tab-chronicles-btn')?.addEventListener('click', () => this.toggleTab('chronicles'));
     document.getElementById('tab-dynasty-btn')?.addEventListener('click', () => this.toggleTab('dynasty'));
+    document.getElementById('tab-shop-btn')?.addEventListener('click', () => this.toggleTab('shop'));
     document.getElementById('tab-cinematic-btn')?.addEventListener('click', () => this.toggleCinematicMode());
     document.getElementById('cinematic-exit-pill')?.addEventListener('click', () => this.toggleCinematicMode());
     document.getElementById('view-chronicles-btn')?.addEventListener('click', () => this.toggleTab('chronicles'));
@@ -658,7 +707,7 @@ export class HUD {
     }
   }
 
-  private toggleTab(tab: 'none' | 'codex' | 'economy' | 'chronicles' | 'dynasty' | 'spawn'): void {
+  private toggleTab(tab: 'none' | 'codex' | 'economy' | 'chronicles' | 'dynasty' | 'spawn' | 'shop'): void {
     this.openTab = this.openTab === tab ? 'none' : tab;
 
     if (this.openTab !== 'none') {
@@ -671,6 +720,7 @@ export class HUD {
     document.getElementById('economy-modal')?.classList.remove('open');
     document.getElementById('chronicles-modal')?.classList.remove('open');
     document.getElementById('dynasty-modal')?.classList.remove('open');
+    document.getElementById('shop-modal')?.classList.remove('open');
 
     // Reset tab active states
     document.getElementById('tab-spawn-btn')?.classList.remove('active');
@@ -678,6 +728,7 @@ export class HUD {
     document.getElementById('tab-economy-btn')?.classList.remove('active');
     document.getElementById('tab-chronicles-btn')?.classList.remove('active');
     document.getElementById('tab-dynasty-btn')?.classList.remove('active');
+    document.getElementById('tab-shop-btn')?.classList.remove('active');
 
     if (this.openTab === 'spawn') {
       if (this.hasSpawnedCharacter) {
@@ -715,6 +766,9 @@ export class HUD {
       document.getElementById('dynasty-modal')?.classList.add('open');
       document.getElementById('tab-dynasty-btn')?.classList.add('active');
       this.renderDynastyTree((window as any).agents || []);
+    } else if (this.openTab === 'shop') {
+      document.getElementById('shop-modal')?.classList.add('open');
+      document.getElementById('tab-shop-btn')?.classList.add('active');
     }
   }
 
@@ -776,6 +830,9 @@ export class HUD {
     const gazeVal = document.getElementById('gaze-timer-val');
     if (passingBanner) {
       passingBanner.style.display = allDeceased ? 'block' : 'none';
+    }
+    if (document.getElementById('shop-modal')) {
+      document.getElementById('shop-modal')!.style.display = this.openTab === 'shop' ? 'block' : 'none';
     }
     if (gazeVal) {
       if (allDeceased) {
