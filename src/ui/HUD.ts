@@ -417,6 +417,22 @@ export class HUD {
             <button class="btn-buy-premium" style="background: rgba(20, 241, 149, 0.1); color: #14F195; border: 1px solid #14F195; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 700; width: 100%;">50M $GENESIS</button>
           </div>
 
+          <div class="shop-item" style="background: rgba(255,255,255,0.05); padding: 24px; border-radius: 12px; border: 1px solid rgba(153, 69, 255, 0.3); display: flex; flex-direction: column; justify-content: space-between; align-items: center; text-align: center; gap: 16px;">
+            <div>
+              <div style="font-size: 18px; font-weight: 700; color: #f8fafc; margin-bottom: 8px;">🤖 Synthetic Pioneer Skin</div>
+              <div style="font-size: 14px; color: var(--text-muted);">Turn your pioneers into polished chrome synthetics.</div>
+            </div>
+            <button class="btn-buy-premium" style="background: rgba(20, 241, 149, 0.1); color: #14F195; border: 1px solid #14F195; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 700; width: 100%;">75M $GENESIS</button>
+          </div>
+
+          <div class="shop-item" style="background: rgba(255,255,255,0.05); padding: 24px; border-radius: 12px; border: 1px solid rgba(153, 69, 255, 0.3); display: flex; flex-direction: column; justify-content: space-between; align-items: center; text-align: center; gap: 16px;">
+            <div>
+              <div style="font-size: 18px; font-weight: 700; color: #f8fafc; margin-bottom: 8px;">🌌 Starweaver Robes</div>
+              <div style="font-size: 14px; color: var(--text-muted);">Equip your lineage with celestial garments.</div>
+            </div>
+            <button class="btn-buy-premium" style="background: rgba(20, 241, 149, 0.1); color: #14F195; border: 1px solid #14F195; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 700; width: 100%;">75M $GENESIS</button>
+          </div>
+
         </div>
       </div>
 
