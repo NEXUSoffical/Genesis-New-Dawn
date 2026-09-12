@@ -394,6 +394,7 @@ export class HUD {
         <div class="shop-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; padding: 20px;">
           
           <div class="shop-item" style="background: rgba(255,255,255,0.05); padding: 24px; border-radius: 12px; border: 1px solid rgba(153, 69, 255, 0.3); display: flex; flex-direction: column; justify-content: space-between; align-items: center; text-align: center; gap: 16px;">
+            <img src="shop/shop_cyberpunk_hud.jpg" alt="Cyberpunk Theme" style="width: 100%; height: 160px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
             <div>
               <div style="font-size: 18px; font-weight: 700; color: #f8fafc; margin-bottom: 8px;">🎨 Cyberpunk HUD Theme</div>
               <div style="font-size: 14px; color: var(--text-muted);">Reskin your game UI with neon scanlines.</div>
@@ -402,6 +403,7 @@ export class HUD {
           </div>
 
           <div class="shop-item" style="background: rgba(255,255,255,0.05); padding: 24px; border-radius: 12px; border: 1px solid rgba(153, 69, 255, 0.3); display: flex; flex-direction: column; justify-content: space-between; align-items: center; text-align: center; gap: 16px;">
+            <img src="shop/shop_eagle_eye.jpg" alt="Eagle-Eye Camera" style="width: 100%; height: 160px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
             <div>
               <div style="font-size: 18px; font-weight: 700; color: #f8fafc; margin-bottom: 8px;">🦅 Eagle-Eye Camera</div>
               <div style="font-size: 14px; color: var(--text-muted);">Unlock ultra-wide zoom-out from the clouds.</div>
@@ -410,6 +412,7 @@ export class HUD {
           </div>
 
           <div class="shop-item" style="background: rgba(255,255,255,0.05); padding: 24px; border-radius: 12px; border: 1px solid rgba(153, 69, 255, 0.3); display: flex; flex-direction: column; justify-content: space-between; align-items: center; text-align: center; gap: 16px;">
+            <img src="shop/shop_supporter_halo.jpg" alt="Supporter Halo" style="width: 100%; height: 160px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
             <div>
               <div style="font-size: 18px; font-weight: 700; color: #f8fafc; margin-bottom: 8px;">👑 Supporter Halo</div>
               <div style="font-size: 14px; color: var(--text-muted);">A golden halo over your custom pioneers.</div>
@@ -418,6 +421,7 @@ export class HUD {
           </div>
 
           <div class="shop-item" style="background: rgba(255,255,255,0.05); padding: 24px; border-radius: 12px; border: 1px solid rgba(153, 69, 255, 0.3); display: flex; flex-direction: column; justify-content: space-between; align-items: center; text-align: center; gap: 16px;">
+            <img src="shop/shop_synthetic_skin.jpg" alt="Synthetic Pioneer Skin" style="width: 100%; height: 160px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
             <div>
               <div style="font-size: 18px; font-weight: 700; color: #f8fafc; margin-bottom: 8px;">🤖 Synthetic Pioneer Skin</div>
               <div style="font-size: 14px; color: var(--text-muted);">Turn your pioneers into polished chrome synthetics.</div>
@@ -426,6 +430,7 @@ export class HUD {
           </div>
 
           <div class="shop-item" style="background: rgba(255,255,255,0.05); padding: 24px; border-radius: 12px; border: 1px solid rgba(153, 69, 255, 0.3); display: flex; flex-direction: column; justify-content: space-between; align-items: center; text-align: center; gap: 16px;">
+            <img src="shop/shop_starweaver_robes.jpg" alt="Starweaver Robes" style="width: 100%; height: 160px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
             <div>
               <div style="font-size: 18px; font-weight: 700; color: #f8fafc; margin-bottom: 8px;">🌌 Starweaver Robes</div>
               <div style="font-size: 14px; color: var(--text-muted);">Equip your lineage with celestial garments.</div>
