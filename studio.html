@@ -11,11 +11,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@500;700;800;900&display=swap" rel="stylesheet">
   
-  <script type="module" crossorigin src="/Genesis-New-Dawn/assets/studio-BQnZW57q.js"></script>
+  <script type="module" crossorigin src="/Genesis-New-Dawn/assets/studio-CiRIqk21.js"></script>
   <link rel="modulepreload" crossorigin href="/Genesis-New-Dawn/assets/modulepreload-polyfill-B5Qt9EMX.js">
   <link rel="modulepreload" crossorigin href="/Genesis-New-Dawn/assets/supabase-4TpxfcpH.js">
   <link rel="modulepreload" crossorigin href="/Genesis-New-Dawn/assets/AuthModal-zxkEjLBU.js">
-  <link rel="stylesheet" crossorigin href="/Genesis-New-Dawn/assets/studio-DMbvH-O0.css">
+  <link rel="stylesheet" crossorigin href="/Genesis-New-Dawn/assets/studio-B0VkDZqx.css">
 </head>
 <body>
   
@@ -28,6 +28,7 @@
       </div>
       <div class="nav-links">
         <a href="#games" class="nav-link-audio">Games</a>
+        <a href="#kids-learning" class="nav-link-audio" style="color: #fde68a;">🎓 Kids & Learning</a>
         <a href="#token" class="nav-link-audio">Token</a>
         <div id="nav-account-container"></div>
         <button id="btn-studio-audio" class="btn-icon" title="Toggle Soundscape">
@@ -70,77 +71,142 @@
   <!-- Games Section -->
   <section id="games" class="features-section">
     <h2 class="section-title">Our Ecosystem</h2>
-    <div class="cards-grid">
-      
-      <div class="feature-card interactive-game-card">
-        <div class="card-tags">
-          <span class="tag-pill live">🟢 Live</span>
-          <span class="tag-pill solana">⚡ Solana</span>
-          <span class="tag-pill">AI Pioneers</span>
-        </div>
-        <div class="card-icon">🌍</div>
-        <h3>Genesis: New Dawn</h3>
-        <p>Our flagship title. Start with Adam and Eve and guide an autonomous AI settlement through the eras of civilization.</p>
-        <a href="index.html" class="card-link game-launch-link">Enter the World &rarr;</a>
-      </div>
-
-      <div class="feature-card interactive-game-card">
-        <div class="card-tags">
-          <span class="tag-pill live">🟢 Live</span>
-          <span class="tag-pill ai">🧬 Genetics</span>
-          <span class="tag-pill">Deep Sea</span>
-        </div>
-        <div class="card-icon">🌊</div>
-        <h3>Abyss: Deep Evolution</h3>
-        <p>An autonomous deep-sea ecosystem. Bioluminescent creatures live, hunt, mutate, and evolve across generations in real time.</p>
-        <a href="abyss.html" class="card-link game-launch-link">Dive In &rarr;</a>
-      </div>
-
-      <div class="feature-card interactive-game-card">
-        <div class="card-tags">
-          <span class="tag-pill live">🟢 Live</span>
-          <span class="tag-pill" style="background: rgba(245, 158, 11, 0.2); color: #fde68a; border-color: rgba(245, 158, 11, 0.4);">🪙 Kids Learning</span>
-          <span class="tag-pill">Math AI</span>
-        </div>
-        <div class="card-icon">🏪</div>
-        <h3>The Number Merchant</h3>
-        <p>An educational AI simulation game for kids. Manage a cozy fantasy trading post, master arithmetic and fractions with quirky AI customers, and expand your living village.</p>
-        <a href="merchant.html" class="card-link game-launch-link">Open Shop &rarr;</a>
-      </div>
-
-      <div class="feature-card interactive-game-card">
-        <div class="card-tags">
-          <span class="tag-pill classic">🚀 Classic</span>
-          <span class="tag-pill">Cosmos</span>
-        </div>
-        <div class="card-icon">🚀</div>
-        <h3 id="space-game-title">Forever Expanding Universe</h3>
-        <p>Explore the cosmos, build orbital stations, and trade rare resources across the galaxy in our classic space simulator.</p>
-        <a href="https://nexusoffical.github.io/foreverexpandinguniverse/" target="_blank" class="card-link">Play Now &rarr;</a>
-      </div>
-
-      <div class="feature-card interactive-game-card">
-        <div class="card-tags">
-          <span class="tag-pill action">👻 Action</span>
-          <span class="tag-pill">Online</span>
-        </div>
-        <div class="card-icon">👻</div>
-        <h3>Ghost Hunter Go</h3>
-        <p>A thrilling ghost hunting adventure with live leaderboard and creator fee rankings.</p>
-        <a href="https://brainrot-go.onrender.com/" class="card-link" target="_blank">Play Now &rarr;</a>
-      </div>
-
-      <div class="feature-card locked">
-        <div class="card-tags">
-          <span class="tag-pill concept">⚔️ Concept</span>
-        </div>
-        <div class="card-icon">⚔️</div>
-        <h3>Project Sovereign</h3>
-        <p>A grand strategy simulation. Raise armies, forge alliances, and conquer territories with true asset ownership.</p>
-        <span class="locked-badge">Concept</span>
-      </div>
-
+    <p class="section-subtitle-main">Explore our living digital worlds—from persistent civilization terrariums to hands-on AI learning games for young minds.</p>
+    
+    <!-- Category Filter Bar -->
+    <div class="ecosystem-filter-bar">
+      <button class="filter-pill-btn active" data-filter="all">🌟 All Titles</button>
+      <button class="filter-pill-btn" data-filter="simulations">🧬 Autonomous AI Simulations</button>
+      <button class="filter-pill-btn highlight-kids" data-filter="learning">🎓 Kids & Learning AI</button>
+      <button class="filter-pill-btn" data-filter="classics">🚀 Classics & Community</button>
     </div>
+
+    <!-- Category 1: Autonomous AI Simulations -->
+    <div class="category-group" data-group="simulations">
+      <div class="category-header-wrap">
+        <div class="category-icon-pill">🧬</div>
+        <div class="category-title-block">
+          <h3>Autonomous AI Simulations</h3>
+          <p>Living persistent ecosystems driven by emergent behaviors, genetics, and autonomous decision-making.</p>
+        </div>
+      </div>
+      <div class="cards-grid">
+        <div class="feature-card interactive-game-card">
+          <div class="card-tags">
+            <span class="tag-pill live">🟢 Live</span>
+            <span class="tag-pill solana">⚡ Solana</span>
+            <span class="tag-pill">AI Pioneers</span>
+          </div>
+          <div class="card-icon">🌍</div>
+          <h3>Genesis: New Dawn</h3>
+          <p>Our flagship title. Start with Adam and Eve and guide an autonomous AI settlement through the eras of civilization.</p>
+          <a href="index.html" class="card-link game-launch-link">Enter the World &rarr;</a>
+        </div>
+
+        <div class="feature-card interactive-game-card">
+          <div class="card-tags">
+            <span class="tag-pill live">🟢 Live</span>
+            <span class="tag-pill ai">🧬 Genetics</span>
+            <span class="tag-pill">Deep Sea</span>
+          </div>
+          <div class="card-icon">🌊</div>
+          <h3>Abyss: Deep Evolution</h3>
+          <p>An autonomous deep-sea ecosystem. Bioluminescent creatures live, hunt, mutate, and evolve across generations in real time.</p>
+          <a href="abyss.html" class="card-link game-launch-link">Dive In &rarr;</a>
+        </div>
+
+        <div class="feature-card locked">
+          <div class="card-tags">
+            <span class="tag-pill concept">⚔️ Concept</span>
+          </div>
+          <div class="card-icon">⚔️</div>
+          <h3>Project Sovereign</h3>
+          <p>A grand strategy simulation. Raise armies, forge alliances, and conquer territories with true asset ownership.</p>
+          <span class="locked-badge">Concept</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category 2: Kids & Learning AI -->
+    <div class="category-group" id="kids-learning" data-group="learning">
+      <div class="category-header-wrap kids-category">
+        <div class="category-icon-pill">🎓</div>
+        <div class="category-title-block">
+          <h3>Kids & Learning AI Academy</h3>
+          <p>Hands-on simulation games that teach mathematics, language, and sciences through discovery and emergent play.</p>
+        </div>
+      </div>
+      <div class="cards-grid">
+        <div class="feature-card interactive-game-card" style="border-color: rgba(245, 158, 11, 0.4); background: linear-gradient(170deg, rgba(30, 41, 59, 0.8), rgba(24, 18, 15, 0.9));">
+          <div class="card-tags">
+            <span class="tag-pill live">🟢 Live</span>
+            <span class="tag-pill" style="background: rgba(245, 158, 11, 0.2); color: #fde68a; border-color: rgba(245, 158, 11, 0.4);">🪙 Kids Math</span>
+            <span class="tag-pill">Ages 5-13+</span>
+          </div>
+          <div class="card-icon">🏪</div>
+          <h3>The Number Merchant</h3>
+          <p>Run a cozy fantasy trading outpost! Count physical gold/silver/bronze coins, measure fraction potions, solve quirky AI customer orders, and expand your village.</p>
+          <a href="merchant.html" class="card-link game-launch-link" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none;">Play Now (Free) &rarr;</a>
+        </div>
+
+        <div class="feature-card locked">
+          <div class="card-tags">
+            <span class="tag-pill concept">✨ Concept</span>
+            <span class="tag-pill">English & Grammar</span>
+          </div>
+          <div class="card-icon">📖</div>
+          <h3>Lexicon Island</h3>
+          <p>A magical living island where nouns summon objects, adjectives change physics, and verbs bring creatures to life. Learn grammar through living words.</p>
+          <span class="locked-badge">In Development</span>
+        </div>
+
+        <div class="feature-card locked">
+          <div class="card-tags">
+            <span class="tag-pill concept">✨ Concept</span>
+            <span class="tag-pill">Biology & Food Webs</span>
+          </div>
+          <div class="card-icon">🐾</div>
+          <h3>CritterCraft Bio-Dome</h3>
+          <p>Breed friendly creatures, mix genetic traits, and discover natural selection, camouflage, and ecosystem balance inside a digital terrarium.</p>
+          <span class="locked-badge">In Development</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category 3: Community & Classics -->
+    <div class="category-group" data-group="classics">
+      <div class="category-header-wrap">
+        <div class="category-icon-pill">🚀</div>
+        <div class="category-title-block">
+          <h3>Community & Classics</h3>
+          <p>Classic titles and community games built across the Genesis ecosystem.</p>
+        </div>
+      </div>
+      <div class="cards-grid">
+        <div class="feature-card interactive-game-card">
+          <div class="card-tags">
+            <span class="tag-pill classic">🚀 Classic</span>
+            <span class="tag-pill">Cosmos</span>
+          </div>
+          <div class="card-icon">🚀</div>
+          <h3 id="space-game-title">Forever Expanding Universe</h3>
+          <p>Explore the cosmos, build orbital stations, and trade rare resources across the galaxy in our classic space simulator.</p>
+          <a href="https://nexusoffical.github.io/foreverexpandinguniverse/" target="_blank" class="card-link">Play Now &rarr;</a>
+        </div>
+
+        <div class="feature-card interactive-game-card">
+          <div class="card-tags">
+            <span class="tag-pill action">👻 Action</span>
+            <span class="tag-pill">Online</span>
+          </div>
+          <div class="card-icon">👻</div>
+          <h3>Ghost Hunter Go</h3>
+          <p>A thrilling ghost hunting adventure with live leaderboard and creator fee rankings.</p>
+          <a href="https://brainrot-go.onrender.com/" class="card-link" target="_blank">Play Now &rarr;</a>
+        </div>
+      </div>
+    </div>
+
   </section>
 
   <!-- Footer -->
