@@ -171,7 +171,13 @@ export class HomePage {
     merchantLink.href = 'merchant.html';
     merchantLink.className = 'home-link';
     merchantLink.style.color = '#fde68a';
-    merchantLink.textContent = '🪙 Kids Math AI';
+    merchantLink.textContent = '🪙 Kids Math';
+
+    const lexiconLink = document.createElement('a');
+    lexiconLink.href = 'lexicon.html';
+    lexiconLink.className = 'home-link';
+    lexiconLink.style.color = '#c4b5fd';
+    lexiconLink.textContent = '📖 Kids English';
 
     const abyssLink = document.createElement('a');
     abyssLink.href = 'abyss.html';
@@ -180,6 +186,7 @@ export class HomePage {
 
     navBar.appendChild(studioLink);
     navBar.appendChild(merchantLink);
+    navBar.appendChild(lexiconLink);
     navBar.appendChild(abyssLink);
     navBar.appendChild(docsLink);
     navBar.appendChild(twitterLink);

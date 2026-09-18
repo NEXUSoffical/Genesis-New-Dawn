@@ -9,7 +9,8 @@ export default defineConfig({
         main: resolve(__dirname, 'index.html'),
         studio: resolve(__dirname, 'studio.html'),
         abyss: resolve(__dirname, 'abyss.html'),
-        merchant: resolve(__dirname, 'merchant.html')
+        merchant: resolve(__dirname, 'merchant.html'),
+        lexicon: resolve(__dirname, 'lexicon.html')
       }
     }
   }
