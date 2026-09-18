@@ -113,10 +113,30 @@ export class HomePage {
           box-shadow: 0 0 10px #10b981;
           animation: pulse 2s infinite;
         }
-        @keyframes pulse {
-          0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-          70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
-          100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        .home-mascot-badge {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          background: rgba(15, 23, 42, 0.85);
+          border: 1px solid rgba(56, 189, 248, 0.4);
+          padding: 8px 18px;
+          border-radius: 999px;
+          backdrop-filter: blur(12px);
+          box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+          font-size: 14px;
+          color: #e2e8f0;
+          animation: float 4s ease-in-out infinite;
+        }
+        .home-mascot-thumb {
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          border: 2px solid #38bdf8;
+          object-fit: cover;
+        }
+        @keyframes float {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-8px); }
         }
       `;
       document.head.appendChild(style);
@@ -168,6 +188,13 @@ export class HomePage {
     const centerContent = document.createElement('div');
     centerContent.className = 'home-center-content';
 
+    const mascotBadge = document.createElement('div');
+    mascotBadge.className = 'home-mascot-badge';
+    mascotBadge.innerHTML = `
+      <img src="mascot.jpg" alt="Nova" class="home-mascot-thumb" />
+      <span>Meet <strong>Nova</strong> — Genesis AI Companion</span>
+    `;
+
     const enterButton = document.createElement('button');
     enterButton.className = 'btn-enter-game';
     enterButton.textContent = 'Click to Enter';
@@ -176,6 +203,7 @@ export class HomePage {
       this.onEnterCallback();
     });
 
+    centerContent.appendChild(mascotBadge);
     centerContent.appendChild(enterButton);
     centerContent.appendChild(this.activeUsersElement);
 
