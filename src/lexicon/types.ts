@@ -2,6 +2,10 @@ export type DifficultyTier = 'sprout' | 'weaver' | 'scribe';
 
 export type PartOfSpeech = 'article' | 'adjective' | 'noun' | 'verb' | 'preposition' | 'adverb';
 
+export type GameMode = 'actions' | 'quests' | 'adjectives' | 'builder';
+
+export type EntityAction = 'idle' | 'hopping' | 'dancing' | 'sleeping' | 'eating' | 'flying' | 'fire';
+
 export interface WordToken {
   id: string;
   text: string;
@@ -40,6 +44,7 @@ export interface IslandEntity {
   id: string;
   name: string;
   icon: string;
+  nounId: string;
   x: number;
   y: number;
   baseY: number;
@@ -49,14 +54,35 @@ export interface IslandEntity {
   vy: number;
   scale: number;
   targetScale: number;
-  state: 'idle' | 'moving' | 'sleeping' | 'dancing' | 'flying' | 'glowing';
+  squashX: number;
+  squashY: number;
+  rotation: number;
+  action: EntityAction;
+  actionTimer: number;
   glowColor?: string;
   glowRadius?: number;
+  colorFilter?: string; // 'rainbow' | 'ice' | 'gold' | 'fire'
   frozen?: boolean;
-  translucent?: boolean;
   particles: Particle[];
-  creationSentence: string;
+  speechBubble?: { text: string; timer: number };
   createdTime: number;
+}
+
+export interface GrammarPuzzle {
+  id: string;
+  tier: DifficultyTier;
+  question: string;
+  sentencePrompt: string; // e.g. "The rabbit hops across the ______."
+  targetPart: PartOfSpeech;
+  correctWord: WordToken;
+  distractors: WordToken[];
+  explanation: string;
+  visualReward: {
+    nounId: string;
+    action: EntityAction;
+    targetLocation: 'meadow' | 'bridge' | 'castle' | 'river' | 'tree';
+    reactionText: string;
+  };
 }
 
 export interface StoryQuest {
@@ -83,9 +109,10 @@ export interface StoryQuest {
 
 export interface LexiconState {
   tier: DifficultyTier;
+  mode: GameMode;
   gems: number;
   completedQuestIds: string[];
+  completedPuzzleIds: string[];
   activeQuestId: string;
   soundEnabled: boolean;
-  sandboxMode: boolean;
 }

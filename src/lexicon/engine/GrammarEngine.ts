@@ -1,70 +1,178 @@
-import { WordToken, PartOfSpeech, ParsedSentence, DifficultyTier } from '../types';
+import { WordToken, ParsedSentence, DifficultyTier, GrammarPuzzle } from '../types';
 
 export const WORD_BANK: Record<string, WordToken> = {
   // Articles
-  the: { id: 'the', text: 'The', partOfSpeech: 'article', icon: '✨', color: '#94a3b8', definition: 'A special word pointing to a specific thing.' },
-  a: { id: 'a', text: 'A', partOfSpeech: 'article', icon: '✨', color: '#94a3b8', definition: 'Points to any single person, animal, or thing.' },
-
-  // Adjectives (Purple / Violet)
-  luminous: { id: 'luminous', text: 'luminous', partOfSpeech: 'adjective', icon: '🌟', color: '#a855f7', definition: 'Glowing brightly with magical light.' },
-  gigantic: { id: 'gigantic', text: 'gigantic', partOfSpeech: 'adjective', icon: '🏔️', color: '#a855f7', definition: 'Huge, towering, and enormous in size.' },
-  gentle: { id: 'gentle', text: 'gentle', partOfSpeech: 'adjective', icon: '🌸', color: '#a855f7', definition: 'Soft, calm, and kind.' },
-  frozen: { id: 'frozen', text: 'frozen', partOfSpeech: 'adjective', icon: '❄️', color: '#a855f7', definition: 'Turned into hard, icy crystal.' },
-  radiant: { id: 'radiant', text: 'radiant', partOfSpeech: 'adjective', icon: '☀️', color: '#a855f7', definition: 'Beaming with warmth, sun, and energy.' },
-  tiny: { id: 'tiny', text: 'tiny', partOfSpeech: 'adjective', icon: '🔍', color: '#a855f7', definition: 'Very small and adorable.' },
-  golden: { id: 'golden', text: 'golden', partOfSpeech: 'adjective', icon: '🪙', color: '#a855f7', definition: 'Shining with the rich luster of pure gold.' },
-  brave: { id: 'brave', text: 'brave', partOfSpeech: 'adjective', icon: '🛡️', color: '#a855f7', definition: 'Ready to face danger without fear.' },
-  fluffy: { id: 'fluffy', text: 'fluffy', partOfSpeech: 'adjective', icon: '☁️', color: '#a855f7', definition: 'Light, soft, and woolly.' },
+  the: { id: 'the', text: 'The', partOfSpeech: 'article', icon: '✨', color: '#94a3b8', definition: 'Points to a specific thing.' },
+  a: { id: 'a', text: 'A', partOfSpeech: 'article', icon: '✨', color: '#94a3b8', definition: 'Points to any single creature or thing.' },
 
   // Nouns (Blue)
-  rabbit: { id: 'rabbit', text: 'rabbit', partOfSpeech: 'noun', icon: '🐇', color: '#3b82f6', definition: 'A cute furry woodland creature with long ears.' },
-  dragon: { id: 'dragon', text: 'dragon', partOfSpeech: 'noun', icon: '🐉', color: '#3b82f6', definition: 'A majestic winged reptile breathing spark and wonder.' },
-  bridge: { id: 'bridge', text: 'bridge', partOfSpeech: 'noun', icon: '🌉', color: '#3b82f6', definition: 'A wooden or stone path spanning across water or a chasm.' },
-  raincloud: { id: 'raincloud', text: 'raincloud', partOfSpeech: 'noun', icon: '🌧️', color: '#3b82f6', definition: 'A floating cloud showering nourishing water.' },
-  lantern: { id: 'lantern', text: 'lantern', partOfSpeech: 'noun', icon: '🏮', color: '#3b82f6', definition: 'A glowing lamp that pierces the darkness.' },
-  castle: { id: 'castle', text: 'castle', partOfSpeech: 'noun', icon: '🏰', color: '#3b82f6', definition: 'A grand fortress with towers and pennants.' },
-  flower: { id: 'flower', text: 'flower', partOfSpeech: 'noun', icon: '🌷', color: '#3b82f6', definition: 'A vibrant plant blossom with petals of sweet nectar.' },
-  wolf: { id: 'wolf', text: 'wolf', partOfSpeech: 'noun', icon: '🐺', color: '#3b82f6', definition: 'A loyal sentinel creature of the northern woods.' },
-  owl: { id: 'owl', text: 'owl', partOfSpeech: 'noun', icon: '🦉', color: '#3b82f6', definition: 'A nocturnal bird of deep wisdom.' },
-  tree: { id: 'tree', text: 'tree', partOfSpeech: 'noun', icon: '🌳', color: '#3b82f6', definition: 'A tall leafy plant rooted deep into the earth.' },
-
-  // Adverbs (Teal)
-  peacefully: { id: 'peacefully', text: 'peacefully', partOfSpeech: 'adverb', icon: '🕊️', color: '#14b8a6', definition: 'In a calm, quiet, and tranquil manner.' },
-  gracefully: { id: 'gracefully', text: 'gracefully', partOfSpeech: 'adverb', icon: '🩰', color: '#14b8a6', definition: 'With smooth, elegant beauty.' },
-  swiftly: { id: 'swiftly', text: 'swiftly', partOfSpeech: 'adverb', icon: '⚡', color: '#14b8a6', definition: 'With great speed and nimble agility.' },
-  courageously: { id: 'courageously', text: 'courageously', partOfSpeech: 'adverb', icon: '🦁', color: '#14b8a6', definition: 'With bold heart and bravery.' },
+  rabbit: { id: 'rabbit', text: 'Bunny', partOfSpeech: 'noun', icon: '🐰', color: '#3b82f6', definition: 'A fluffy hopping animal with long ears.' },
+  dragon: { id: 'dragon', text: 'Dragon', partOfSpeech: 'noun', icon: '🐲', color: '#3b82f6', definition: 'A magical creature that can breathe fire.' },
+  frog: { id: 'frog', text: 'Frog', partOfSpeech: 'noun', icon: '🐸', color: '#3b82f6', definition: 'A green amphibious jumper.' },
+  bear: { id: 'bear', text: 'Bear', partOfSpeech: 'noun', icon: '🐻', color: '#3b82f6', definition: 'A strong, cuddly woodland protector.' },
+  castle: { id: 'castle', text: 'Castle', partOfSpeech: 'noun', icon: '🏰', color: '#3b82f6', definition: 'A grand stone fortress with towers.' },
+  flower: { id: 'flower', text: 'Flower', partOfSpeech: 'noun', icon: '🌸', color: '#3b82f6', definition: 'A blooming colorful plant.' },
+  tree: { id: 'tree', text: 'Willow Tree', partOfSpeech: 'noun', icon: '🌳', color: '#3b82f6', definition: 'An ancient leafy tree of wisdom.' },
+  carrot: { id: 'carrot', text: 'Carrot', partOfSpeech: 'noun', icon: '🥕', color: '#3b82f6', definition: 'A crunchy orange snack.' },
+  river: { id: 'river', text: 'River', partOfSpeech: 'noun', icon: '🌊', color: '#3b82f6', definition: 'A flowing stream of freshwater.' },
 
   // Verbs (Emerald Green)
-  hops: { id: 'hops', text: 'hops', partOfSpeech: 'verb', icon: '🦘', color: '#10b981', definition: 'Leaps lightly on springy feet.' },
-  glides: { id: 'glides', text: 'glides', partOfSpeech: 'verb', icon: '🦅', color: '#10b981', definition: 'Sails smoothly through the air without flapping.' },
-  shines: { id: 'shines', text: 'shines', partOfSpeech: 'verb', icon: '✨', color: '#10b981', definition: 'Radiates bright sparkling light.' },
-  sleeps: { id: 'sleeps', text: 'sleeps', partOfSpeech: 'verb', icon: '💤', color: '#10b981', definition: 'Rests quietly in peaceful slumber.' },
-  dances: { id: 'dances', text: 'dances', partOfSpeech: 'verb', icon: '💃', color: '#10b981', definition: 'Moves playfully to the rhythm of nature.' },
-  melts: { id: 'melts', text: 'melts', partOfSpeech: 'verb', icon: '💧', color: '#10b981', definition: 'Transforms solid cold ice into flowing warm water.' },
-  blooms: { id: 'blooms', text: 'blooms', partOfSpeech: 'verb', icon: '🌺', color: '#10b981', definition: 'Unfurls radiant petals in full color.' },
-  protects: { id: 'protects', text: 'protects', partOfSpeech: 'verb', icon: '🛡️', color: '#10b981', definition: 'Guards friends and shelters them from harm.' },
-  builds: { id: 'builds', text: 'builds', partOfSpeech: 'verb', icon: '🔨', color: '#10b981', definition: 'Constructs sturdy foundations and beams.' },
+  hops: { id: 'hops', text: 'hops', partOfSpeech: 'verb', icon: '🦘', color: '#10b981', definition: 'Leaps and bounces springily.' },
+  dances: { id: 'dances', text: 'dances', partOfSpeech: 'verb', icon: '💃', color: '#10b981', definition: 'Wiggles and moves to the music.' },
+  eats: { id: 'eats', text: 'eats', partOfSpeech: 'verb', icon: '🥕', color: '#10b981', definition: 'Munches on a tasty meal.' },
+  sleeps: { id: 'sleeps', text: 'sleeps', partOfSpeech: 'verb', icon: '💤', color: '#10b981', definition: 'Rests in peaceful slumber.' },
+  flies: { id: 'flies', text: 'flies', partOfSpeech: 'verb', icon: '🦅', color: '#10b981', definition: 'Soars through the open sky.' },
+  breathes_fire: { id: 'breathes_fire', text: 'breathes fire', partOfSpeech: 'verb', icon: '🔥', color: '#10b981', definition: 'Shoots bright sparks and flames.' },
+  shines: { id: 'shines', text: 'shines', partOfSpeech: 'verb', icon: '✨', color: '#10b981', definition: 'Beams with brilliant light.' },
 
-  // Prepositions (Warm Orange / Amber)
-  into_meadow: { id: 'into_meadow', text: 'into the meadow', partOfSpeech: 'preposition', icon: '🌾', color: '#f59e0b', definition: 'Moving inward toward the grassy fields.' },
-  across_chasm: { id: 'across_chasm', text: 'across the chasm', partOfSpeech: 'preposition', icon: '🌉', color: '#f59e0b', definition: 'Stretching from one edge of the gorge to the other.' },
-  under_tree: { id: 'under_tree', text: 'under the willow tree', partOfSpeech: 'preposition', icon: '🍃', color: '#f59e0b', definition: 'Beneath the shady green branches.' },
-  above_lake: { id: 'above_lake', text: 'above the crystal lake', partOfSpeech: 'preposition', icon: '🌊', color: '#f59e0b', definition: 'In the open sky over the shimmering water.' },
-  around_fire: { id: 'around_fire', text: 'around the campfire', partOfSpeech: 'preposition', icon: '🔥', color: '#f59e0b', definition: 'Circling the warm hearth stones.' },
-  through_forest: { id: 'through_forest', text: 'through the enchanted woods', partOfSpeech: 'preposition', icon: '🌲', color: '#f59e0b', definition: 'Navigating between the mossy trunks.' }
+  // Adjectives (Purple)
+  fluffy: { id: 'fluffy', text: 'fluffy', partOfSpeech: 'adjective', icon: '☁️', color: '#a855f7', definition: 'Soft and woolly to touch.' },
+  gigantic: { id: 'gigantic', text: 'gigantic', partOfSpeech: 'adjective', icon: '🏔️', color: '#a855f7', definition: 'Enormous and towering.' },
+  tiny: { id: 'tiny', text: 'tiny', partOfSpeech: 'adjective', icon: '🐜', color: '#a855f7', definition: 'Very small and cute.' },
+  radiant: { id: 'radiant', text: 'radiant', partOfSpeech: 'adjective', icon: '🌟', color: '#a855f7', definition: 'Glowing with golden energy.' },
+  frozen: { id: 'frozen', text: 'frozen', partOfSpeech: 'adjective', icon: '❄️', color: '#a855f7', definition: 'Turned to cool ice crystals.' },
+  rainbow: { id: 'rainbow', text: 'rainbow', partOfSpeech: 'adjective', icon: '🌈', color: '#a855f7', definition: 'Shifting through all the colors.' },
+  happy: { id: 'happy', text: 'happy', partOfSpeech: 'adjective', icon: '💖', color: '#a855f7', definition: 'Full of joy and good cheer.' },
+
+  // Prepositions (Amber)
+  in_meadow: { id: 'in_meadow', text: 'in the meadow', partOfSpeech: 'preposition', icon: '🌾', color: '#f59e0b', definition: 'In the green grassy field.' },
+  across_bridge: { id: 'across_bridge', text: 'across the bridge', partOfSpeech: 'preposition', icon: '🌉', color: '#f59e0b', definition: 'Over the stone river arch.' },
+  near_castle: { id: 'near_castle', text: 'near the castle', partOfSpeech: 'preposition', icon: '🏰', color: '#f59e0b', definition: 'By the royal stone towers.' },
+  under_tree: { id: 'under_tree', text: 'under the willow tree', partOfSpeech: 'preposition', icon: '🍃', color: '#f59e0b', definition: 'Under the shady leaves.' }
 };
 
+export const GRAMMAR_PUZZLES: GrammarPuzzle[] = [
+  {
+    id: 'pz_verb_hop',
+    tier: 'sprout',
+    question: 'Choose the ACTION word (Verb) to make the bunny move!',
+    sentencePrompt: 'The fluffy bunny _______ across the clover.',
+    targetPart: 'verb',
+    correctWord: WORD_BANK.hops,
+    distractors: [
+      WORD_BANK.carrot,
+      WORD_BANK.fluffy
+    ],
+    explanation: '“Hops” is a VERB! Verbs are action words that show what someone or something does.',
+    visualReward: {
+      nounId: 'rabbit',
+      action: 'hopping',
+      targetLocation: 'meadow',
+      reactionText: 'Boing! Boing!'
+    }
+  },
+  {
+    id: 'pz_noun_food',
+    tier: 'sprout',
+    question: 'Choose the THING (Noun) for the bunny to eat!',
+    sentencePrompt: 'The happy bunny eats a crunchy _______.',
+    targetPart: 'noun',
+    correctWord: WORD_BANK.carrot,
+    distractors: [
+      WORD_BANK.dances,
+      WORD_BANK.frozen
+    ],
+    explanation: '“Carrot” is a NOUN! Nouns are words for people, animals, places, or things (like food).',
+    visualReward: {
+      nounId: 'rabbit',
+      action: 'eating',
+      targetLocation: 'meadow',
+      reactionText: 'Nom nom nom! 🥕'
+    }
+  },
+  {
+    id: 'pz_adj_dragon',
+    tier: 'sprout',
+    question: 'Choose the DESCRIBING word (Adjective) for the dragon!',
+    sentencePrompt: 'The _______ dragon glows like pure sunshine.',
+    targetPart: 'adjective',
+    correctWord: WORD_BANK.radiant,
+    distractors: [
+      WORD_BANK.flies,
+      WORD_BANK.castle
+    ],
+    explanation: '“Radiant” is an ADJECTIVE! Adjectives describe how things look, feel, or sound.',
+    visualReward: {
+      nounId: 'dragon',
+      action: 'dancing',
+      targetLocation: 'castle',
+      reactionText: 'I am radiant! ✨'
+    }
+  },
+  {
+    id: 'pz_verb_fly',
+    tier: 'weaver',
+    question: 'What action does the majestic dragon do in the sky?',
+    sentencePrompt: 'The golden dragon _______ high above the cloud castle.',
+    targetPart: 'verb',
+    correctWord: WORD_BANK.flies,
+    distractors: [
+      WORD_BANK.tree,
+      WORD_BANK.tiny
+    ],
+    explanation: '“Flies” is a VERB! It tells what action the dragon is doing.',
+    visualReward: {
+      nounId: 'dragon',
+      action: 'flying',
+      targetLocation: 'castle',
+      reactionText: 'Soaring through the clouds!'
+    }
+  },
+  {
+    id: 'pz_prep_bridge',
+    tier: 'weaver',
+    question: 'Where is the brave bear walking? Choose the PREPOSITION!',
+    sentencePrompt: 'The bear marches _______ to reach the secret tower.',
+    targetPart: 'preposition',
+    correctWord: WORD_BANK.across_bridge,
+    distractors: [
+      WORD_BANK.sleeps,
+      WORD_BANK.rainbow
+    ],
+    explanation: '“Across the bridge” is a PREPOSITIONAL phrase! It tells WHERE the action is happening.',
+    visualReward: {
+      nounId: 'bear',
+      action: 'dancing',
+      targetLocation: 'bridge',
+      reactionText: 'Crossing the bridge!'
+    }
+  },
+  {
+    id: 'pz_verb_fire',
+    tier: 'scribe',
+    question: 'The friendly dragon wants to roast marshmallows! What verb does it use?',
+    sentencePrompt: 'The magical dragon _______ to light the campfire.',
+    targetPart: 'verb',
+    correctWord: WORD_BANK.breathes_fire,
+    distractors: [
+      WORD_BANK.river,
+      WORD_BANK.frozen
+    ],
+    explanation: '“Breathes fire” is the action VERB showing how the dragon lights the campfire!',
+    visualReward: {
+      nounId: 'dragon',
+      action: 'fire',
+      targetLocation: 'tree',
+      reactionText: 'Roaaar! Warm fire! 🔥'
+    }
+  }
+];
+
 export class GrammarEngine {
-  /**
-   * Parses and validates a sequence of tokens into a complete, executable sentence.
-   */
-  public static parse(tokens: WordToken[], tier: DifficultyTier): ParsedSentence {
+  public static getPuzzlesForTier(tier: DifficultyTier): GrammarPuzzle[] {
+    if (tier === 'sprout') {
+      return GRAMMAR_PUZZLES.filter(p => p.tier === 'sprout');
+    }
+    return GRAMMAR_PUZZLES;
+  }
+
+  public static parse(tokens: WordToken[], _tier: DifficultyTier): ParsedSentence {
     if (tokens.length === 0) {
       return {
         tokens,
         rawText: '',
         isValid: false,
-        errorMessage: 'Tap or drag words to build your sentence spell!'
+        errorMessage: 'Choose words to build your sentence!'
       };
     }
 
@@ -73,84 +181,41 @@ export class GrammarEngine {
     let subjectNoun: WordToken | undefined;
     let adjective: WordToken | undefined;
     let verb: WordToken | undefined;
-    let adverb: WordToken | undefined;
     let prepositionPhrase: WordToken | undefined;
 
     tokens.forEach(t => {
       if (t.partOfSpeech === 'noun') subjectNoun = t;
       if (t.partOfSpeech === 'adjective') adjective = t;
       if (t.partOfSpeech === 'verb') verb = t;
-      if (t.partOfSpeech === 'adverb') adverb = t;
       if (t.partOfSpeech === 'preposition') prepositionPhrase = t;
     });
 
-    // 1. Must have a Noun
     if (!subjectNoun) {
       return {
         tokens,
         rawText,
         isValid: false,
-        errorMessage: 'Who or what is your sentence about? Add a Noun (like rabbit, dragon, or bridge)!'
+        errorMessage: 'Add a NOUN (like Bunny, Dragon, or Bear) so we know WHO the sentence is about!'
       };
     }
 
-    // 2. Must have a Verb
     if (!verb) {
       return {
         tokens,
         rawText,
         isValid: false,
-        errorMessage: `What does the ${subjectNoun.text} do? Add an Action Verb (like hops, glides, or shines)!`
-      };
-    }
-
-    // 3. Tier-specific checks
-    if (tier === 'weaver' && !adjective && !prepositionPhrase) {
-      return {
-        tokens,
-        rawText,
-        isValid: false,
-        errorMessage: 'Sentence Weavers add description! Add an Adjective (like luminous) or a Preposition (where it happens)!'
-      };
-    }
-
-    if (tier === 'scribe' && (!adjective || !prepositionPhrase)) {
-      return {
-        tokens,
-        rawText,
-        isValid: false,
-        errorMessage: 'Master Scribes craft complete scenes! Include an Adjective, a Verb, and a Prepositional Phrase.'
-      };
-    }
-
-    // Correct syntax sequence: Adjective should come before Noun
-    const nounIdx = tokens.findIndex(t => t.partOfSpeech === 'noun');
-    const adjIdx = tokens.findIndex(t => t.partOfSpeech === 'adjective');
-    if (adjIdx !== -1 && adjIdx > nounIdx) {
-      return {
-        tokens,
-        rawText,
-        isValid: false,
-        errorMessage: `English grammar tip: In English, adjectives go before nouns! (e.g. "${adjective?.text} ${subjectNoun.text}", not "${subjectNoun.text} ${adjective?.text}").`
+        errorMessage: 'Add a VERB (like hops, dances, or eats) so we know WHAT they are doing!'
       };
     }
 
     return {
       tokens,
-      rawText: rawText.charAt(0).toUpperCase() + rawText.slice(1) + '.',
+      rawText,
       isValid: true,
       subjectNoun,
       adjective,
       verb,
-      adverb,
       prepositionPhrase
     };
-  }
-
-  /**
-   * Get available word tokens filtered by category or difficulty
-   */
-  public static getWordTokensByPart(part: PartOfSpeech): WordToken[] {
-    return Object.values(WORD_BANK).filter(w => w.partOfSpeech === part);
   }
 }
