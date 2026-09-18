@@ -11,9 +11,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@500;700;800;900&display=swap" rel="stylesheet">
   
-  <script type="module" crossorigin src="/Genesis-New-Dawn/assets/studio-D7MkbawI.js"></script>
+  <script type="module" crossorigin src="/Genesis-New-Dawn/assets/studio-BQnZW57q.js"></script>
   <link rel="modulepreload" crossorigin href="/Genesis-New-Dawn/assets/modulepreload-polyfill-B5Qt9EMX.js">
-  <link rel="stylesheet" crossorigin href="/Genesis-New-Dawn/assets/studio-CzeZTkqS.css">
+  <link rel="modulepreload" crossorigin href="/Genesis-New-Dawn/assets/supabase-4TpxfcpH.js">
+  <link rel="modulepreload" crossorigin href="/Genesis-New-Dawn/assets/AuthModal-zxkEjLBU.js">
+  <link rel="stylesheet" crossorigin href="/Genesis-New-Dawn/assets/studio-DMbvH-O0.css">
 </head>
 <body>
   
@@ -25,8 +27,12 @@
         <span class="logo-text">Genesis <span class="accent">Studios</span></span>
       </div>
       <div class="nav-links">
-        <a href="#games">Games</a>
-        <a href="#token">Token</a>
+        <a href="#games" class="nav-link-audio">Games</a>
+        <a href="#token" class="nav-link-audio">Token</a>
+        <div id="nav-account-container"></div>
+        <button id="btn-studio-audio" class="btn-icon" title="Toggle Soundscape">
+          <span id="studio-audio-icon">🔇</span>
+        </button>
         <button id="btn-nav-connect" class="btn-connect">Connect Solana</button>
       </div>
     </div>
@@ -34,6 +40,7 @@
 
   <!-- Hero Section -->
   <section class="hero">
+    <canvas id="hero-canvas"></canvas>
     <div class="glow-orb orb-1"></div>
     <div class="glow-orb orb-2"></div>
     
@@ -44,12 +51,20 @@
         We build next-generation simulation games powered by the blockchain. Own your assets, command expansive worlds, and shape the future across our growing ecosystem of titles.
       </p>
       
+      <div class="hero-stats-row">
+        <div class="hero-stat-pill">
+          <span class="pulse-dot-green"></span>
+          <span>Ecosystem: <strong>Live</strong></span>
+        </div>
+        <div class="hero-stat-pill">
+          <span>🧬 <strong>Autonomous AI Simulations</strong></span>
+        </div>
+      </div>
+
       <div class="hero-cta">
         <a href="#games" class="btn-primary">Explore Ecosystem</a>
       </div>
     </div>
-
-
   </section>
 
   <!-- Games Section -->
@@ -57,28 +72,68 @@
     <h2 class="section-title">Our Ecosystem</h2>
     <div class="cards-grid">
       
-      <div class="feature-card">
+      <div class="feature-card interactive-game-card">
+        <div class="card-tags">
+          <span class="tag-pill live">🟢 Live</span>
+          <span class="tag-pill solana">⚡ Solana</span>
+          <span class="tag-pill">AI Pioneers</span>
+        </div>
         <div class="card-icon">🌍</div>
         <h3>Genesis: New Dawn</h3>
         <p>Our flagship title. Start with Adam and Eve and guide an autonomous AI settlement through the eras of civilization.</p>
-        <a href="index.html" class="card-link">Enter the World &rarr;</a>
+        <a href="index.html" class="card-link game-launch-link">Enter the World &rarr;</a>
       </div>
 
-      <div class="feature-card">
+      <div class="feature-card interactive-game-card">
+        <div class="card-tags">
+          <span class="tag-pill live">🟢 Live</span>
+          <span class="tag-pill ai">🧬 Genetics</span>
+          <span class="tag-pill">Deep Sea</span>
+        </div>
+        <div class="card-icon">🌊</div>
+        <h3>Abyss: Deep Evolution</h3>
+        <p>An autonomous deep-sea ecosystem. Bioluminescent creatures live, hunt, mutate, and evolve across generations in real time.</p>
+        <a href="abyss.html" class="card-link game-launch-link">Dive In &rarr;</a>
+      </div>
+
+      <div class="feature-card interactive-game-card">
+        <div class="card-tags">
+          <span class="tag-pill live">🟢 Live</span>
+          <span class="tag-pill" style="background: rgba(245, 158, 11, 0.2); color: #fde68a; border-color: rgba(245, 158, 11, 0.4);">🪙 Kids Learning</span>
+          <span class="tag-pill">Math AI</span>
+        </div>
+        <div class="card-icon">🏪</div>
+        <h3>The Number Merchant</h3>
+        <p>An educational AI simulation game for kids. Manage a cozy fantasy trading post, master arithmetic and fractions with quirky AI customers, and expand your living village.</p>
+        <a href="merchant.html" class="card-link game-launch-link">Open Shop &rarr;</a>
+      </div>
+
+      <div class="feature-card interactive-game-card">
+        <div class="card-tags">
+          <span class="tag-pill classic">🚀 Classic</span>
+          <span class="tag-pill">Cosmos</span>
+        </div>
         <div class="card-icon">🚀</div>
         <h3 id="space-game-title">Forever Expanding Universe</h3>
         <p>Explore the cosmos, build orbital stations, and trade rare resources across the galaxy in our classic space simulator.</p>
         <a href="https://nexusoffical.github.io/foreverexpandinguniverse/" target="_blank" class="card-link">Play Now &rarr;</a>
       </div>
 
-      <div class="feature-card">
+      <div class="feature-card interactive-game-card">
+        <div class="card-tags">
+          <span class="tag-pill action">👻 Action</span>
+          <span class="tag-pill">Online</span>
+        </div>
         <div class="card-icon">👻</div>
         <h3>Ghost Hunter Go</h3>
-        <p>A thrilling ghost hunting adventure.</p>
+        <p>A thrilling ghost hunting adventure with live leaderboard and creator fee rankings.</p>
         <a href="https://brainrot-go.onrender.com/" class="card-link" target="_blank">Play Now &rarr;</a>
       </div>
 
       <div class="feature-card locked">
+        <div class="card-tags">
+          <span class="tag-pill concept">⚔️ Concept</span>
+        </div>
         <div class="card-icon">⚔️</div>
         <h3>Project Sovereign</h3>
         <p>A grand strategy simulation. Raise armies, forge alliances, and conquer territories with true asset ownership.</p>
