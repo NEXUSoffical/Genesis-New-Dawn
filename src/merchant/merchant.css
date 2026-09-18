@@ -1,0 +1,1412 @@
+/* ==========================================================================
+   The Number Merchant - AI Town Economy Design System
+   Kid-Friendly Fantasy Glassmorphism & Tactile Mathematics Styling
+   ========================================================================== */
+
+:root {
+  --font-display: 'Fredoka', 'Outfit', cursive, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Palette */
+  --bg-main: #0f172a;
+  --bg-wood-dark: #1e1b18;
+  --bg-counter: rgba(30, 27, 24, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-card: rgba(255, 255, 255, 0.05);
+
+  --accent-gold: #f59e0b;
+  --accent-gold-glow: rgba(245, 158, 11, 0.35);
+  --accent-silver: #94a3b8;
+  --accent-bronze: #d97706;
+
+  --color-primary: #ec4899;
+  --color-success: #10b981;
+  --color-info: #3b82f6;
+  --color-magic: #8b5cf6;
+  --color-amber: #f59e0b;
+
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-bright: #ffffff;
+
+  --shadow-warm: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+  --shadow-coin: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body.merchant-body {
+  font-family: var(--font-body);
+  background: radial-gradient(circle at 50% 20%, #1e293b 0%, #0f172a 100%);
+  color: var(--text-main);
+  min-height: 100vh;
+  overflow-x: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* App Container */
+.merchant-app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ==========================================================================
+   Header Bar
+   ========================================================================== */
+
+.merchant-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1.75rem;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--glass-border);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  gap: 1rem;
+}
+
+.brand-area {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.back-to-hub-btn {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--glass-border);
+  padding: 0.35rem 0.7rem;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.back-to-hub-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateX(-2px);
+}
+
+.brand-logo {
+  font-size: 2.2rem;
+  filter: drop-shadow(0 0 8px var(--accent-gold-glow));
+  animation: gentle-bob 3s ease-in-out infinite;
+}
+
+.brand-title {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #fde68a, #f59e0b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 0.5px;
+}
+
+.brand-sub {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* Navigation Tabs */
+.nav-tabs {
+  display: flex;
+  gap: 0.5rem;
+  background: rgba(0, 0, 0, 0.35);
+  padding: 0.25rem;
+  border-radius: 999px;
+  border: 1px solid var(--glass-border);
+}
+
+.nav-tab-btn {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0.5rem 1.15rem;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.nav-tab-btn:hover {
+  color: var(--text-bright);
+}
+
+.nav-tab-btn.active {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  box-shadow: 0 2px 10px rgba(59, 130, 246, 0.4);
+  transform: scale(1.03);
+}
+
+/* Header Right Area */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.difficulty-dropdown-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.diff-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.diff-select {
+  font-family: var(--font-display);
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid var(--glass-border);
+  color: #fde68a;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.diff-select:hover, .diff-select:focus {
+  border-color: var(--accent-gold);
+}
+
+/* Stats Badges */
+.stats-pouch {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.stat-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--glass-border);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.coin-badge {
+  border-color: rgba(245, 158, 11, 0.4);
+  color: #fde68a;
+}
+
+.prosperity-badge {
+  border-color: rgba(139, 92, 246, 0.4);
+  color: #c4b5fd;
+}
+
+.sound-toggle-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--glass-border);
+  font-size: 1.1rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sound-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  transform: scale(1.05);
+}
+
+.sound-toggle-btn.muted {
+  opacity: 0.5;
+}
+
+/* ==========================================================================
+   Main View & Panels
+   ========================================================================== */
+
+.merchant-main-view {
+  flex: 1;
+  display: flex;
+  position: relative;
+  padding: 1.5rem;
+  max-width: 1300px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.view-panel {
+  display: none;
+  width: 100%;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.view-panel.active {
+  display: block;
+}
+
+/* ==========================================================================
+   Shop Counter Layout
+   ========================================================================== */
+
+.shop-counter-layout {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 950px) {
+  .shop-counter-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Customer Card */
+.customer-stage-card {
+  background: linear-gradient(165deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.9));
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: var(--shadow-warm);
+  position: relative;
+}
+
+.customer-avatar-box {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, rgba(0, 0, 0, 0.3) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 4px solid var(--accent, #f59e0b);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  margin-bottom: 1rem;
+}
+
+.customer-avatar-icon {
+  font-size: 4rem;
+  animation: bounce-slow 3s infinite ease-in-out;
+}
+
+.customer-mood-badge {
+  position: absolute;
+  bottom: -6px;
+  background: #1e293b;
+  border: 1px solid var(--glass-border);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  color: #f8fafc;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+
+.customer-mood-badge.mood-ecstatic {
+  background: #059669;
+  border-color: #34d399;
+}
+
+.customer-name {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-bright);
+}
+
+.customer-title {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.customer-dialogue-bubble {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 14px;
+  padding: 1rem;
+  position: relative;
+  margin-bottom: 1.25rem;
+  width: 100%;
+}
+
+.customer-dialogue-bubble::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 0 8px 8px 8px;
+  border-style: solid;
+  border-color: transparent transparent rgba(255, 255, 255, 0.15) transparent;
+}
+
+.dialogue-text {
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: #e2e8f0;
+  font-style: italic;
+}
+
+.order-items-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  width: 100%;
+}
+
+.item-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--glass-border);
+  padding: 0.35rem 0.7rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.pill-icon {
+  font-size: 1.1rem;
+}
+
+.pill-price {
+  color: #fde68a;
+}
+
+/* ==========================================================================
+   Counter Work Area
+   ========================================================================== */
+
+.counter-work-area {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Ledger Card */
+.ledger-instruction-card {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(20, 27, 45, 0.9));
+  border: 1px solid var(--glass-border);
+  border-radius: 18px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: var(--shadow-warm);
+}
+
+.ledger-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.ledger-tag {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #93c5fd;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.hint-toggle-btn {
+  font-family: var(--font-display);
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #fde68a;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.hint-toggle-btn:hover {
+  background: rgba(245, 158, 11, 0.25);
+  transform: translateY(-1px);
+}
+
+.instruction-main {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #ffffff;
+  line-height: 1.4;
+}
+
+/* Hint Scaffold Box */
+.hint-scaffold-box {
+  margin-top: 0.85rem;
+  padding: 0.85rem 1rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  border: 1px dashed rgba(245, 158, 11, 0.4);
+  display: none;
+}
+
+.hint-scaffold-box.visible {
+  display: block;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.hint-steps-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.hint-step-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.9rem;
+  color: #fef08a;
+}
+
+.step-num {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #d97706;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* ==========================================================================
+   Tactile Cash Register
+   ========================================================================== */
+
+.coin-register-card {
+  background: linear-gradient(170deg, rgba(39, 32, 28, 0.95), rgba(24, 18, 15, 0.98));
+  border: 2px solid #573e2d;
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.register-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 0.75rem;
+}
+
+.register-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.register-title h3 {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #d1b89d;
+}
+
+.tray-total-display {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  padding: 0.4rem 1rem;
+  border-radius: 12px;
+}
+
+.total-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.total-number {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #e2e8f0;
+  min-width: 40px;
+  text-align: right;
+  transition: all 0.2s;
+}
+
+.total-number.active {
+  color: #fbbf24;
+  text-shadow: 0 0 12px rgba(251, 191, 36, 0.6);
+}
+
+.total-currency {
+  font-size: 0.9rem;
+  color: #fde68a;
+  font-weight: 600;
+}
+
+/* Coin Dispenser Buttons */
+.coin-dispensers {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.coin-draw-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.85rem 1rem;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.coin-draw-btn:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+.coin-draw-btn:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.coin-graphic {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.1rem;
+  box-shadow: var(--shadow-coin);
+  position: relative;
+}
+
+.coin-gold {
+  background: radial-gradient(circle at 35% 35%, #fef08a, #d97706);
+  color: #78350f;
+  border: 2px solid #fde047;
+}
+
+.coin-silver {
+  background: radial-gradient(circle at 35% 35%, #ffffff, #64748b);
+  color: #1e293b;
+  border: 2px solid #cbd5e1;
+}
+
+.coin-bronze {
+  background: radial-gradient(circle at 35% 35%, #fed7aa, #b45309);
+  color: #451a03;
+  border: 2px solid #fb923c;
+}
+
+.coin-label-block {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.coin-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #f8fafc;
+}
+
+.coin-val {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* Counter Tray Box */
+.counter-tray-box {
+  background: rgba(0, 0, 0, 0.5);
+  border: 2px dashed rgba(217, 119, 6, 0.3);
+  border-radius: 14px;
+  padding: 1.25rem;
+  min-height: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tray-empty-text {
+  font-size: 0.9rem;
+  color: #94a3b8;
+  text-align: center;
+  font-style: italic;
+}
+
+.tray-tokens-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+  max-height: 140px;
+  overflow-y: auto;
+}
+
+.tray-coin-token {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.8rem;
+  animation: pop-in 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.tray-coin-token.gold {
+  background: radial-gradient(circle at 35% 35%, #fef08a, #d97706);
+  color: #78350f;
+  border: 1px solid #fde047;
+}
+
+.tray-coin-token.silver {
+  background: radial-gradient(circle at 35% 35%, #ffffff, #64748b);
+  color: #1e293b;
+  border: 1px solid #cbd5e1;
+}
+
+.tray-coin-token.bronze {
+  background: radial-gradient(circle at 35% 35%, #fed7aa, #b45309);
+  color: #451a03;
+  border: 1px solid #fb923c;
+}
+
+/* Bottom Controls */
+.counter-bottom-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.clear-tray-btn {
+  font-family: var(--font-display);
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.6rem 1rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.clear-tray-btn:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.25);
+  transform: translateY(-1px);
+}
+
+.clear-tray-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.direct-number-entry {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.direct-input {
+  font-family: var(--font-display);
+  width: 75px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  padding: 0.45rem 0.6rem;
+  color: #fde68a;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-align: center;
+  outline: none;
+}
+
+.direct-input:focus {
+  border-color: var(--accent-gold);
+}
+
+.ring-bell-btn {
+  font-family: var(--font-display);
+  background: linear-gradient(135deg, #10b981, #059669);
+  border: none;
+  color: white;
+  font-size: 1.15rem;
+  font-weight: 700;
+  padding: 0.75rem 1.6rem;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.4);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.ring-bell-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.5);
+}
+
+.ring-bell-btn:active {
+  transform: translateY(1px);
+}
+
+/* ==========================================================================
+   Fraction Apparatus Tool
+   ========================================================================== */
+
+.fraction-apparatus-card {
+  background: linear-gradient(160deg, rgba(20, 24, 40, 0.95), rgba(12, 14, 25, 0.98));
+  border: 2px solid rgba(139, 92, 246, 0.4);
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-warm);
+}
+
+.apparatus-header h3 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: #c4b5fd;
+  margin-bottom: 0.25rem;
+}
+
+.apparatus-header p {
+  font-size: 0.9rem;
+  color: #cbd5e1;
+  margin-bottom: 1.25rem;
+}
+
+.flask-visual-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3rem;
+  margin-bottom: 1.5rem;
+}
+
+.flask-outer {
+  position: relative;
+  width: 110px;
+  height: 220px;
+  border: 4px solid rgba(255, 255, 255, 0.4);
+  border-radius: 12px 12px 30px 30px;
+  background: rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  box-shadow: inset 0 0 20px rgba(139, 92, 246, 0.3), 0 0 15px rgba(139, 92, 246, 0.2);
+}
+
+.flask-liquid {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(180deg, #a855f7, #6366f1);
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.8);
+  transition: height 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.flask-marks {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.flask-mark-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.4);
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 4px;
+}
+
+.flask-mark-line span {
+  font-size: 0.65rem;
+  color: #e2e8f0;
+  font-weight: 700;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.6);
+  padding: 1px 3px;
+  border-radius: 4px;
+}
+
+.flask-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.flask-readout {
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--glass-border);
+  padding: 0.6rem 1.25rem;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.readout-label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.readout-value {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #c4b5fd;
+}
+
+.flask-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.flask-btn {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.6rem 1rem;
+  border-radius: 10px;
+  cursor: pointer;
+  border: 1px solid var(--glass-border);
+  transition: all 0.2s;
+}
+
+.flask-btn.add-btn {
+  background: rgba(139, 92, 246, 0.25);
+  color: #e9d5ff;
+}
+
+.flask-btn.add-btn:hover {
+  background: rgba(139, 92, 246, 0.4);
+  transform: translateY(-2px);
+}
+
+.flask-btn.clear-btn {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+}
+
+/* ==========================================================================
+   Living Village View (Diorama & Upgrades)
+   ========================================================================== */
+
+.town-view-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.town-skyline-banner {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
+  border: 1px solid var(--glass-border);
+  border-radius: 18px;
+  padding: 1.25rem 1.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  box-shadow: var(--shadow-warm);
+}
+
+.skyline-info h2 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: #fde68a;
+  margin-bottom: 0.25rem;
+}
+
+.skyline-info p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.skyline-stats {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.stat-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--glass-border);
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  min-width: 90px;
+}
+
+.stat-value {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.stat-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+/* Village Diorama Canvas */
+.village-diorama {
+  position: relative;
+  height: 240px;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  box-shadow: var(--shadow-warm);
+  background: linear-gradient(180deg, #38bdf8 0%, #7dd3fc 45%, #86efac 46%, #22c55e 100%);
+}
+
+.diorama-sky {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 45%;
+}
+
+.diorama-sun {
+  position: absolute;
+  top: 15px;
+  right: 40px;
+  font-size: 2.5rem;
+  animation: gentle-bob 4s infinite ease-in-out;
+}
+
+.diorama-cloud {
+  position: absolute;
+  font-size: 2rem;
+  animation: float-cloud 25s infinite linear;
+}
+
+.diorama-cloud.c1 { top: 20px; left: -50px; animation-duration: 20s; }
+.diorama-cloud.c2 { top: 50px; left: -80px; animation-duration: 32s; }
+
+.diorama-landscape {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  padding: 0 2rem 1.5rem 2rem;
+}
+
+.diorama-building-lot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: all 0.3s;
+}
+
+.diorama-building-lot.locked {
+  opacity: 0.25;
+  filter: grayscale(1);
+}
+
+.building-sprite {
+  font-size: 3.2rem;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+  transition: transform 0.2s;
+}
+
+.diorama-building-lot.built:hover .building-sprite {
+  transform: scale(1.15) translateY(-5px);
+}
+
+.sprite-label {
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-top: 4px;
+}
+
+.mini-villager {
+  position: absolute;
+  font-size: 1.8rem;
+  bottom: 12px;
+  animation: wander 8s infinite alternate ease-in-out;
+}
+
+.mini-villager.v1 { left: 15%; animation-duration: 6s; }
+.mini-villager.v2 { left: 45%; animation-duration: 9s; animation-delay: 1s; }
+.mini-villager.v3 { left: 75%; animation-duration: 7s; animation-delay: 2s; }
+
+/* Building Cards Grid */
+.section-title {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  color: #f8fafc;
+  margin-bottom: 1rem;
+}
+
+.building-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.building-card {
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+  box-shadow: var(--shadow-warm);
+  transition: all 0.2s;
+}
+
+.building-card:hover {
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+}
+
+.card-icon-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.b-icon {
+  font-size: 2.2rem;
+}
+
+.b-level-badge {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+}
+
+.card-details h4 {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  color: #ffffff;
+  margin-bottom: 0.35rem;
+}
+
+.b-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin-bottom: 0.6rem;
+}
+
+.b-benefit {
+  font-size: 0.8rem;
+  color: #86efac;
+  background: rgba(34, 197, 94, 0.1);
+  padding: 0.4rem 0.6rem;
+  border-radius: 8px;
+}
+
+.upgrade-btn {
+  font-family: var(--font-display);
+  width: 100%;
+  padding: 0.7rem;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.upgrade-btn.affordable {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.upgrade-btn.affordable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
+}
+
+.upgrade-btn.unaffordable {
+  background: rgba(255, 255, 255, 0.08);
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+.upgrade-btn.maxed {
+  background: rgba(16, 185, 129, 0.2);
+  color: #6ee7b7;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  cursor: default;
+}
+
+/* ==========================================================================
+   Modals & Feedback Toasts
+   ========================================================================== */
+
+.merchant-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.merchant-modal-card {
+  background: linear-gradient(160deg, #1e293b, #0f172a);
+  border: 2px solid var(--accent-gold);
+  border-radius: 24px;
+  padding: 2.25rem;
+  max-width: 480px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px var(--accent-gold-glow);
+  position: relative;
+  animation: modal-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.confetti-emitter {
+  font-size: 1.5rem;
+  letter-spacing: 0.5rem;
+  margin-bottom: 0.5rem;
+  animation: bounce-slow 2s infinite ease-in-out;
+}
+
+.success-avatar {
+  font-size: 4rem;
+  margin-bottom: 0.75rem;
+}
+
+.merchant-modal-card h2 {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  color: #fde68a;
+  line-height: 1.4;
+  margin-bottom: 1.25rem;
+}
+
+.success-explanation-box {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 12px;
+  padding: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.check-icon {
+  font-size: 1.4rem;
+  color: #34d399;
+  font-weight: 900;
+}
+
+.success-explanation-box p {
+  font-size: 0.9rem;
+  color: #d1fae5;
+  line-height: 1.4;
+}
+
+.reward-pouch {
+  display: flex;
+  justify-content: center;
+  gap: 1.25rem;
+  margin-bottom: 1.75rem;
+}
+
+.reward-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.reward-amount {
+  color: #fde68a;
+}
+
+.next-customer-btn {
+  font-family: var(--font-display);
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  border: none;
+  color: white;
+  font-size: 1.15rem;
+  font-weight: 700;
+  padding: 0.85rem 2rem;
+  border-radius: 14px;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  width: 100%;
+}
+
+.next-customer-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.6);
+}
+
+/* Retry Toast */
+.retry-toast-message {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: #1e293b;
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  border-radius: 12px;
+  padding: 0.85rem 1.25rem;
+  box-shadow: var(--shadow-warm);
+  animation: slideInRight 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  max-width: 380px;
+  z-index: 60;
+}
+
+.toast-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.toast-icon {
+  font-size: 1.5rem;
+}
+
+.toast-text strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  color: #fde68a;
+  margin-bottom: 2px;
+}
+
+.toast-text p {
+  font-size: 0.85rem;
+  color: #e2e8f0;
+  line-height: 1.4;
+}
+
+/* ==========================================================================
+   Keyframes & Animations
+   ========================================================================== */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modal-pop {
+  from { opacity: 0; transform: scale(0.85); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes pop-in {
+  from { transform: scale(0); }
+  to { transform: scale(1); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes gentle-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes bounce-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes float-cloud {
+  0% { transform: translateX(-100px); }
+  100% { transform: translateX(110vw); }
+}
+
+@keyframes wander {
+  0% { transform: translateX(0) scaleX(1); }
+  49% { transform: translateX(80px) scaleX(1); }
+  50% { transform: translateX(80px) scaleX(-1); }
+  100% { transform: translateX(-40px) scaleX(-1); }
+}

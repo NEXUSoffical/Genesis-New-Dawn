@@ -7,7 +7,9 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
-        studio: resolve(__dirname, 'studio.html')
+        studio: resolve(__dirname, 'studio.html'),
+        abyss: resolve(__dirname, 'abyss.html'),
+        merchant: resolve(__dirname, 'merchant.html')
       }
     }
   }

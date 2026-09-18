@@ -142,6 +142,25 @@ export class HomePage {
     twitterLink.className = 'home-link';
     twitterLink.textContent = 'Twitter';
 
+    const studioLink = document.createElement('a');
+    studioLink.href = 'studio.html';
+    studioLink.className = 'home-link';
+    studioLink.textContent = '🎮 Studios Hub';
+
+    const merchantLink = document.createElement('a');
+    merchantLink.href = 'merchant.html';
+    merchantLink.className = 'home-link';
+    merchantLink.style.color = '#fde68a';
+    merchantLink.textContent = '🪙 Kids Math AI';
+
+    const abyssLink = document.createElement('a');
+    abyssLink.href = 'abyss.html';
+    abyssLink.className = 'home-link';
+    abyssLink.textContent = '🌊 Abyss';
+
+    navBar.appendChild(studioLink);
+    navBar.appendChild(merchantLink);
+    navBar.appendChild(abyssLink);
     navBar.appendChild(docsLink);
     navBar.appendChild(twitterLink);
 
