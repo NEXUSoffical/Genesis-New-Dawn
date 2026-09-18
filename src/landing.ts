@@ -109,5 +109,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
+  // Ecosystem Category Filter Pills
+  const filterBtns = document.querySelectorAll<HTMLButtonElement>('.filter-pill-btn');
+  const categoryGroups = document.querySelectorAll<HTMLElement>('.category-group');
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const filter = btn.dataset.filter;
+      categoryGroups.forEach(group => {
+        if (filter === 'all' || group.dataset.group === filter) {
+          group.style.display = 'block';
+        } else {
+          group.style.display = 'none';
+        }
+      });
+    });
+  });
+
   attachAudioTriggers();
 });
