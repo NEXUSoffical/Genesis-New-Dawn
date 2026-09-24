@@ -119,6 +119,10 @@ export class DayNightCycle {
     const sunWorldPos = new THREE.Vector3();
     this.sunMesh.getWorldPosition(sunWorldPos);
     this.sunLight.position.copy(sunWorldPos);
+    if (this.sunLight.target) {
+      this.sunLight.target.position.copy(playerPos);
+      this.sunLight.target.updateMatrixWorld();
+    }
 
     if (this.onTimeChange) {
       this.onTimeChange(this.getTimeString(), isNightNow);

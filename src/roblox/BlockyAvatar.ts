@@ -25,12 +25,25 @@ export class BlockyAvatar {
   private customization: AvatarCustomization;
 
   constructor(customization: AvatarCustomization, name: string = 'Player') {
-    this.customization = customization;
+    const safeCustomization: AvatarCustomization = {
+      headColor: customization.headColor || '#fdba74',
+      torsoColor: customization.torsoColor || '#1e293b',
+      leftArmColor: customization.leftArmColor || '#fdba74',
+      rightArmColor: customization.rightArmColor || '#fdba74',
+      leftLegColor: customization.leftLegColor || '#0f172a',
+      rightLegColor: customization.rightLegColor || '#0f172a',
+      equippedHat: customization.equippedHat || 'none',
+      equippedShirt: customization.equippedShirt || 'none',
+      equippedPants: customization.equippedPants || 'none',
+      equippedFace: customization.equippedFace || 'smile',
+      equippedGear: customization.equippedGear || 'none'
+    };
+    this.customization = safeCustomization;
     this.root = new THREE.Group();
 
     // 1. Create Torso (2 x 2 x 1)
     const torsoGeo = new THREE.BoxGeometry(2, 2, 1);
-    const torsoMats = this.createTorsoMaterials(customization.equippedShirt, customization.torsoColor);
+    const torsoMats = this.createTorsoMaterials(safeCustomization.equippedShirt, safeCustomization.torsoColor);
     this.torsoMesh = new THREE.Mesh(torsoGeo, torsoMats);
     this.torsoMesh.position.y = 3;
     this.torsoMesh.castShadow = true;
@@ -43,7 +56,7 @@ export class BlockyAvatar {
     this.torsoMesh.add(this.headGroup);
 
     const headGeo = new THREE.BoxGeometry(1.25, 1.25, 1.25);
-    const headMats = this.createHeadMaterials(customization.headColor, customization.equippedFace);
+    const headMats = this.createHeadMaterials(safeCustomization.headColor, safeCustomization.equippedFace);
     this.headMesh = new THREE.Mesh(headGeo, headMats);
     this.headMesh.castShadow = true;
     this.headGroup.add(this.headMesh);
@@ -55,7 +68,7 @@ export class BlockyAvatar {
 
     const armGeo = new THREE.BoxGeometry(1, 2, 1);
     armGeo.translate(0, -1, 0); // Pivot at shoulder
-    const leftArmMat = new THREE.MeshLambertMaterial({ color: customization.leftArmColor });
+    const leftArmMat = new THREE.MeshLambertMaterial({ color: safeCustomization.leftArmColor });
     this.leftArmMesh = new THREE.Mesh(armGeo, leftArmMat);
     this.leftArmMesh.castShadow = true;
     this.leftArmGroup.add(this.leftArmMesh);
@@ -65,7 +78,7 @@ export class BlockyAvatar {
     this.rightArmGroup.position.set(1.5, 1, 0);
     this.torsoMesh.add(this.rightArmGroup);
 
-    const rightArmMat = new THREE.MeshLambertMaterial({ color: customization.rightArmColor });
+    const rightArmMat = new THREE.MeshLambertMaterial({ color: safeCustomization.rightArmColor });
     this.rightArmMesh = new THREE.Mesh(armGeo.clone(), rightArmMat);
     this.rightArmMesh.castShadow = true;
     this.rightArmGroup.add(this.rightArmMesh);
@@ -82,7 +95,7 @@ export class BlockyAvatar {
 
     const legGeo = new THREE.BoxGeometry(1, 2, 1);
     legGeo.translate(0, -1, 0); // Pivot at hip
-    const leftLegMat = new THREE.MeshLambertMaterial({ color: customization.leftLegColor });
+    const leftLegMat = new THREE.MeshLambertMaterial({ color: safeCustomization.leftLegColor });
     this.leftLegMesh = new THREE.Mesh(legGeo, leftLegMat);
     this.leftLegMesh.castShadow = true;
     this.leftLegGroup.add(this.leftLegMesh);
@@ -92,14 +105,14 @@ export class BlockyAvatar {
     this.rightLegGroup.position.set(0.5, -1, 0);
     this.torsoMesh.add(this.rightLegGroup);
 
-    const rightLegMat = new THREE.MeshLambertMaterial({ color: customization.rightLegColor });
+    const rightLegMat = new THREE.MeshLambertMaterial({ color: safeCustomization.rightLegColor });
     this.rightLegMesh = new THREE.Mesh(legGeo.clone(), rightLegMat);
     this.rightLegMesh.castShadow = true;
     this.rightLegGroup.add(this.rightLegMesh);
 
     // 7. Equip Initial Hat & Accessories
-    this.applyHat(customization.equippedHat);
-    this.applyGear(customization.equippedGear);
+    this.applyHat(safeCustomization.equippedHat);
+    this.applyGear(safeCustomization.equippedGear);
 
     // 8. Overhead Name Billboard
     this.createNameTag(name);
@@ -285,18 +298,18 @@ export class BlockyAvatar {
 
   public applyCustomization(customization: AvatarCustomization): void {
     this.customization = customization;
-    this.torsoMesh.material = this.createTorsoMaterials(customization.equippedShirt || 'none', customization.torsoColor);
-    (this.leftArmMesh.material as THREE.MeshLambertMaterial).color.set(customization.leftArmColor);
-    (this.rightArmMesh.material as THREE.MeshLambertMaterial).color.set(customization.rightArmColor);
-    (this.leftLegMesh.material as THREE.MeshLambertMaterial).color.set(customization.leftLegColor);
-    (this.rightLegMesh.material as THREE.MeshLambertMaterial).color.set(customization.rightLegColor);
+    this.torsoMesh.material = this.createTorsoMaterials(customization.equippedShirt || 'none', customization.torsoColor || '#1e293b');
+    (this.leftArmMesh.material as THREE.MeshLambertMaterial).color.set(customization.leftArmColor || '#fdba74');
+    (this.rightArmMesh.material as THREE.MeshLambertMaterial).color.set(customization.rightArmColor || '#fdba74');
+    (this.leftLegMesh.material as THREE.MeshLambertMaterial).color.set(customization.leftLegColor || '#0f172a');
+    (this.rightLegMesh.material as THREE.MeshLambertMaterial).color.set(customization.rightLegColor || '#0f172a');
 
     // Refresh head
-    this.headMesh.material = this.createHeadMaterials(customization.headColor, customization.equippedFace);
+    this.headMesh.material = this.createHeadMaterials(customization.headColor || '#fdba74', customization.equippedFace || 'smile');
 
     // Refresh hat & gear
-    this.applyHat(customization.equippedHat);
-    this.applyGear(customization.equippedGear);
+    this.applyHat(customization.equippedHat || 'none');
+    this.applyGear(customization.equippedGear || 'none');
   }
 
   public getCustomization(): AvatarCustomization {
@@ -537,11 +550,17 @@ export class BlockyAvatar {
     ctx.fillText(name, 128, 32);
 
     const texture = new THREE.CanvasTexture(canvas);
-    const spriteMat = new THREE.SpriteMaterial({ map: texture, depthTest: false });
+    const spriteMat = new THREE.SpriteMaterial({ map: texture, depthTest: true });
     this.nameTagSprite = new THREE.Sprite(spriteMat);
     this.nameTagSprite.position.set(0, 3.2, 0);
     this.nameTagSprite.scale.set(3, 0.75, 1);
     this.torsoMesh.add(this.nameTagSprite);
+  }
+
+  public setLocalPlayer(isLocal: boolean): void {
+    if (this.nameTagSprite) {
+      this.nameTagSprite.visible = !isLocal;
+    }
   }
 
   public triggerToolSwing(): void {

@@ -57,7 +57,7 @@ export class GameEngine3D {
   private isJumping: boolean = false;
 
   // Camera Orbit
-  private cameraDistance: number = 9;
+  private cameraDistance: number = 8.5;
   private cameraPitch: number = 0.35; // Vertical angle
   private cameraYaw: number = 0; // Horizontal angle
   private isMouseDown: boolean = false;
@@ -128,8 +128,7 @@ export class GameEngine3D {
     });
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    this.renderer.shadowMap.enabled = false; // Fast, robust WebGL rendering without shadow acne or shader discard
 
     // HUD
     this.hud = new RobloxHUD(this.container);
@@ -168,6 +167,7 @@ export class GameEngine3D {
 
     // Spawn Player Avatar on ground
     this.playerAvatar = new BlockyAvatar(customization, username);
+    this.playerAvatar.setLocalPlayer(true); // Hide local player overhead tag so it does not block third-person view
     this.playerAvatar.root.position.copy(this.playerPos);
     this.scene.add(this.playerAvatar.root);
 
@@ -219,26 +219,18 @@ export class GameEngine3D {
   }
 
   private setupLighting(): void {
-    // Ambient light
-    this.ambientLight = new THREE.AmbientLight(0xffffff, 0.65);
+    // Ambient light - bright and clear
+    this.ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
     this.scene.add(this.ambientLight);
 
-    // Sunlight
-    this.sunLight = new THREE.DirectionalLight(0xfffaed, 1.3);
+    // Sunlight - warm directional key light
+    this.sunLight = new THREE.DirectionalLight(0xfffaed, 1.4);
     this.sunLight.position.set(40, 70, 30);
-    this.sunLight.castShadow = true;
-    this.sunLight.shadow.mapSize.width = 2048;
-    this.sunLight.shadow.mapSize.height = 2048;
-    this.sunLight.shadow.camera.near = 10;
-    this.sunLight.shadow.camera.far = 250;
-    this.sunLight.shadow.camera.left = -60;
-    this.sunLight.shadow.camera.right = 60;
-    this.sunLight.shadow.camera.top = 60;
-    this.sunLight.shadow.camera.bottom = -60;
     this.scene.add(this.sunLight);
+    this.scene.add(this.sunLight.target);
 
-    // Hemispheric light
-    const hemiLight = new THREE.HemisphereLight(0x87ceeb, 0x228b22, 0.4);
+    // Hemispheric light for ambient bounce
+    const hemiLight = new THREE.HemisphereLight(0x87ceeb, 0x228b22, 0.5);
     this.scene.add(hemiLight);
   }
 
@@ -650,18 +642,19 @@ export class GameEngine3D {
       const deltaY = e.clientY - this.prevMousePos.y;
 
       this.cameraYaw -= deltaX * 0.005;
-      this.cameraPitch = Math.max(-Math.PI / 2.3, Math.min(Math.PI / 2.2, this.cameraPitch + deltaY * 0.005));
+      // Clamp pitch between 0.05 (slightly above ground) and 1.2 (looking down at character), avoiding underground angles
+      this.cameraPitch = Math.max(0.05, Math.min(1.2, this.cameraPitch + deltaY * 0.005));
 
       this.prevMousePos = { x: e.clientX, y: e.clientY };
     });
 
     // Zoom & First-Person toggle
     this.canvas.addEventListener('wheel', (e) => {
-      this.cameraDistance = Math.max(0.5, Math.min(25, this.cameraDistance + e.deltaY * 0.01));
-      if (this.cameraDistance <= 0.8 && !this.isFirstPerson) {
+      this.cameraDistance = Math.max(1.5, Math.min(22, this.cameraDistance + e.deltaY * 0.01));
+      if (this.cameraDistance <= 2.0 && !this.isFirstPerson) {
         this.isFirstPerson = true;
         this.playerAvatar.setFirstPerson(true);
-      } else if (this.cameraDistance > 0.8 && this.isFirstPerson) {
+      } else if (this.cameraDistance > 2.0 && this.isFirstPerson) {
         this.isFirstPerson = false;
         this.playerAvatar.setFirstPerson(false);
       }
@@ -676,6 +669,12 @@ export class GameEngine3D {
   }
 
   private handleMineAction(): void {
+    if (!this.isStudioMode) {
+      // In Play Mode (Obby), clicking swings weapon/tool, but never breaks blocks so players cannot destroy maps
+      this.voxelAudio.playSwing();
+      return;
+    }
+
     if (this.currentTarget.hit) {
       const { x, y, z } = this.currentTarget.voxelPos;
       const removed = this.voxelWorld.removeBlock(x, y, z);
@@ -854,11 +853,11 @@ export class GameEngine3D {
       this.camera.lookAt(this.camera.position.clone().add(forward));
     } else {
       const camX = this.playerPos.x + Math.sin(this.cameraYaw) * Math.cos(this.cameraPitch) * this.cameraDistance;
-      const camY = this.playerPos.y + Math.sin(this.cameraPitch) * this.cameraDistance + 2.5;
+      const camY = this.playerPos.y + Math.sin(this.cameraPitch) * this.cameraDistance + 2.0;
       const camZ = this.playerPos.z + Math.cos(this.cameraYaw) * Math.cos(this.cameraPitch) * this.cameraDistance;
 
       this.camera.position.set(camX, camY, camZ);
-      this.camera.lookAt(this.playerPos.x, this.playerPos.y + 2.5, this.playerPos.z);
+      this.camera.lookAt(this.playerPos.x, this.playerPos.y + 2.0, this.playerPos.z);
     }
   }
 
