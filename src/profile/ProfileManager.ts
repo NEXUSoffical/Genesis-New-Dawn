@@ -65,6 +65,7 @@ export class ProfileManager {
           this.currentProfile.currentXp = this.currentProfile.currentXp || 0;
           this.currentProfile.xpToNextLevel = calculateXpForLevel(this.currentProfile.level);
           this.currentProfile.title = getTitleForLevel(this.currentProfile.level);
+          this.currentProfile.coins = this.currentProfile.coins || 0;
         }
       } catch {
         this.currentProfile = this.createDefaultProfile(userId, email);
@@ -88,6 +89,7 @@ export class ProfileManager {
       xpToNextLevel: calculateXpForLevel(1),
       totalXp: 0,
       title: getTitleForLevel(1),
+      coins: 0,
       stats: {
         gamesPlayed: 0,
         abyssGenerations: 0,
@@ -95,6 +97,18 @@ export class ProfileManager {
         playtimeMinutes: 0
       }
     };
+  }
+
+  public addCoins(amount: number): number {
+    if (!this.currentProfile) return 0;
+    this.currentProfile.coins = (this.currentProfile.coins || 0) + amount;
+    this.save();
+    this.notifyAuthListeners();
+    return this.currentProfile.coins;
+  }
+
+  public getCoins(): number {
+    return this.currentProfile?.coins || 0;
   }
 
   public save(): void {

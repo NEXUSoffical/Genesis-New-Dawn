@@ -1,4 +1,6 @@
 import './ui/styles.css';
+import './roblox/roblox.css';
+import { RobloxPortal } from './roblox/RobloxPortal';
 import { WorldManager } from './simulation/World';
 import { EconomyEngine } from './simulation/Economy';
 import { AIEngine } from './simulation/AIEngine';
@@ -12,7 +14,6 @@ import { FaunaManager } from './simulation/Fauna';
 import { SoundEngine } from './audio/SoundEngine';
 import { AuthManager } from './auth/AuthManager';
 import { LoginModal } from './ui/LoginModal';
-import { HomePage } from './ui/HomePage';
 
 class GenesisGame {
   private world: WorldManager;
@@ -342,7 +343,7 @@ const startApp = async () => {
   }
 };
 
-const homePage = new HomePage(() => {
-  startApp();
-});
-homePage.mount();
+// Mount the Roblox Platform & Game Portal
+const robloxPortal = new RobloxPortal('app');
+(window as any).robloxPortal = robloxPortal;
+(window as any).startClassic2D = () => startApp();

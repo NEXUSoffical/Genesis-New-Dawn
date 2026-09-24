@@ -1,0 +1,404 @@
+/* ==============================================================================
+   GENESIS STRIPE BILLING & CELEBRATION STYLES
+   ============================================================================== */
+
+.stripe-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 7, 15, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: stripeFadeIn 0.25s ease-out forwards;
+}
+
+@keyframes stripeFadeIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.stripe-setup-card,
+.stripe-celebration-card {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  background: linear-gradient(135deg, rgba(23, 27, 43, 0.95), rgba(12, 15, 29, 0.98));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 35px rgba(99, 102, 241, 0.2);
+  padding: 30px;
+  color: #fff;
+  font-family: 'Inter', system-ui, sans-serif;
+  box-sizing: border-box;
+}
+
+.stripe-modal-close {
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  color: #94a3b8;
+  font-size: 24px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.stripe-modal-close:hover {
+  background: rgba(239, 68, 68, 0.25);
+  color: #f87171;
+  transform: rotate(90deg);
+}
+
+.stripe-modal-header {
+  margin-bottom: 22px;
+}
+
+.stripe-logo-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.stripe-logo-text {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 900;
+  font-size: 22px;
+  letter-spacing: -0.5px;
+  color: #635bff; /* Official Stripe signature purple */
+}
+
+.stripe-checkout-tag {
+  background: rgba(99, 91, 255, 0.18);
+  border: 1px solid rgba(99, 91, 255, 0.4);
+  color: #a5b4fc;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.stripe-modal-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  margin: 0 0 6px 0;
+  color: #ffffff;
+}
+
+.stripe-modal-desc {
+  font-size: 13px;
+  color: #94a3b8;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.stripe-summary-box {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.stripe-pack-preview {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.stripe-pack-icon {
+  font-size: 32px;
+}
+
+.stripe-pack-name {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: #fff;
+}
+
+.stripe-pack-amount {
+  font-size: 12px;
+  color: #fbbf24;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.stripe-pack-price {
+  font-family: 'Outfit', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  color: #38bdf8;
+}
+
+.stripe-connect-section {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 22px;
+}
+
+.stripe-section-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #c7d2fe;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stripe-section-hint {
+  font-size: 11px;
+  color: #94a3b8;
+  margin: 0 0 10px 0;
+  line-height: 1.4;
+}
+
+.stripe-section-hint a {
+  color: #818cf8;
+  text-decoration: underline;
+}
+
+.stripe-input-group {
+  display: flex;
+  gap: 8px;
+}
+
+.stripe-text-input {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  padding: 9px 12px;
+  color: #fff;
+  font-size: 12px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.stripe-text-input:focus {
+  border-color: #635bff;
+}
+
+.stripe-btn-save {
+  background: rgba(99, 91, 255, 0.25);
+  border: 1px solid #635bff;
+  color: #c7d2fe;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 10px;
+  padding: 0 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.stripe-btn-save:hover {
+  background: #635bff;
+  color: #fff;
+}
+
+.stripe-modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.stripe-btn-checkout {
+  width: 100%;
+  background: linear-gradient(135deg, #635bff, #4f46e5);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 14px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(99, 91, 255, 0.4);
+  transition: all 0.2s ease;
+}
+
+.stripe-btn-checkout:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 25px rgba(99, 91, 255, 0.6);
+  filter: brightness(1.1);
+}
+
+.stripe-btn-simulate {
+  width: 100%;
+  background: rgba(250, 204, 21, 0.12);
+  border: 1px dashed rgba(250, 204, 21, 0.4);
+  color: #fde047;
+  border-radius: 12px;
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.stripe-btn-simulate:hover {
+  background: rgba(250, 204, 21, 0.22);
+}
+
+.stripe-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 11px;
+  color: #64748b;
+  text-align: center;
+}
+
+.stripe-footer-link {
+  color: #94a3b8;
+  text-decoration: none;
+}
+
+.stripe-footer-link:hover {
+  color: #635bff;
+}
+
+/* Celebration Modal */
+.stripe-celebration-burst {
+  font-size: 48px;
+  text-align: center;
+  margin-bottom: 10px;
+  animation: stripeBounce 0.8s infinite alternate ease-in-out;
+}
+
+@keyframes stripeBounce {
+  from { transform: translateY(0); }
+  to { transform: translateY(-8px); }
+}
+
+.stripe-badge-verified {
+  display: inline-block;
+  background: rgba(34, 197, 94, 0.18);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  color: #4ade80;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  margin: 0 auto 12px auto;
+  text-align: center;
+  width: fit-content;
+}
+
+.stripe-celebration-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 26px;
+  font-weight: 900;
+  text-align: center;
+  margin: 0 0 6px 0;
+  background: linear-gradient(135deg, #fef08a, #f59e0b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.stripe-celebration-subtitle {
+  text-align: center;
+  font-size: 13px;
+  color: #cbd5e1;
+  margin: 0 0 20px 0;
+}
+
+.stripe-reward-box {
+  background: radial-gradient(circle, rgba(234, 179, 8, 0.15) 0%, rgba(0, 0, 0, 0.3) 100%);
+  border: 1px solid rgba(234, 179, 8, 0.3);
+  border-radius: 16px;
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+.stripe-reward-amount {
+  font-family: 'Outfit', sans-serif;
+  font-size: 32px;
+  font-weight: 900;
+  color: #fde047;
+  text-shadow: 0 0 20px rgba(250, 204, 21, 0.5);
+}
+
+.stripe-reward-label {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 4px;
+}
+
+.stripe-total-balance {
+  text-align: center;
+  font-size: 13px;
+  color: #94a3b8;
+  margin-bottom: 22px;
+}
+
+.stripe-total-balance strong {
+  color: #38bdf8;
+}
+
+.stripe-btn-claim {
+  width: 100%;
+  background: linear-gradient(135deg, #eab308, #ca8a04);
+  color: #000;
+  border: none;
+  border-radius: 14px;
+  padding: 14px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 8px 25px rgba(234, 179, 8, 0.4);
+  transition: all 0.2s ease;
+}
+
+.stripe-btn-claim:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.15);
+  box-shadow: 0 12px 30px rgba(234, 179, 8, 0.6);
+}
+
+/* Toast */
+.stripe-toast-notification {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(99, 102, 241, 0.4);
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: 600;
+  z-index: 100000;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  animation: stripeSlideUp 0.3s ease-out;
+}
+
+@keyframes stripeSlideUp {
+  from { opacity: 0; transform: translate(-50%, 20px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}

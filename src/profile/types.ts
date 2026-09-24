@@ -7,6 +7,7 @@ export interface UserProfile {
   xpToNextLevel: number;
   totalXp: number;
   title: string;
+  coins?: number;
   stats: {
     gamesPlayed: number;
     abyssGenerations: number;
