@@ -600,6 +600,14 @@ export class GameEngine3D {
   private setupInputEvents(): void {
     // Keyboard
     window.addEventListener('keydown', (e) => {
+      if ((e.target as HTMLElement)?.tagName === 'INPUT' || (e.target as HTMLElement)?.tagName === 'TEXTAREA') {
+        return;
+      }
+
+      if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Space'].includes(e.code)) {
+        e.preventDefault();
+      }
+
       this.keys[e.code] = true;
       if (e.code === 'Space' && this.isGrounded) {
         this.playerVelocityY = 14; // Jump force
@@ -718,12 +726,22 @@ export class GameEngine3D {
   }
 
   private updateMovement(deltaSec: number): void {
+    // Roblox Camera Rotation with Left & Right Arrow keys
+    const camRotateSpeed = 2.6; // Radians per sec
+    if (this.keys['ArrowLeft']) {
+      this.cameraYaw += camRotateSpeed * deltaSec;
+    }
+    if (this.keys['ArrowRight']) {
+      this.cameraYaw -= camRotateSpeed * deltaSec;
+    }
+
+    // WASD Character Movement (and optional Up/Down Arrow for forward/back)
     const moveDir = new THREE.Vector3(0, 0, 0);
 
     if (this.keys['KeyW'] || this.keys['ArrowUp']) moveDir.z -= 1;
     if (this.keys['KeyS'] || this.keys['ArrowDown']) moveDir.z += 1;
-    if (this.keys['KeyA'] || this.keys['ArrowLeft']) moveDir.x -= 1;
-    if (this.keys['KeyD'] || this.keys['ArrowRight']) moveDir.x += 1;
+    if (this.keys['KeyA']) moveDir.x -= 1;
+    if (this.keys['KeyD']) moveDir.x += 1;
 
     this.isMoving = moveDir.lengthSq() > 0;
 
