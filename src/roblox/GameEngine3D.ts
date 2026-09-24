@@ -7,8 +7,10 @@ import { VoxelWorld, VoxelType, VOXEL_SIZE, RaycastHitResult } from './VoxelWorl
 import { VoxelAudio } from './VoxelAudio';
 import { VoxelParticles } from './VoxelParticles';
 import { DayNightCycle } from './DayNightCycle';
-import { MapData } from './MapTypes';
+import { MapData, ScriptedEntity } from './MapTypes';
 import { MapManager } from './MapManager';
+import { ScriptingEngine, ScriptPlayerAPI, ScriptWorldAPI } from './ScriptingEngine';
+import { ScriptInspectorModal } from './ScriptInspectorModal';
 
 interface CoinPickup {
   mesh: THREE.Mesh;
@@ -66,11 +68,18 @@ export class GameEngine3D {
   // Keys
   private keys: { [key: string]: boolean } = {};
 
-  // NPCs (Adam & Eve)
+  // NPCs & Scripted Entities
   private adamAvatar: BlockyAvatar;
   private eveAvatar: BlockyAvatar;
-  private adamPos: THREE.Vector3 = new THREE.Vector3(6, 0, 6);
-  private evePos: THREE.Vector3 = new THREE.Vector3(-6, 0, 8);
+  private adamPos: THREE.Vector3 = new THREE.Vector3(14, 0, -8);
+  private evePos: THREE.Vector3 = new THREE.Vector3(8, 0, 4);
+  private scriptingEngine: ScriptingEngine;
+  private scriptedEntities: Map<string, {
+    entity: ScriptedEntity;
+    mesh: THREE.Object3D;
+    avatar: BlockyAvatar | null;
+  }> = new Map();
+  private inspectorModal: ScriptInspectorModal | null = null;
 
   // Interactive items & world objects
   private coins: CoinPickup[] = [];
@@ -214,6 +223,44 @@ export class GameEngine3D {
     );
     this.eveAvatar.root.position.copy(this.evePos);
     this.scene.add(this.eveAvatar.root);
+
+    // Initialize Scripting & Entity Engine
+    this.scriptingEngine = new ScriptingEngine(this.scene, this.voxelAudio);
+
+    // Register Adam and Eve as interactive scripted NPCs
+    this.adamAvatar.root.userData = { entityId: 'npc_adam' };
+    this.adamAvatar.torsoMesh.userData = { entityId: 'npc_adam' };
+    this.scriptedEntities.set('npc_adam', {
+      entity: {
+        id: 'npc_adam',
+        name: 'Adam (Founder)',
+        type: 'npc',
+        position: { x: this.adamPos.x, y: this.adamPos.y, z: this.adamPos.z },
+        script: {
+          behavior: 'dialogue',
+          dialogueText: 'Welcome to Genesis! Use Studio mode (TAB) to build anything and attach custom code!'
+        }
+      },
+      mesh: this.adamAvatar.root,
+      avatar: this.adamAvatar
+    });
+
+    this.eveAvatar.root.userData = { entityId: 'npc_eve' };
+    this.eveAvatar.torsoMesh.userData = { entityId: 'npc_eve' };
+    this.scriptedEntities.set('npc_eve', {
+      entity: {
+        id: 'npc_eve',
+        name: 'Eve (Founder)',
+        type: 'npc',
+        position: { x: this.evePos.x, y: this.evePos.y, z: this.evePos.z },
+        script: {
+          behavior: 'dialogue',
+          dialogueText: 'You can create your own NPCs, items, and script their behavior just like Roblox!'
+        }
+      },
+      mesh: this.eveAvatar.root,
+      avatar: this.eveAvatar
+    });
 
     // Controls
     this.setupInputEvents();
@@ -557,6 +604,9 @@ export class GameEngine3D {
     this.hud.onSaveMap = () => this.openSaveMapModal();
     this.hud.onPublishMap = () => this.openPublishMapModal();
     this.hud.onLoadMap = () => this.openLoadMapModal();
+    this.hud.onSpawnNPC = () => this.spawnScriptedNPC();
+    this.hud.onSpawnItem = () => this.spawnScriptedItem();
+    this.hud.onOpenInspector = () => this.openScriptInspector();
   }
 
   private setupMultiplayerCallbacks(): void {
@@ -629,17 +679,19 @@ export class GameEngine3D {
     // Prevent default right click menu for block placement
     this.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
 
-    // Mouse clicks: Left Click = Mine / Swing, Right Click = Place Block
+    // Mouse clicks: Left Click = Mine / Swing / Interact, Right Click = Place Block
     this.canvas.addEventListener('mousedown', (e) => {
       this.isMouseDown = true;
       this.prevMousePos = { x: e.clientX, y: e.clientY };
 
       if (e.button === 0) {
-        // Left click: Mine / Attack
+        // Check if an entity (NPC or scripted item) was clicked
+        if (this.handleEntityClick()) {
+          return;
+        }
         this.playerAvatar.triggerToolSwing();
         this.handleMineAction();
       } else if (e.button === 2) {
-        // Right click: Place block
         this.playerAvatar.triggerToolSwing();
         this.handlePlaceAction();
       }
@@ -904,9 +956,20 @@ export class GameEngine3D {
       }
     });
 
-    // 4. Update NPCs (Adam & Eve gentle wandering animations)
-    this.adamAvatar.updateAnimation(deltaSec, false, false, 0);
-    this.eveAvatar.updateAnimation(deltaSec, false, false, 0);
+    // 4. Update Scripted Entities & NPCs
+    this.scriptedEntities.forEach(item => {
+      this.scriptingEngine.updateEntity(
+        item.entity,
+        item.mesh,
+        item.avatar,
+        deltaSec,
+        this.getPlayerAPI(),
+        this.getWorldAPI()
+      );
+      if (item.avatar) {
+        item.avatar.updateAnimation(deltaSec, false, false, 0, this.camera.position);
+      }
+    });
   }
 
   private animate = (currentTime: number): void => {
@@ -950,6 +1013,19 @@ export class GameEngine3D {
     if (this.playerAvatar) this.playerAvatar.root.position.copy(this.playerPos);
     this.hud.setGameTitle(map.title);
     this.hasReachedFinish = false;
+
+    // Load custom people (NPCs) & scripted items
+    this.clearScriptedEntities();
+    if (map.entities && map.entities.length > 0) {
+      map.entities.forEach(ent => {
+        if (ent.type === 'npc') {
+          this.spawnScriptedNPC(ent);
+        } else {
+          this.spawnScriptedItem(ent.itemType || 'portal', ent);
+        }
+      });
+    }
+
     this.hud.showToast(`Loaded map: ${map.title}`);
   }
 
@@ -1069,6 +1145,7 @@ export class GameEngine3D {
         gameMode: mode,
         spawnPoint: { x: this.playerPos.x, y: this.playerPos.y, z: this.playerPos.z },
         blocks,
+        entities: this.exportScriptedEntities(),
         likes: 0,
         plays: 0,
         tags: [mode.toUpperCase(), 'Player Creation']
@@ -1078,7 +1155,7 @@ export class GameEngine3D {
       this.activeMap = mapData;
       this.hud.setGameTitle(title);
       overlay.remove();
-      this.hud.showToast(`✓ Saved "${title}" (${blocks.length} blocks)`);
+      this.hud.showToast(`✓ Saved "${title}" (${blocks.length} blocks, ${mapData.entities?.length || 0} scripted entities)`);
     });
 
     overlay.querySelector('#rbx-btn-download-json')?.addEventListener('click', () => {
@@ -1092,12 +1169,13 @@ export class GameEngine3D {
         gameMode: modeSelect.value as any,
         spawnPoint: { x: this.playerPos.x, y: this.playerPos.y, z: this.playerPos.z },
         blocks,
+        entities: this.exportScriptedEntities(),
         likes: 0,
         plays: 0,
         tags: ['Player Creation']
       };
       MapManager.getInstance().exportMapFile(mapData);
-      this.hud.showToast('✓ Exported map JSON file');
+      this.hud.showToast('✓ Exported map JSON file with entities & scripts');
     });
   }
 
@@ -1153,6 +1231,7 @@ export class GameEngine3D {
         gameMode: 'obby',
         spawnPoint: { x: this.playerPos.x, y: this.playerPos.y, z: this.playerPos.z },
         blocks,
+        entities: this.exportScriptedEntities(),
         likes: 1,
         plays: 0,
         tags: ['Obby', 'Community Published']
@@ -1251,6 +1330,12 @@ export class GameEngine3D {
 
   public destroy(): void {
     cancelAnimationFrame(this.animId);
+    if (this.inspectorModal) {
+      this.inspectorModal.destroy();
+      this.inspectorModal = null;
+    }
+    this.scriptingEngine.destroy();
+    this.clearScriptedEntities();
     this.multiplayer.destroy();
     this.voxelWorld.destroy();
     this.dayNight.destroy();
@@ -1263,5 +1348,309 @@ export class GameEngine3D {
     if (overlay && overlay.parentNode) {
       overlay.parentNode.removeChild(overlay);
     }
+  }
+
+  /* ==========================================================================
+     ROBLOX STUDIO SCRIPTING & ENTITY MANAGEMENT
+     ========================================================================== */
+  private getPlayerAPI(): ScriptPlayerAPI {
+    return {
+      name: 'Pioneer',
+      position: this.playerPos,
+      giveCoins: (amount: number) => {
+        const cur = parseInt(localStorage.getItem('rbx_player_coins') || '0', 10);
+        const next = cur + amount;
+        localStorage.setItem('rbx_player_coins', next.toString());
+        this.hud.showToast(`+🪙 ${amount} Coins added!`);
+        this.voxelAudio.playCoin();
+      },
+      teleport: (x: number, y: number, z: number) => {
+        this.playerPos.set(x, y, z);
+        this.playerVelocityY = 0;
+        this.playerAvatar.root.position.copy(this.playerPos);
+      },
+      launch: (forceY: number) => {
+        this.playerVelocityY = forceY;
+        this.isGrounded = false;
+      },
+      damage: (amount: number) => {
+        this.playerHealth = Math.max(0, this.playerHealth - amount);
+        this.hud.showToast(`💔 Took ${amount} damage! (Health: ${this.playerHealth})`);
+        if (this.playerHealth <= 0) {
+          this.playerHealth = 100;
+          this.respawnAtCheckpoint('☠️ Defeated! Respawning at checkpoint...');
+        }
+      },
+      boostSpeed: (durationSec: number) => {
+        this.speedBoostTimer = durationSec;
+        this.playerSpeed = 22;
+      }
+    };
+  }
+
+  private getWorldAPI(): ScriptWorldAPI {
+    return {
+      playSound: (name: string) => {
+        if (name === 'coin') this.voxelAudio.playCoin();
+        else if (name === 'bounce') this.voxelAudio.playBounce();
+        else if (name === 'victory') this.voxelAudio.playVictory();
+        else if (name === 'lava') this.voxelAudio.playLavaSizzle();
+        else this.voxelAudio.playSwing();
+      },
+      showToast: (msg: string) => this.hud.showToast(msg),
+      getTime: () => this.dayNight.getTimeString()
+    };
+  }
+
+  private handleEntityClick(): boolean {
+    const mouse = new THREE.Vector2(0, 0); // crosshair center
+    this.raycaster.setFromCamera(mouse, this.camera);
+    const entityMeshes: THREE.Object3D[] = [];
+    this.scriptedEntities.forEach(item => {
+      entityMeshes.push(item.mesh);
+    });
+
+    const intersects = this.raycaster.intersectObjects(entityMeshes, true);
+    if (intersects.length > 0 && intersects[0].distance < 16) {
+      let topObj: THREE.Object3D | null = intersects[0].object;
+      let foundEntityId: string | null = null;
+      while (topObj && !foundEntityId) {
+        if (topObj.userData && topObj.userData.entityId) {
+          foundEntityId = topObj.userData.entityId;
+          break;
+        }
+        topObj = topObj.parent;
+      }
+
+      if (foundEntityId) {
+        const record = this.scriptedEntities.get(foundEntityId);
+        if (record) {
+          if (this.isStudioMode) {
+            // Open Script and Properties Inspector in Studio mode
+            this.openScriptInspector(foundEntityId);
+          } else {
+            // Interact / Run script in Play mode
+            this.scriptingEngine.handleInteraction(
+              record.entity,
+              record.mesh,
+              this.getPlayerAPI(),
+              this.getWorldAPI()
+            );
+          }
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  public spawnScriptedNPC(config?: Partial<ScriptedEntity>): ScriptedEntity {
+    const forward = new THREE.Vector3(-Math.sin(this.cameraYaw), 0, -Math.cos(this.cameraYaw));
+    const spawnPos = config?.position
+      ? new THREE.Vector3(config.position.x, config.position.y, config.position.z)
+      : this.playerPos.clone().add(forward.multiplyScalar(4));
+
+    if (!config?.position) {
+      const groundY = this.getGroundY(spawnPos.x, spawnPos.z);
+      spawnPos.y = groundY;
+    }
+
+    const id = config?.id || 'npc_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+    const avatarConfig: AvatarCustomization = config?.avatarConfig || {
+      headColor: '#facc15',
+      torsoColor: '#0284c7',
+      leftArmColor: '#facc15',
+      rightArmColor: '#facc15',
+      leftLegColor: '#1e293b',
+      rightLegColor: '#1e293b',
+      equippedHat: 'top_hat',
+      equippedShirt: 'genesis_hoodie',
+      equippedPants: 'blue_jeans',
+      equippedFace: 'chill',
+      equippedGear: 'none'
+    };
+
+    const name = config?.name || 'Helper Pioneer';
+    const avatar = new BlockyAvatar(avatarConfig, name);
+    avatar.root.position.copy(spawnPos);
+    this.scene.add(avatar.root);
+
+    const entity: ScriptedEntity = {
+      id,
+      name,
+      type: 'npc',
+      position: { x: spawnPos.x, y: spawnPos.y, z: spawnPos.z },
+      rotationY: 0,
+      avatarConfig,
+      script: config?.script || {
+        behavior: 'dialogue',
+        dialogueText: `Hello! I am ${name}. Welcome to Genesis Studio!`
+      }
+    };
+
+    avatar.root.userData = { entityId: id };
+    avatar.torsoMesh.userData = { entityId: id };
+
+    this.scriptedEntities.set(id, { entity, mesh: avatar.root, avatar });
+    this.hud.showToast(`✨ Created Person: ${name}`);
+    this.voxelAudio.playBlockPlace();
+
+    if (!config) {
+      // Auto open inspector on newly created NPC
+      this.openScriptInspector(id);
+    }
+    return entity;
+  }
+
+  public spawnScriptedItem(type: string = 'portal', config?: Partial<ScriptedEntity>): ScriptedEntity {
+    const forward = new THREE.Vector3(-Math.sin(this.cameraYaw), 0, -Math.cos(this.cameraYaw));
+    const spawnPos = config?.position
+      ? new THREE.Vector3(config.position.x, config.position.y, config.position.z)
+      : this.playerPos.clone().add(forward.multiplyScalar(3.5));
+
+    if (!config?.position) {
+      const groundY = this.getGroundY(spawnPos.x, spawnPos.z);
+      spawnPos.y = groundY + 0.5;
+    }
+
+    const id = config?.id || 'item_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+    let mesh: THREE.Object3D;
+    let name = 'Warp Portal';
+
+    if (type === 'portal') {
+      name = 'Warp Portal';
+      const geo = new THREE.TorusGeometry(1.4, 0.25, 16, 32);
+      const mat = new THREE.MeshBasicMaterial({ color: 0xa855f7 });
+      mesh = new THREE.Mesh(geo, mat);
+      mesh.rotation.x = Math.PI / 2;
+    } else if (type === 'chest') {
+      name = 'Treasure Chest';
+      const geo = new THREE.BoxGeometry(1.4, 1.2, 1.2);
+      const mat = new THREE.MeshBasicMaterial({ color: 0xd97706 });
+      mesh = new THREE.Mesh(geo, mat);
+    } else if (type === 'bounce_pad') {
+      name = 'Super Launch Pad';
+      const geo = new THREE.CylinderGeometry(1.8, 1.8, 0.3, 24);
+      const mat = new THREE.MeshBasicMaterial({ color: 0x22c55e });
+      mesh = new THREE.Mesh(geo, mat);
+    } else if (type === 'crystal') {
+      name = 'Power Crystal';
+      const geo = new THREE.OctahedronGeometry(1.2);
+      const mat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
+      mesh = new THREE.Mesh(geo, mat);
+    } else {
+      name = 'Genesis Coin Prop';
+      const geo = new THREE.CylinderGeometry(1.0, 1.0, 0.2, 24);
+      const mat = new THREE.MeshBasicMaterial({ color: 0xfacc15 });
+      mesh = new THREE.Mesh(geo, mat);
+    }
+
+    mesh.position.copy(spawnPos);
+    mesh.userData = { entityId: id };
+    this.scene.add(mesh);
+
+    const entity: ScriptedEntity = {
+      id,
+      name,
+      type: 'item',
+      itemType: type,
+      position: { x: spawnPos.x, y: spawnPos.y, z: spawnPos.z },
+      script: config?.script || {
+        behavior: type === 'bounce_pad' ? 'bounce' : (type === 'portal' ? 'teleport' : 'coin_reward'),
+        coinAmount: 50,
+        teleportTarget: { x: 0, y: 15, z: 20 }
+      }
+    };
+
+    this.scriptedEntities.set(id, { entity, mesh, avatar: null });
+    this.hud.showToast(`✨ Created Item: ${name}`);
+    this.voxelAudio.playBlockPlace();
+
+    if (!config) {
+      // Auto open inspector on newly created item
+      this.openScriptInspector(id);
+    }
+    return entity;
+  }
+
+  public openScriptInspector(entityId?: string): void {
+    if (this.inspectorModal) {
+      this.inspectorModal.destroy();
+      this.inspectorModal = null;
+    }
+
+    let targetEntity: ScriptedEntity | undefined;
+    if (entityId) {
+      targetEntity = this.scriptedEntities.get(entityId)?.entity;
+    }
+    if (!targetEntity) {
+      // Find closest entity to player
+      let closestDist = Infinity;
+      this.scriptedEntities.forEach(item => {
+        const dist = this.playerPos.distanceTo(item.mesh.position);
+        if (dist < closestDist) {
+          closestDist = dist;
+          targetEntity = item.entity;
+        }
+      });
+    }
+
+    if (!targetEntity) {
+      targetEntity = this.spawnScriptedNPC();
+    }
+
+    this.inspectorModal = new ScriptInspectorModal(this.container, {
+      entity: targetEntity,
+      onSave: (updated) => {
+        this.updateScriptedEntity(updated);
+        this.hud.showToast(`💾 Saved properties & scripts for ${updated.name}`);
+      },
+      onDelete: (id) => {
+        this.removeScriptedEntity(id);
+        this.hud.showToast(`🗑️ Deleted entity`);
+      },
+      onClose: () => {
+        this.inspectorModal = null;
+      },
+      onTestScript: (ent) => {
+        const record = this.scriptedEntities.get(ent.id);
+        if (record) {
+          this.scriptingEngine.handleInteraction(ent, record.mesh, this.getPlayerAPI(), this.getWorldAPI());
+        }
+      }
+    });
+  }
+
+  private updateScriptedEntity(updated: ScriptedEntity): void {
+    const record = this.scriptedEntities.get(updated.id);
+    if (!record) return;
+
+    record.entity = updated;
+    if (record.avatar && updated.avatarConfig) {
+      record.avatar.applyCustomization(updated.avatarConfig);
+    }
+  }
+
+  private removeScriptedEntity(id: string): void {
+    const record = this.scriptedEntities.get(id);
+    if (!record) return;
+
+    this.scene.remove(record.mesh);
+    this.scriptedEntities.delete(id);
+  }
+
+  private clearScriptedEntities(): void {
+    this.scriptedEntities.forEach(item => {
+      this.scene.remove(item.mesh);
+    });
+    this.scriptedEntities.clear();
+  }
+
+  private exportScriptedEntities(): ScriptedEntity[] {
+    const list: ScriptedEntity[] = [];
+    this.scriptedEntities.forEach(item => {
+      list.push(item.entity);
+    });
+    return list;
   }
 }

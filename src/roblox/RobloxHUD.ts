@@ -30,6 +30,9 @@ export class RobloxHUD {
   public onPublishMap?: () => void;
   public onLoadMap?: () => void;
   public onToggleFlyMode?: () => void;
+  public onSpawnNPC?: () => void;
+  public onSpawnItem?: () => void;
+  public onOpenInspector?: () => void;
 
   private buildTools: HotbarTool[] = [
     { id: 'pickaxe', name: 'Pickaxe', icon: '⛏️', key: '1' },
@@ -93,7 +96,15 @@ export class RobloxHUD {
             ${this.isStudioMode ? '🛠️ Studio (Building)' : '🎮 Play Mode'}
           </button>
 
-          <div id="rbx-studio-action-row" style="display: ${this.isStudioMode ? 'flex' : 'none'}; gap: 6px; align-items: center;">
+            <button id="rbx-btn-spawn-npc" class="rbx-hud-pill-btn blue" title="Spawn a customizable Person / NPC">
+              ➕ Person
+            </button>
+            <button id="rbx-btn-spawn-item" class="rbx-hud-pill-btn gold" title="Spawn an interactive Item / Object">
+              ➕ Item
+            </button>
+            <button id="rbx-btn-open-inspector" class="rbx-hud-pill-btn cyan" title="Properties & Script Editor">
+              📜 Scripts
+            </button>
             <button id="rbx-btn-save-map" class="rbx-hud-pill-btn green" title="Save map draft locally">
               💾 Save
             </button>
@@ -199,6 +210,15 @@ export class RobloxHUD {
     });
     this.container.querySelector('#rbx-btn-fly-toggle')?.addEventListener('click', () => {
       if (this.onToggleFlyMode) this.onToggleFlyMode();
+    });
+    this.container.querySelector('#rbx-btn-spawn-npc')?.addEventListener('click', () => {
+      if (this.onSpawnNPC) this.onSpawnNPC();
+    });
+    this.container.querySelector('#rbx-btn-spawn-item')?.addEventListener('click', () => {
+      if (this.onSpawnItem) this.onSpawnItem();
+    });
+    this.container.querySelector('#rbx-btn-open-inspector')?.addEventListener('click', () => {
+      if (this.onOpenInspector) this.onOpenInspector();
     });
 
     // Hotbar tab switcher

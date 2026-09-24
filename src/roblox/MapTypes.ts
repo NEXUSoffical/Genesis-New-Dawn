@@ -9,6 +9,37 @@ export interface VoxelBlockExport {
   type: VoxelType;
 }
 
+export type ScriptBehavior = 
+  | 'none' 
+  | 'dialogue' 
+  | 'follow' 
+  | 'patrol' 
+  | 'guard' 
+  | 'coin_reward' 
+  | 'teleport' 
+  | 'bounce' 
+  | 'speed_pad' 
+  | 'custom_code';
+
+export interface EntityScript {
+  behavior: ScriptBehavior;
+  dialogueText?: string;
+  coinAmount?: number;
+  teleportTarget?: { x: number; y: number; z: number };
+  customCode?: string; // JavaScript executed in sandbox
+}
+
+export interface ScriptedEntity {
+  id: string;
+  name: string;
+  type: 'npc' | 'item';
+  position: { x: number; y: number; z: number };
+  rotationY?: number;
+  avatarConfig?: any; // AvatarCustomization
+  itemType?: string; // 'coin' | 'chest' | 'portal' | 'bounce_pad' | 'crystal' | 'speed_pad' | 'campfire' | 'spinner'
+  script: EntityScript;
+}
+
 export interface MapData {
   id: string;
   title: string;
@@ -19,6 +50,7 @@ export interface MapData {
   gameMode: GameModeType;
   spawnPoint: { x: number; y: number; z: number };
   blocks: VoxelBlockExport[];
+  entities?: ScriptedEntity[];
   likes: number;
   plays: number;
   tags: string[];

@@ -549,7 +549,7 @@ export class BlockyAvatar {
     const spriteMat = new THREE.SpriteMaterial({ map: texture, depthTest: true });
     this.nameTagSprite = new THREE.Sprite(spriteMat);
     this.nameTagSprite.position.set(0, 3.2, 0);
-    this.nameTagSprite.scale.set(3, 0.75, 1);
+    this.nameTagSprite.scale.set(1.6, 0.4, 1);
     this.torsoMesh.add(this.nameTagSprite);
   }
 
@@ -574,8 +574,16 @@ export class BlockyAvatar {
     deltaSec: number,
     isMoving: boolean,
     isJumping: boolean,
-    velocityY: number
+    velocityY: number,
+    cameraPos?: THREE.Vector3
   ): void {
+    // Hide nametag if camera is very close so it never obscures the screen
+    if (this.nameTagSprite && cameraPos) {
+      const dist = this.root.position.distanceTo(cameraPos);
+      if (dist < 3.0) {
+        this.nameTagSprite.visible = false;
+      }
+    }
     this.animTime += deltaSec * 8;
 
     // Handle tool swing
