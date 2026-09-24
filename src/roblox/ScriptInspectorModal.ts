@@ -96,6 +96,8 @@ export class ScriptInspectorModal {
             <div class="rbx-inspector-field">
               <select id="rbx-prop-behavior" class="rbx-inspector-select">
                 <option value="dialogue" ${script.behavior === 'dialogue' ? 'selected' : ''}>💬 Interactive Dialogue / Speech</option>
+                <option value="zombie" ${script.behavior === 'zombie' ? 'selected' : ''}>🧟 Zombie Undead (Chases & Attacks)</option>
+                <option value="medic" ${script.behavior === 'medic' ? 'selected' : ''}>💉 Medic Doctor (Heals to 100 HP)</option>
                 <option value="follow" ${script.behavior === 'follow' ? 'selected' : ''}>🏃 Pet / Companion (Follows Player)</option>
                 <option value="patrol" ${script.behavior === 'patrol' ? 'selected' : ''}>🚶 Smooth Patrol / Wander</option>
                 <option value="guard" ${script.behavior === 'guard' ? 'selected' : ''}>⚔️ Guard / Enemy (Chases & Attacks)</option>
@@ -107,13 +109,36 @@ export class ScriptInspectorModal {
             </div>
 
             <!-- PARAMETERS BASED ON BEHAVIOR -->
-            <div id="rbx-param-dialogue" class="rbx-behavior-param-group" style="display: ${script.behavior === 'dialogue' ? 'block' : 'none'};">
+            <div id="rbx-param-combat" class="rbx-behavior-param-group" style="display: ${(script.behavior === 'zombie' || script.behavior === 'guard') ? 'block' : 'none'};">
+              <div class="rbx-inspector-grid2">
+                <div class="rbx-inspector-field">
+                  <label>Health (HP)</label>
+                  <input type="number" id="rbx-param-health" class="rbx-inspector-input" value="${script.health ?? script.maxHealth ?? 60}" min="1" max="2000" />
+                </div>
+                <div class="rbx-inspector-field">
+                  <label>Attack Damage</label>
+                  <input type="number" id="rbx-param-damage" class="rbx-inspector-input" value="${script.damageAmount ?? 12}" min="1" max="100" />
+                </div>
+              </div>
+              <div class="rbx-inspector-grid2" style="margin-top: 6px;">
+                <div class="rbx-inspector-field">
+                  <label>Movement Speed</label>
+                  <input type="number" id="rbx-param-speed" class="rbx-inspector-input" value="${script.moveSpeed ?? 6}" min="1" max="30" step="0.5" />
+                </div>
+                <div class="rbx-inspector-field">
+                  <label>Aggro Range</label>
+                  <input type="number" id="rbx-param-range" class="rbx-inspector-input" value="${script.detectionRange ?? 24}" min="5" max="80" />
+                </div>
+              </div>
+            </div>
+
+            <div id="rbx-param-dialogue" class="rbx-behavior-param-group" style="display: ${(script.behavior === 'dialogue' || script.behavior === 'medic') ? 'block' : 'none'};">
               <label>Speech Bubble Text</label>
               <textarea id="rbx-param-dialogue-text" class="rbx-inspector-textarea" rows="2" placeholder="e.g. Welcome to my obstacle course! Watch out for the lava tightrope!">${script.dialogueText || ''}</textarea>
             </div>
 
-            <div id="rbx-param-coin" class="rbx-behavior-param-group" style="display: ${script.behavior === 'coin_reward' ? 'block' : 'none'};">
-              <label>Coins to Award</label>
+            <div id="rbx-param-coin" class="rbx-behavior-param-group" style="display: ${(script.behavior === 'coin_reward' || script.behavior === 'zombie') ? 'block' : 'none'};">
+              <label>Coins to Award / Bounty</label>
               <input type="number" id="rbx-param-coin-amount" class="rbx-inspector-input" value="${script.coinAmount || 25}" min="1" max="1000" />
             </div>
 
@@ -140,6 +165,8 @@ export class ScriptInspectorModal {
               <div style="display: flex; gap: 8px;">
                 <select id="rbx-script-template-select" class="rbx-inspector-select-mini">
                   <option value="">Insert Code Template...</option>
+                  <option value="zombie_ai">🧟 Zombie Aggro AI</option>
+                  <option value="medic">💉 Field Medic Healer</option>
                   <option value="quest">Quest & Coin Giver</option>
                   <option value="teleport">Checkpoint Teleport</option>
                   <option value="bounce">Launch Bouncer</option>
@@ -209,16 +236,22 @@ function onTick(dt) {
       const dlgGroup = this.container.querySelector('#rbx-param-dialogue') as HTMLElement;
       const coinGroup = this.container.querySelector('#rbx-param-coin') as HTMLElement;
       const tpGroup = this.container.querySelector('#rbx-param-teleport') as HTMLElement;
+      const combatGroup = this.container.querySelector('#rbx-param-combat') as HTMLElement;
 
-      if (dlgGroup) dlgGroup.style.display = b === 'dialogue' ? 'block' : 'none';
-      if (coinGroup) coinGroup.style.display = b === 'coin_reward' ? 'block' : 'none';
+      if (dlgGroup) dlgGroup.style.display = (b === 'dialogue' || b === 'medic') ? 'block' : 'none';
+      if (coinGroup) coinGroup.style.display = (b === 'coin_reward' || b === 'zombie') ? 'block' : 'none';
       if (tpGroup) tpGroup.style.display = b === 'teleport' ? 'block' : 'none';
+      if (combatGroup) combatGroup.style.display = (b === 'zombie' || b === 'guard') ? 'block' : 'none';
     });
 
     // Insert templates
     templateSelect?.addEventListener('change', () => {
       const val = templateSelect.value;
-      if (val === 'quest') {
+      if (val === 'zombie_ai') {
+        codeArea.value = `// Zombie Aggro AI Script\nfunction onTick(dt) {\n  let dist = self.position.distanceTo(player.position);\n  if (dist < 25) {\n    self.lookAt(player.position.x, player.position.z);\n    self.moveToward(player.position.x, player.position.z, 6.5);\n    if (dist < 2.2) {\n      player.damage(12);\n      world.playSound("zombie_attack");\n    }\n  }\n}\n\nfunction onInteract(player) {\n  world.playSound("zombie_groan");\n  self.say("Grrrrrr... BRAINS!");\n}`;
+      } else if (val === 'medic') {
+        codeArea.value = `// Field Medic Healer Script\nfunction onInteract(player) {\n  player.heal(100);\n  world.playSound("heal");\n  self.say("Medkit administered! You are back at full 100 HP!");\n  world.showToast("💚 Fully restored to 100 HP!");\n}`;
+      } else if (val === 'quest') {
         codeArea.value = `function onInteract(player) {\n  self.say("Pioneer! Take these coins for your bravery!");\n  world.playSound("coin");\n  player.giveCoins(50);\n  world.showToast("⭐ Quest completed: +50 Coins!");\n}`;
       } else if (val === 'teleport') {
         codeArea.value = `function onInteract(player) {\n  self.say("Warping you forward!");\n  world.playSound("bounce");\n  player.teleport(0, 14, 25);\n}`;
@@ -260,6 +293,10 @@ function onTick(dt) {
     const behaviorSelect = this.container.querySelector('#rbx-prop-behavior') as HTMLSelectElement;
     const dialogueInput = this.container.querySelector('#rbx-param-dialogue-text') as HTMLTextAreaElement;
     const coinInput = this.container.querySelector('#rbx-param-coin-amount') as HTMLInputElement;
+    const healthInput = this.container.querySelector('#rbx-param-health') as HTMLInputElement;
+    const damageInput = this.container.querySelector('#rbx-param-damage') as HTMLInputElement;
+    const speedInput = this.container.querySelector('#rbx-param-speed') as HTMLInputElement;
+    const rangeInput = this.container.querySelector('#rbx-param-range') as HTMLInputElement;
     const tpX = this.container.querySelector('#rbx-tp-x') as HTMLInputElement;
     const tpY = this.container.querySelector('#rbx-tp-y') as HTMLInputElement;
     const tpZ = this.container.querySelector('#rbx-tp-z') as HTMLInputElement;
@@ -276,6 +313,8 @@ function onTick(dt) {
       equippedHat: hatSelect ? hatSelect.value : e.avatarConfig.equippedHat
     } : undefined;
 
+    const hp = healthInput ? parseInt(healthInput.value, 10) || 60 : 60;
+
     return {
       ...e,
       name: nameInput?.value.trim() || e.name,
@@ -285,6 +324,11 @@ function onTick(dt) {
         behavior,
         dialogueText: dialogueInput?.value.trim() || undefined,
         coinAmount: coinInput ? parseInt(coinInput.value, 10) || 20 : undefined,
+        health: hp,
+        maxHealth: hp,
+        damageAmount: damageInput ? parseInt(damageInput.value, 10) || 12 : undefined,
+        moveSpeed: speedInput ? parseFloat(speedInput.value) || 6 : undefined,
+        detectionRange: rangeInput ? parseFloat(rangeInput.value) || 24 : undefined,
         teleportTarget: (tpX && tpY && tpZ) ? {
           x: parseFloat(tpX.value) || 0,
           y: parseFloat(tpY.value) || 4,

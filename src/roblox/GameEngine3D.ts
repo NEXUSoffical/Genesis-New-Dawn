@@ -686,7 +686,8 @@ export class GameEngine3D {
 
       if (e.button === 0) {
         // Check if an entity (NPC or scripted item) was clicked
-        if (this.handleEntityClick()) {
+        if (this.handleEntityClick(e.clientX, e.clientY)) {
+          this.playerAvatar.triggerToolSwing();
           return;
         }
         this.playerAvatar.triggerToolSwing();
@@ -1381,6 +1382,10 @@ export class GameEngine3D {
           this.respawnAtCheckpoint('☠️ Defeated! Respawning at checkpoint...');
         }
       },
+      heal: (amount: number) => {
+        this.playerHealth = Math.min(100, this.playerHealth + amount);
+        this.hud.showToast(`💚 Health restored (+${amount} HP)! Health: ${this.playerHealth}`);
+      },
       boostSpeed: (durationSec: number) => {
         this.speedBoostTimer = durationSec;
         this.playerSpeed = 22;
@@ -1395,15 +1400,25 @@ export class GameEngine3D {
         else if (name === 'bounce') this.voxelAudio.playBounce();
         else if (name === 'victory') this.voxelAudio.playVictory();
         else if (name === 'lava') this.voxelAudio.playLavaSizzle();
+        else if (name === 'zombie_attack') this.voxelAudio.playZombieAttack();
+        else if (name === 'zombie_groan') this.voxelAudio.playZombieGroan();
+        else if (name === 'heal') this.voxelAudio.playHeal();
+        else if (name === 'gunshot') this.voxelAudio.playGunshot();
         else this.voxelAudio.playSwing();
       },
       showToast: (msg: string) => this.hud.showToast(msg),
-      getTime: () => this.dayNight.getTimeString()
+      getTime: () => this.dayNight.getTimeString(),
+      removeEntity: (entityId: string) => this.removeScriptedEntity(entityId),
+      spawnParticles: (pos: THREE.Vector3, color: string) => this.voxelParticles.spawnBreakBurst(pos, color)
     };
   }
 
-  private handleEntityClick(): boolean {
-    const mouse = new THREE.Vector2(0, 0); // crosshair center
+  private handleEntityClick(clientX?: number, clientY?: number): boolean {
+    const mouse = new THREE.Vector2(0, 0); // crosshair center fallback
+    if (clientX !== undefined && clientY !== undefined) {
+      mouse.x = (clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(clientY / window.innerHeight) * 2 + 1;
+    }
     this.raycaster.setFromCamera(mouse, this.camera);
     const entityMeshes: THREE.Object3D[] = [];
     this.scriptedEntities.forEach(item => {
@@ -1411,7 +1426,7 @@ export class GameEngine3D {
     });
 
     const intersects = this.raycaster.intersectObjects(entityMeshes, true);
-    if (intersects.length > 0 && intersects[0].distance < 16) {
+    if (intersects.length > 0 && intersects[0].distance < 18) {
       let topObj: THREE.Object3D | null = intersects[0].object;
       let foundEntityId: string | null = null;
       while (topObj && !foundEntityId) {
@@ -1515,35 +1530,37 @@ export class GameEngine3D {
 
     const id = config?.id || 'item_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
     let mesh: THREE.Object3D;
-    let name = 'Warp Portal';
+    let defaultName = 'Warp Portal';
 
     if (type === 'portal') {
-      name = 'Warp Portal';
+      defaultName = 'Warp Portal';
       const geo = new THREE.TorusGeometry(1.4, 0.25, 16, 32);
       const mat = new THREE.MeshBasicMaterial({ color: 0xa855f7 });
       mesh = new THREE.Mesh(geo, mat);
       mesh.rotation.x = Math.PI / 2;
     } else if (type === 'chest') {
-      name = 'Treasure Chest';
+      defaultName = 'Treasure Chest';
       const geo = new THREE.BoxGeometry(1.4, 1.2, 1.2);
       const mat = new THREE.MeshBasicMaterial({ color: 0xd97706 });
       mesh = new THREE.Mesh(geo, mat);
     } else if (type === 'bounce_pad') {
-      name = 'Super Launch Pad';
+      defaultName = 'Super Launch Pad';
       const geo = new THREE.CylinderGeometry(1.8, 1.8, 0.3, 24);
       const mat = new THREE.MeshBasicMaterial({ color: 0x22c55e });
       mesh = new THREE.Mesh(geo, mat);
     } else if (type === 'crystal') {
-      name = 'Power Crystal';
+      defaultName = 'Power Crystal';
       const geo = new THREE.OctahedronGeometry(1.2);
       const mat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
       mesh = new THREE.Mesh(geo, mat);
     } else {
-      name = 'Genesis Coin Prop';
+      defaultName = 'Genesis Coin Prop';
       const geo = new THREE.CylinderGeometry(1.0, 1.0, 0.2, 24);
       const mat = new THREE.MeshBasicMaterial({ color: 0xfacc15 });
       mesh = new THREE.Mesh(geo, mat);
     }
+
+    const name = config?.name || defaultName;
 
     mesh.position.copy(spawnPos);
     mesh.userData = { entityId: id };

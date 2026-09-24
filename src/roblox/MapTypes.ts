@@ -15,6 +15,8 @@ export type ScriptBehavior =
   | 'follow' 
   | 'patrol' 
   | 'guard' 
+  | 'zombie'
+  | 'medic'
   | 'coin_reward' 
   | 'teleport' 
   | 'bounce' 
@@ -26,6 +28,11 @@ export interface EntityScript {
   dialogueText?: string;
   coinAmount?: number;
   teleportTarget?: { x: number; y: number; z: number };
+  health?: number;
+  maxHealth?: number;
+  damageAmount?: number;
+  moveSpeed?: number;
+  detectionRange?: number;
   customCode?: string; // JavaScript executed in sandbox
 }
 

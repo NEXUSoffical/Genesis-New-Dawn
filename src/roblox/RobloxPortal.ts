@@ -568,6 +568,49 @@ export class RobloxPortal {
           )
           .join('')}
       </div>
+
+      <!-- FEATURED CREATOR EXPERIENCES & SURVIVAL ARENAS -->
+      <div class="rbx-section-header" style="margin-top: 36px;">
+        <div>
+          <h2 class="rbx-section-title">🔥 Featured Studio Games & Survival Arenas</h2>
+          <p style="color: var(--rbx-text-sub); font-size: 13px; margin: 4px 0 0 0;">
+            Created exclusively with our new Genesis Studio: fight the undead apocalypse, jump parkour obbies, or remix in Studio!
+          </p>
+        </div>
+      </div>
+
+      <div class="rbx-experiences-grid">
+        ${MapManager.getInstance().getAllMaps().slice(0, 3).map(m => {
+          const isZombie = m.id === 'default_zombie_survival' || m.tags?.includes('Zombie');
+          const bgGradient = isZombie
+            ? 'linear-gradient(135deg, #450a0a, #1c1917)'
+            : (m.gameMode === 'obby' ? 'linear-gradient(135deg, #1e1b4b, #0f172a)' : 'linear-gradient(135deg, #064e3b, #022c22)');
+          const icon = isZombie ? '🧟 ☣️ ⚔️' : (m.gameMode === 'obby' ? '🏃 🔥' : '🏙️ ✨');
+          const badgeColor = isZombie ? 'background: #dc2626; color: #fff;' : '';
+          const entityCount = m.entities ? m.entities.length : 0;
+
+          return `
+          <div class="rbx-game-card">
+            <div class="rbx-card-thumb-wrap" style="background: ${bgGradient}; display: flex; align-items: center; justify-content: center; font-size: 48px;">
+              ${icon}
+              <span class="rbx-badge-featured" style="${badgeColor}">${isZombie ? 'SURVIVAL APOCALYPSE' : m.gameMode.toUpperCase()}</span>
+            </div>
+            <div class="rbx-card-body">
+              <h3 class="rbx-card-title">${m.title}</h3>
+              <p class="rbx-card-tagline">By ${m.author} • ${m.blocks.length} Blocks ${entityCount > 0 ? `• 👥 ${entityCount} Scripted NPCs/Items` : ''}</p>
+              <p class="rbx-card-desc">${m.description}</p>
+              <div style="display: flex; gap: 8px; margin-top: auto;">
+                <button class="rbx-card-play-btn rbx-btn-play-map" data-map-id="${m.id}" style="flex: 1.4; ${isZombie ? 'background: linear-gradient(135deg, #dc2626, #991b1b);' : ''}">
+                  ▶ ${isZombie ? 'Play Survival' : (m.gameMode === 'obby' ? 'Play Obby' : 'Play World')}
+                </button>
+                <button class="rbx-card-play-btn rbx-btn-edit-map" data-map-id="${m.id}" style="flex: 1; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff;">
+                  🛠️ Studio
+                </button>
+              </div>
+            </div>
+          </div>
+        `}).join('')}
+      </div>
     `;
 
     // Hero quick launch
@@ -576,12 +619,31 @@ export class RobloxPortal {
     });
 
     // Card and button clicks launch immediately
-    container.querySelectorAll('.rbx-game-card, .rbx-card-play-btn').forEach((el) => {
+    container.querySelectorAll('.rbx-game-card[data-exp-id], .rbx-card-play-btn[data-exp-id]').forEach((el) => {
       el.addEventListener('click', (e) => {
         e.stopPropagation();
         const id = el.getAttribute('data-exp-id');
         const exp = this.experiences.find((item) => item.id === id);
         if (exp) this.launchExperience(exp);
+      });
+    });
+
+    // Community / Studio map play & edit buttons
+    container.querySelectorAll('.rbx-btn-play-map').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const mapId = btn.getAttribute('data-map-id');
+        const map = MapManager.getInstance().getMapById(mapId || '');
+        if (map) this.launchCustomMap(map, false);
+      });
+    });
+
+    container.querySelectorAll('.rbx-btn-edit-map').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const mapId = btn.getAttribute('data-map-id');
+        const map = MapManager.getInstance().getMapById(mapId || '');
+        if (map) this.launchCustomMap(map, true);
       });
     });
   }
@@ -1042,27 +1104,36 @@ export class RobloxPortal {
       </div>
 
       <div class="rbx-experiences-grid">
-        ${maps.map(m => `
+        ${maps.map(m => {
+          const isZombie = m.id === 'default_zombie_survival' || m.tags?.includes('Zombie');
+          const bgGradient = isZombie
+            ? 'linear-gradient(135deg, #450a0a, #1c1917)'
+            : (m.gameMode === 'obby' ? 'linear-gradient(135deg, #1e1b4b, #0f172a)' : 'linear-gradient(135deg, #064e3b, #022c22)');
+          const icon = isZombie ? '🧟 ☣️ ⚔️' : (m.gameMode === 'obby' ? '🏃 🔥' : '🏙️ ✨');
+          const badgeColor = isZombie ? 'background: #dc2626; color: #fff;' : '';
+          const entityCount = m.entities ? m.entities.length : 0;
+
+          return `
           <div class="rbx-game-card">
-            <div class="rbx-card-thumb-wrap" style="background: linear-gradient(135deg, #1e1b4b, #0f172a); display: flex; align-items: center; justify-content: center; font-size: 50px;">
-              ${m.gameMode === 'obby' ? '🏃 🔥' : '🏙️ ✨'}
-              <span class="rbx-badge-featured">${m.gameMode.toUpperCase()}</span>
+            <div class="rbx-card-thumb-wrap" style="background: ${bgGradient}; display: flex; align-items: center; justify-content: center; font-size: 48px;">
+              ${icon}
+              <span class="rbx-badge-featured" style="${badgeColor}">${isZombie ? 'SURVIVAL APOCALYPSE' : m.gameMode.toUpperCase()}</span>
             </div>
             <div class="rbx-card-body">
               <h3 class="rbx-card-title">${m.title}</h3>
-              <p class="rbx-card-tagline">By ${m.author} • ${m.blocks.length} Blocks</p>
+              <p class="rbx-card-tagline">By ${m.author} • ${m.blocks.length} Blocks ${entityCount > 0 ? `• 👥 ${entityCount} Scripted NPCs/Items` : ''}</p>
               <p class="rbx-card-desc">${m.description}</p>
               <div style="display: flex; gap: 8px; margin-top: auto;">
-                <button class="rbx-card-play-btn rbx-btn-play-map" data-map-id="${m.id}" style="flex: 1.4;">
-                  ▶ Play Obby
+                <button class="rbx-card-play-btn rbx-btn-play-map" data-map-id="${m.id}" style="flex: 1.4; ${isZombie ? 'background: linear-gradient(135deg, #dc2626, #991b1b);' : ''}">
+                  ▶ ${isZombie ? 'Play Survival' : (m.gameMode === 'obby' ? 'Play Obby' : 'Play World')}
                 </button>
                 <button class="rbx-card-play-btn rbx-btn-edit-map" data-map-id="${m.id}" style="flex: 1; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff;">
-                  🛠️ Edit
+                  🛠️ Edit in Studio
                 </button>
               </div>
             </div>
           </div>
-        `).join('')}
+        `}).join('')}
       </div>
 
       <!-- YOUR LOCAL DRAFTS -->

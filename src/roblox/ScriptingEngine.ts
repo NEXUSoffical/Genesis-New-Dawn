@@ -10,13 +10,16 @@ export interface ScriptPlayerAPI {
   teleport: (x: number, y: number, z: number) => void;
   launch: (forceY: number) => void;
   damage: (amount: number) => void;
+  heal: (amount: number) => void;
   boostSpeed: (durationSec: number) => void;
 }
 
 export interface ScriptWorldAPI {
-  playSound: (sound: 'coin' | 'swing' | 'bounce' | 'victory' | 'lava' | 'mine' | 'place') => void;
+  playSound: (sound: 'coin' | 'swing' | 'bounce' | 'victory' | 'lava' | 'mine' | 'place' | 'zombie_attack' | 'zombie_groan' | 'heal' | 'gunshot' | string) => void;
   showToast: (msg: string) => void;
   getTime: () => string;
+  removeEntity?: (entityId: string) => void;
+  spawnParticles?: (pos: THREE.Vector3, color: string) => void;
 }
 
 export class ScriptingEngine {
@@ -202,6 +205,60 @@ export class ScriptingEngine {
         break;
       }
 
+      case 'zombie': {
+        // Zombie AI: Shambles with arms outstretched towards player
+        const range = script.detectionRange || 26;
+        const speed = script.moveSpeed || 6.2;
+        const damage = script.damageAmount || 12;
+
+        if (distToPlayer < range) {
+          const dir = player.position.clone().sub(mesh.position).normalize();
+          mesh.rotation.y = Math.atan2(dir.x, dir.z);
+
+          // Move toward player
+          mesh.position.x += dir.x * speed * deltaSec;
+          mesh.position.z += dir.z * speed * deltaSec;
+
+          if (avatar) {
+            avatar.updateAnimation(deltaSec, true, false, 0);
+            // Classic Roblox Zombie Pose: both arms held straight forward
+            avatar.leftArmGroup.rotation.x = -Math.PI * 0.48;
+            avatar.rightArmGroup.rotation.x = -Math.PI * 0.48;
+          }
+
+          // Random zombie groan
+          if (Math.random() < 0.004) {
+            this.audio.playZombieGroan();
+          }
+
+          // Attack player on contact
+          if (distToPlayer < 2.2) {
+            player.damage(damage);
+            this.audio.playZombieAttack();
+            world.showToast(`🧟 ${entity.name} attacked you for ${damage} damage!`);
+            if (avatar) avatar.triggerToolSwing();
+          }
+        } else {
+          if (avatar) {
+            avatar.updateAnimation(deltaSec, false, false, 0);
+            avatar.leftArmGroup.rotation.x = -Math.PI * 0.48;
+            avatar.rightArmGroup.rotation.x = -Math.PI * 0.48;
+          }
+        }
+        break;
+      }
+
+      case 'medic': {
+        // Medic: looks at player, heals if player approaches
+        if (distToPlayer < 8) {
+          const dx = player.position.x - mesh.position.x;
+          const dz = player.position.z - mesh.position.z;
+          mesh.rotation.y = Math.atan2(dx, dz);
+        }
+        if (avatar) avatar.updateAnimation(deltaSec, false, false, 0);
+        break;
+      }
+
       case 'custom_code': {
         if (script.customCode) {
           this.executeCustomSandbox(script.customCode, entity, mesh, avatar, deltaSec, player, world);
@@ -209,6 +266,17 @@ export class ScriptingEngine {
         break;
       }
     }
+  }
+
+  /**
+   * Damage an entity (e.g. when player attacks a zombie)
+   */
+  public damageEntity(entity: ScriptedEntity, amount: number): boolean {
+    if (entity.script.health === undefined) {
+      entity.script.health = entity.script.maxHealth || 60;
+    }
+    entity.script.health -= amount;
+    return entity.script.health <= 0;
   }
 
   /**
@@ -222,7 +290,30 @@ export class ScriptingEngine {
   ): void {
     const script = entity.script;
 
-    if (script.behavior === 'dialogue') {
+    if (script.behavior === 'medic') {
+      player.heal(100);
+      this.audio.playHeal();
+      const msg = script.dialogueText || "Medkit applied! Health fully restored, get back out there!";
+      this.showSpeechBubble(mesh, msg, 4.5);
+      world.showToast(`💉 Medic: "Health restored to 100!"`);
+    } else if (script.behavior === 'zombie') {
+      const dmg = 25;
+      const isDead = this.damageEntity(entity, dmg);
+      this.audio.playZombieAttack();
+      if (world.spawnParticles) {
+        world.spawnParticles(mesh.position, '#dc2626');
+      }
+      if (isDead) {
+        player.giveCoins(script.coinAmount || 25);
+        this.audio.playZombieGroan();
+        world.showToast(`☠️ Defeated ${entity.name}! +${script.coinAmount || 25} Coins`);
+        if (world.removeEntity) {
+          world.removeEntity(entity.id);
+        }
+      } else {
+        world.showToast(`⚔️ Struck ${entity.name}! (${entity.script.health} HP left)`);
+      }
+    } else if (script.behavior === 'dialogue') {
       const msg = script.dialogueText || `Hey ${player.name}! Welcome to my world!`;
       this.showSpeechBubble(mesh, msg, 5.0);
       world.showToast(`💬 ${entity.name}: "${msg}"`);

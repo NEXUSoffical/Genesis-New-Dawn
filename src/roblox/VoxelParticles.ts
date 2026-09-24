@@ -21,11 +21,12 @@ export class VoxelParticles {
   /**
    * Spawns a burst of tumbling mini block chunks at (x, y, z)
    */
-  public spawnBreakBurst(pos: THREE.Vector3, color: number): void {
+  public spawnBreakBurst(pos: THREE.Vector3, color: number | string): void {
+    const colVal = typeof color === 'string' ? new THREE.Color(color).getHex() : color;
     const count = 12;
     for (let i = 0; i < count; i++) {
       const mat = new THREE.MeshLambertMaterial({
-        color,
+        color: colVal,
         transparent: true,
         opacity: 0.95
       });

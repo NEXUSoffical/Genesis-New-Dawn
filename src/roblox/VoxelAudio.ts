@@ -300,4 +300,105 @@ export class VoxelAudio {
       osc.stop(st + 0.35);
     });
   }
+
+  /** Zombie Groan: spooky low pitch guttural FM noise */
+  public playZombieGroan(): void {
+    const ctx = this.initCtx();
+    if (!ctx) return;
+    const t = ctx.currentTime;
+    const dur = 0.8;
+
+    const osc = ctx.createOscillator();
+    const mod = ctx.createOscillator();
+    const modGain = ctx.createGain();
+    const gain = ctx.createGain();
+
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(85, t);
+    osc.frequency.exponentialRampToValueAtTime(55, t + dur);
+
+    mod.type = 'sine';
+    mod.frequency.setValueAtTime(24, t);
+    modGain.gain.setValueAtTime(45, t);
+
+    mod.connect(osc.frequency);
+    mod.start(t);
+    mod.stop(t + dur);
+
+    gain.gain.setValueAtTime(0.25, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(t);
+    osc.stop(t + dur);
+  }
+
+  /** Zombie attack bite / strike */
+  public playZombieAttack(): void {
+    const ctx = this.initCtx();
+    if (!ctx) return;
+    const t = ctx.currentTime;
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(160, t);
+    osc.frequency.exponentialRampToValueAtTime(30, t + 0.2);
+
+    gain.gain.setValueAtTime(0.4, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(t);
+    osc.stop(t + 0.2);
+  }
+
+  /** Medic healing chime */
+  public playHeal(): void {
+    const ctx = this.initCtx();
+    if (!ctx) return;
+    const t = ctx.currentTime;
+    const chords = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+    chords.forEach((freq, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      const st = t + idx * 0.07;
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, st);
+      gain.gain.setValueAtTime(0.2, st);
+      gain.gain.exponentialRampToValueAtTime(0.001, st + 0.4);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(st);
+      osc.stop(st + 0.45);
+    });
+  }
+
+  /** Weapon blast / gunshot */
+  public playGunshot(): void {
+    const ctx = this.initCtx();
+    if (!ctx) return;
+    const t = ctx.currentTime;
+    const dur = 0.14;
+
+    const bufferSize = Math.floor(ctx.sampleRate * dur);
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.03));
+    }
+
+    const noise = ctx.createBufferSource();
+    noise.buffer = buffer;
+
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.5, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+
+    noise.connect(gain);
+    gain.connect(ctx.destination);
+    noise.start(t);
+  }
 }
