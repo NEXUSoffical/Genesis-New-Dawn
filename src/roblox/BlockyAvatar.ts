@@ -68,9 +68,8 @@ export class BlockyAvatar {
 
     const armGeo = new THREE.BoxGeometry(1, 2, 1);
     armGeo.translate(0, -1, 0); // Pivot at shoulder
-    const leftArmMat = new THREE.MeshLambertMaterial({ color: safeCustomization.leftArmColor });
+    const leftArmMat = new THREE.MeshBasicMaterial({ color: safeCustomization.leftArmColor });
     this.leftArmMesh = new THREE.Mesh(armGeo, leftArmMat);
-    this.leftArmMesh.castShadow = true;
     this.leftArmGroup.add(this.leftArmMesh);
 
     // 4. Create Right Arm & Shoulder Joint (1.5, 1, 0 relative to torso)
@@ -78,9 +77,8 @@ export class BlockyAvatar {
     this.rightArmGroup.position.set(1.5, 1, 0);
     this.torsoMesh.add(this.rightArmGroup);
 
-    const rightArmMat = new THREE.MeshLambertMaterial({ color: safeCustomization.rightArmColor });
+    const rightArmMat = new THREE.MeshBasicMaterial({ color: safeCustomization.rightArmColor });
     this.rightArmMesh = new THREE.Mesh(armGeo.clone(), rightArmMat);
-    this.rightArmMesh.castShadow = true;
     this.rightArmGroup.add(this.rightArmMesh);
 
     // Tool hand attachment
@@ -95,9 +93,8 @@ export class BlockyAvatar {
 
     const legGeo = new THREE.BoxGeometry(1, 2, 1);
     legGeo.translate(0, -1, 0); // Pivot at hip
-    const leftLegMat = new THREE.MeshLambertMaterial({ color: safeCustomization.leftLegColor });
+    const leftLegMat = new THREE.MeshBasicMaterial({ color: safeCustomization.leftLegColor });
     this.leftLegMesh = new THREE.Mesh(legGeo, leftLegMat);
-    this.leftLegMesh.castShadow = true;
     this.leftLegGroup.add(this.leftLegMesh);
 
     // 6. Create Right Leg & Hip Joint (0.5, -1, 0 relative to torso)
@@ -105,9 +102,8 @@ export class BlockyAvatar {
     this.rightLegGroup.position.set(0.5, -1, 0);
     this.torsoMesh.add(this.rightLegGroup);
 
-    const rightLegMat = new THREE.MeshLambertMaterial({ color: safeCustomization.rightLegColor });
+    const rightLegMat = new THREE.MeshBasicMaterial({ color: safeCustomization.rightLegColor });
     this.rightLegMesh = new THREE.Mesh(legGeo.clone(), rightLegMat);
-    this.rightLegMesh.castShadow = true;
     this.rightLegGroup.add(this.rightLegMesh);
 
     // 7. Equip Initial Hat & Accessories
@@ -119,8 +115,8 @@ export class BlockyAvatar {
   }
 
   private createHeadMaterials(headColor: string, faceStyle: string): THREE.Material[] {
-    const baseMat = new THREE.MeshLambertMaterial({ color: headColor });
-    const faceMat = new THREE.MeshLambertMaterial({
+    const baseMat = new THREE.MeshBasicMaterial({ color: headColor });
+    const faceMat = new THREE.MeshBasicMaterial({
       map: this.generateFaceTexture(faceStyle, headColor),
       color: 0xffffff,
       transparent: false
@@ -215,7 +211,7 @@ export class BlockyAvatar {
   }
 
   private createTorsoMaterials(shirtId: string, baseColor: string): THREE.Material[] {
-    const baseMat = new THREE.MeshLambertMaterial({ color: baseColor });
+    const baseMat = new THREE.MeshBasicMaterial({ color: baseColor });
     if (!shirtId || shirtId === 'none') {
       return [baseMat, baseMat, baseMat, baseMat, baseMat, baseMat];
     }
@@ -254,8 +250,8 @@ export class BlockyAvatar {
 
       const tex = new THREE.CanvasTexture(canvas);
       tex.needsUpdate = true;
-      const frontMat = new THREE.MeshStandardMaterial({ map: tex, roughness: 0.3, metalness: 0.7 });
-      const sideMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.4, metalness: 0.6 });
+      const frontMat = new THREE.MeshBasicMaterial({ map: tex });
+      const sideMat = new THREE.MeshBasicMaterial({ color: 0x1e293b });
       return [sideMat, sideMat, sideMat, sideMat, frontMat, sideMat];
     } else if (shirtId === 'starweaver_robes') {
       const bgGrad = ctx.createLinearGradient(0, 0, 256, 256);
@@ -288,8 +284,8 @@ export class BlockyAvatar {
 
       const tex = new THREE.CanvasTexture(canvas);
       tex.needsUpdate = true;
-      const frontMat = new THREE.MeshStandardMaterial({ map: tex, roughness: 0.5 });
-      const sideMat = new THREE.MeshStandardMaterial({ color: 0x312e81, roughness: 0.5 });
+      const frontMat = new THREE.MeshBasicMaterial({ map: tex });
+      const sideMat = new THREE.MeshBasicMaterial({ color: 0x312e81 });
       return [sideMat, sideMat, sideMat, sideMat, frontMat, sideMat];
     }
 
@@ -299,10 +295,10 @@ export class BlockyAvatar {
   public applyCustomization(customization: AvatarCustomization): void {
     this.customization = customization;
     this.torsoMesh.material = this.createTorsoMaterials(customization.equippedShirt || 'none', customization.torsoColor || '#1e293b');
-    (this.leftArmMesh.material as THREE.MeshLambertMaterial).color.set(customization.leftArmColor || '#fdba74');
-    (this.rightArmMesh.material as THREE.MeshLambertMaterial).color.set(customization.rightArmColor || '#fdba74');
-    (this.leftLegMesh.material as THREE.MeshLambertMaterial).color.set(customization.leftLegColor || '#0f172a');
-    (this.rightLegMesh.material as THREE.MeshLambertMaterial).color.set(customization.rightLegColor || '#0f172a');
+    (this.leftArmMesh.material as THREE.MeshBasicMaterial).color.set(customization.leftArmColor || '#fdba74');
+    (this.rightArmMesh.material as THREE.MeshBasicMaterial).color.set(customization.rightArmColor || '#fdba74');
+    (this.leftLegMesh.material as THREE.MeshBasicMaterial).color.set(customization.leftLegColor || '#0f172a');
+    (this.rightLegMesh.material as THREE.MeshBasicMaterial).color.set(customization.rightLegColor || '#0f172a');
 
     // Refresh head
     this.headMesh.material = this.createHeadMaterials(customization.headColor || '#fdba74', customization.equippedFace || 'smile');
@@ -561,6 +557,13 @@ export class BlockyAvatar {
     if (this.nameTagSprite) {
       this.nameTagSprite.visible = !isLocal;
     }
+    // Ensure body parts and limbs are always visible in 3rd person
+    this.torsoMesh.visible = true;
+    this.headGroup.visible = true;
+    this.leftArmGroup.visible = true;
+    this.rightArmGroup.visible = true;
+    this.leftLegGroup.visible = true;
+    this.rightLegGroup.visible = true;
   }
 
   public triggerToolSwing(): void {

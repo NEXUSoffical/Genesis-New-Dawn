@@ -112,7 +112,12 @@ export class GameEngine3D {
     // Initialize Three.js Scene
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0x87ceeb); // Classic sky blue
-    this.scene.fog = new THREE.FogExp2(0x87ceeb, 0.015);
+    // Fog disabled so platforms and character are always 100% visible and crisp
+
+    // Classic Studio & Obby reference floor grid (provides continuous spatial orientation)
+    const studioGrid = new THREE.GridHelper(300, 60, 0x0284c7, 0x334155);
+    studioGrid.position.y = -6;
+    this.scene.add(studioGrid);
 
     this.camera = new THREE.PerspectiveCamera(
       60,
@@ -642,22 +647,15 @@ export class GameEngine3D {
       const deltaY = e.clientY - this.prevMousePos.y;
 
       this.cameraYaw -= deltaX * 0.005;
-      // Clamp pitch between 0.05 (slightly above ground) and 1.2 (looking down at character), avoiding underground angles
-      this.cameraPitch = Math.max(0.05, Math.min(1.2, this.cameraPitch + deltaY * 0.005));
+      // Clamp pitch between 0.1 (elevated behind) and 1.15 (looking down at character), avoiding underground angles
+      this.cameraPitch = Math.max(0.1, Math.min(1.15, this.cameraPitch + deltaY * 0.005));
 
       this.prevMousePos = { x: e.clientX, y: e.clientY };
     });
 
-    // Zoom & First-Person toggle
+    // Zoom in/out without auto-triggering first person (First person toggled via V key)
     this.canvas.addEventListener('wheel', (e) => {
-      this.cameraDistance = Math.max(1.5, Math.min(22, this.cameraDistance + e.deltaY * 0.01));
-      if (this.cameraDistance <= 2.0 && !this.isFirstPerson) {
-        this.isFirstPerson = true;
-        this.playerAvatar.setFirstPerson(true);
-      } else if (this.cameraDistance > 2.0 && this.isFirstPerson) {
-        this.isFirstPerson = false;
-        this.playerAvatar.setFirstPerson(false);
-      }
+      this.cameraDistance = Math.max(3.0, Math.min(25, this.cameraDistance + e.deltaY * 0.01));
     });
 
     // Resize

@@ -951,6 +951,11 @@ export class RobloxPortal {
     const gameContainer = this.container.querySelector('#rbx-game-container') as HTMLElement;
     if (!gameContainer) return;
 
+    if (this.active3DGame) {
+      this.active3DGame.destroy();
+      this.active3DGame = null;
+    }
+    gameContainer.innerHTML = '';
     gameContainer.classList.add('active');
 
     this.active3DGame = new GameEngine3D(
@@ -959,8 +964,12 @@ export class RobloxPortal {
       this.playerData.username,
       () => {
         // Exit game callback
+        if (this.active3DGame) {
+          this.active3DGame.destroy();
+          this.active3DGame = null;
+        }
+        gameContainer.innerHTML = '';
         gameContainer.classList.remove('active');
-        this.active3DGame = null;
         this.renderCurrentView();
       }
     );
@@ -970,6 +979,11 @@ export class RobloxPortal {
     const gameContainer = this.container.querySelector('#rbx-game-container') as HTMLElement;
     if (!gameContainer) return;
 
+    if (this.active3DGame) {
+      this.active3DGame.destroy();
+      this.active3DGame = null;
+    }
+    gameContainer.innerHTML = '';
     gameContainer.classList.add('active');
 
     this.active3DGame = new GameEngine3D(
@@ -978,8 +992,12 @@ export class RobloxPortal {
       this.playerData.username,
       () => {
         // Exit game callback
+        if (this.active3DGame) {
+          this.active3DGame.destroy();
+          this.active3DGame = null;
+        }
+        gameContainer.innerHTML = '';
         gameContainer.classList.remove('active');
-        this.active3DGame = null;
         this.renderCurrentView();
       },
       map,

@@ -242,11 +242,11 @@ export class VoxelWorld {
       ctx.fillRect(7, 7, 2, 2);
     });
 
-    // Create Mesh Materials
+    // Create Mesh Materials (MeshBasicMaterial guarantees 100% visibility on all GPUs and lighting conditions)
     // Grass: [Right, Left, Top, Bottom, Front, Back]
-    const grassMatSide = new THREE.MeshLambertMaterial({ map: grassSideTex });
-    const grassMatTop = new THREE.MeshLambertMaterial({ map: grassTopTex });
-    const grassMatBottom = new THREE.MeshLambertMaterial({ map: dirtTex });
+    const grassMatSide = new THREE.MeshBasicMaterial({ map: grassSideTex, side: THREE.DoubleSide });
+    const grassMatTop = new THREE.MeshBasicMaterial({ map: grassTopTex, side: THREE.DoubleSide });
+    const grassMatBottom = new THREE.MeshBasicMaterial({ map: dirtTex, side: THREE.DoubleSide });
     this.materials.set('grass', [
       grassMatSide,
       grassMatSide,
@@ -256,11 +256,11 @@ export class VoxelWorld {
       grassMatSide
     ]);
 
-    this.materials.set('dirt', new THREE.MeshLambertMaterial({ map: dirtTex }));
-    this.materials.set('stone', new THREE.MeshLambertMaterial({ map: stoneTex }));
+    this.materials.set('dirt', new THREE.MeshBasicMaterial({ map: dirtTex, side: THREE.DoubleSide }));
+    this.materials.set('stone', new THREE.MeshBasicMaterial({ map: stoneTex, side: THREE.DoubleSide }));
 
-    const woodSideMat = new THREE.MeshLambertMaterial({ map: woodSideTex });
-    const woodTopMat = new THREE.MeshLambertMaterial({ map: woodTopTex });
+    const woodSideMat = new THREE.MeshBasicMaterial({ map: woodSideTex, side: THREE.DoubleSide });
+    const woodTopMat = new THREE.MeshBasicMaterial({ map: woodTopTex, side: THREE.DoubleSide });
     this.materials.set('wood', [
       woodSideMat,
       woodSideMat,
@@ -270,117 +270,93 @@ export class VoxelWorld {
       woodSideMat
     ]);
 
-    this.materials.set('leaves', new THREE.MeshLambertMaterial({ map: leavesTex }));
-    this.materials.set('brick', new THREE.MeshLambertMaterial({ map: brickTex }));
-    this.materials.set(
-      'crystal',
-      new THREE.MeshStandardMaterial({
-        map: crystalTex,
-        emissive: 0x38bdf8,
-        emissiveIntensity: 0.6,
-        roughness: 0.2
-      })
-    );
+    this.materials.set('leaves', new THREE.MeshBasicMaterial({ map: leavesTex, side: THREE.DoubleSide }));
+    this.materials.set('brick', new THREE.MeshBasicMaterial({ map: brickTex, side: THREE.DoubleSide }));
+    this.materials.set('crystal', new THREE.MeshBasicMaterial({ map: crystalTex, side: THREE.DoubleSide }));
     this.materials.set(
       'glass',
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshBasicMaterial({
         color: 0xc7d2fe,
         transparent: true,
-        opacity: 0.5,
-        roughness: 0.1
+        opacity: 0.55,
+        side: THREE.DoubleSide
       })
     );
     this.materials.set(
       'sand',
-      new THREE.MeshLambertMaterial({ color: 0xfde047 })
+      new THREE.MeshBasicMaterial({ color: 0xfde047, side: THREE.DoubleSide })
     );
 
     // Obby & Creative Interactive Materials
     this.materials.set(
       'lava',
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshBasicMaterial({
         color: 0xff3b00,
-        emissive: 0xff2200,
-        emissiveIntensity: 0.9,
-        roughness: 0.3
+        side: THREE.DoubleSide
       })
     );
 
     this.materials.set(
       'bounce_pad',
-      new THREE.MeshStandardMaterial({
-        color: 0x4ade80,
-        emissive: 0x22c55e,
-        emissiveIntensity: 0.7,
-        roughness: 0.2
+      new THREE.MeshBasicMaterial({
+        color: 0x22c55e,
+        side: THREE.DoubleSide
       })
     );
 
     this.materials.set(
       'speed_pad',
-      new THREE.MeshStandardMaterial({
-        color: 0x38bdf8,
-        emissive: 0x0284c7,
-        emissiveIntensity: 0.8,
-        roughness: 0.2
+      new THREE.MeshBasicMaterial({
+        color: 0x0284c7,
+        side: THREE.DoubleSide
       })
     );
 
     this.materials.set(
       'checkpoint',
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshBasicMaterial({
         color: 0xfacc15,
-        emissive: 0xeab308,
-        emissiveIntensity: 0.7,
-        metalness: 0.8,
-        roughness: 0.2
+        side: THREE.DoubleSide
       })
     );
 
     this.materials.set(
       'finish_line',
-      new THREE.MeshStandardMaterial({
-        color: 0xc084fc,
-        emissive: 0xa855f7,
-        emissiveIntensity: 0.95,
-        metalness: 0.5,
-        roughness: 0.1
+      new THREE.MeshBasicMaterial({
+        color: 0xa855f7,
+        side: THREE.DoubleSide
       })
     );
 
     this.materials.set(
       'gold',
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshBasicMaterial({
         color: 0xfde047,
-        metalness: 0.9,
-        roughness: 0.15
+        side: THREE.DoubleSide
       })
     );
 
     this.materials.set(
       'obsidian',
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshBasicMaterial({
         color: 0x0f172a,
-        metalness: 0.3,
-        roughness: 0.1
+        side: THREE.DoubleSide
       })
     );
 
     this.materials.set(
       'neon_pink',
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshBasicMaterial({
         color: 0xf472b6,
-        emissive: 0xec4899,
-        emissiveIntensity: 0.9
+        side: THREE.DoubleSide
       })
     );
 
     this.materials.set(
       'neon_cyan',
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshBasicMaterial({
         color: 0x22d3ee,
-        emissive: 0x06b6d4,
-        emissiveIntensity: 0.9
+        side: THREE.DoubleSide
       })
     );
   }
