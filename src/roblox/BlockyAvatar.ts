@@ -141,7 +141,96 @@ export class BlockyAvatar {
     ctx.lineWidth = 14;
     ctx.lineCap = 'round';
 
-    if (faceStyle === 'chill') {
+    if (faceStyle === 'zombie') {
+      // Menacing glowing red/yellow infected eyes
+      ctx.fillStyle = '#0f172a'; // Dark sunken eye sockets
+      ctx.fillRect(52, 68, 52, 44);
+      ctx.fillRect(152, 68, 52, 44);
+
+      // Glowing red pupil
+      ctx.fillStyle = '#ef4444';
+      ctx.beginPath();
+      ctx.arc(78, 90, 16, 0, Math.PI * 2);
+      ctx.arc(178, 90, 16, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Sharp yellow pinpoint
+      ctx.fillStyle = '#fde047';
+      ctx.beginPath();
+      ctx.arc(80, 88, 6, 0, Math.PI * 2);
+      ctx.arc(180, 88, 6, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Angry brows
+      ctx.strokeStyle = '#052e16';
+      ctx.lineWidth = 10;
+      ctx.beginPath();
+      ctx.moveTo(50, 64);
+      ctx.lineTo(105, 80);
+      ctx.moveTo(206, 64);
+      ctx.lineTo(151, 80);
+      ctx.stroke();
+
+      // Snarling open zombie mouth with sharp jagged teeth
+      ctx.fillStyle = '#450a0a'; // Deep bloody mouth
+      ctx.beginPath();
+      ctx.ellipse(128, 162, 55, 32, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Jagged sharp teeth
+      ctx.fillStyle = '#fef08a';
+      for (let tx = 85; tx <= 165; tx += 16) {
+        ctx.beginPath();
+        ctx.moveTo(tx - 6, 138);
+        ctx.lineTo(tx + 6, 138);
+        ctx.lineTo(tx, 152);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(tx - 6, 186);
+        ctx.lineTo(tx + 6, 186);
+        ctx.lineTo(tx, 172);
+        ctx.fill();
+      }
+
+      // Forehead stitch scar
+      ctx.strokeStyle = '#14532d';
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.moveTo(60, 30);
+      ctx.lineTo(110, 45);
+      ctx.stroke();
+      for (let s = 68; s <= 102; s += 10) {
+        ctx.beginPath();
+        ctx.moveTo(s, 28);
+        ctx.lineTo(s + 4, 48);
+        ctx.stroke();
+      }
+    } else if (faceStyle === 'serious') {
+      // Determined survivor / military face
+      ctx.fillStyle = '#0f172a';
+      ctx.beginPath();
+      ctx.arc(75, 95, 14, 0, Math.PI * 2);
+      ctx.arc(181, 95, 14, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Angled focused brows
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 10;
+      ctx.beginPath();
+      ctx.moveTo(55, 78);
+      ctx.lineTo(100, 88);
+      ctx.moveTo(201, 78);
+      ctx.lineTo(156, 88);
+      ctx.stroke();
+
+      // Firm straight grimace
+      ctx.lineWidth = 8;
+      ctx.beginPath();
+      ctx.moveTo(95, 150);
+      ctx.lineTo(161, 150);
+      ctx.stroke();
+    } else if (faceStyle === 'chill') {
       // Chill eyes (horizontal curved lines)
       ctx.beginPath();
       ctx.arc(75, 95, 26, Math.PI, 0, false);
@@ -286,6 +375,39 @@ export class BlockyAvatar {
       tex.needsUpdate = true;
       const frontMat = new THREE.MeshBasicMaterial({ map: tex });
       const sideMat = new THREE.MeshBasicMaterial({ color: 0x312e81 });
+      return [sideMat, sideMat, sideMat, sideMat, frontMat, sideMat];
+    } else if (shirtId === 'tattered_zombie') {
+      // Rotting decaying ragged zombie tunic
+      ctx.fillStyle = '#1c1917';
+      ctx.fillRect(0, 0, 256, 256);
+
+      // Blood and grime stains
+      ctx.fillStyle = '#450a0a';
+      ctx.beginPath();
+      ctx.arc(80, 110, 45, 0, Math.PI * 2);
+      ctx.arc(175, 160, 55, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Exposed ribs / decayed bone
+      ctx.fillStyle = '#e2e8f0';
+      for (let r = 80; r <= 150; r += 20) {
+        ctx.fillRect(60, r, 50, 8);
+      }
+
+      // Ripped tattered tears
+      ctx.fillStyle = baseColor;
+      ctx.beginPath();
+      ctx.moveTo(0, 256);
+      for (let x = 0; x <= 256; x += 32) {
+        ctx.lineTo(x + 16, 220);
+        ctx.lineTo(x + 32, 256);
+      }
+      ctx.fill();
+
+      const tex = new THREE.CanvasTexture(canvas);
+      tex.needsUpdate = true;
+      const frontMat = new THREE.MeshBasicMaterial({ map: tex });
+      const sideMat = new THREE.MeshBasicMaterial({ color: 0x1c1917 });
       return [sideMat, sideMat, sideMat, sideMat, frontMat, sideMat];
     }
 

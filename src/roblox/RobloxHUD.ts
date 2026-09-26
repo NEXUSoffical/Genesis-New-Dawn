@@ -161,6 +161,15 @@ export class RobloxHUD {
         </div>
       </div>
 
+      <!-- SURVIVAL HEALTH BAR -->
+      <div id="rbx-survival-hud" class="rbx-survival-bar" style="display: none; position: fixed; bottom: 84px; left: 50%; transform: translateX(-50%); background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(239, 68, 68, 0.6); border-radius: 20px; padding: 6px 16px; align-items: center; gap: 10px; z-index: 999; box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4);">
+        <span style="font-size: 16px;">❤️</span>
+        <div style="width: 180px; height: 12px; background: rgba(0, 0, 0, 0.6); border-radius: 6px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);">
+          <div id="rbx-hp-fill" style="width: 100%; height: 100%; background: linear-gradient(90deg, #ef4444, #22c55e); transition: width 0.25s ease;"></div>
+        </div>
+        <span id="rbx-hp-text" style="color: #fff; font-size: 12px; font-weight: 800; min-width: 65px; font-family: monospace;">100 / 100</span>
+      </div>
+
       <!-- ESC PAUSE MENU -->
       <div id="rbx-esc-modal" class="rbx-esc-menu-modal" style="display: none;">
         <div class="rbx-esc-card">
@@ -397,6 +406,19 @@ export class RobloxHUD {
     line.innerHTML = `<span class="rbx-chat-sender" style="color: ${color};">[${sender}]</span> <span class="rbx-chat-text">${escapeHtml(text)}</span>`;
     this.chatMessagesEl.appendChild(line);
     this.chatMessagesEl.scrollTop = this.chatMessagesEl.scrollHeight;
+  }
+
+  public setSurvivalMode(active: boolean): void {
+    const el = this.container.querySelector('#rbx-survival-hud') as HTMLElement;
+    if (el) el.style.display = active ? 'flex' : 'none';
+  }
+
+  public setHealth(current: number, max: number = 100): void {
+    const fill = this.container.querySelector('#rbx-hp-fill') as HTMLElement;
+    const text = this.container.querySelector('#rbx-hp-text') as HTMLElement;
+    const pct = Math.max(0, Math.min(100, Math.round((current / max) * 100)));
+    if (fill) fill.style.width = `${pct}%`;
+    if (text) text.textContent = `${current} / ${max}`;
   }
 
   public toggleEscMenu(force?: boolean): void {

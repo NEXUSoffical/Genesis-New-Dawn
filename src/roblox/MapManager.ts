@@ -149,160 +149,175 @@ function createDefaultZombieSurvivalMap(): MapData {
   const blocks: VoxelBlockExport[] = [];
 
   // ==========================================
-  // 1. FORTIFIED SURVIVOR BASE (x: -10..10, z: -10..10)
+  // 1. FORTIFIED SURVIVOR BASE (x: -24..24, z: -26..8)
   // ==========================================
-  // Base Floor (Stone with obsidian reinforcement)
-  for (let x = -10; x <= 10; x++) {
-    for (let z = -10; z <= 10; z++) {
-      const isPerimeter = Math.abs(x) === 10 || Math.abs(z) === 10;
-      blocks.push({
-        vx: x,
-        vy: 0,
-        vz: z,
-        type: isPerimeter ? 'obsidian' : (Math.abs(x) < 4 && Math.abs(z) < 4 ? 'wood' : 'stone')
-      });
+  // Base Compound Floor (Granite stone reinforced with obsidian borders)
+  for (let x = -24; x <= 24; x++) {
+    for (let z = -26; z <= 8; z++) {
+      const isBorder = Math.abs(x) >= 23 || z === -26 || z === 8;
+      const isPathway = Math.abs(x) <= 2 && z >= -14 && z <= 8;
+      const type = isBorder ? 'obsidian' : (isPathway ? 'stone' : (Math.abs(x) < 6 && z < -10 ? 'wood' : 'stone'));
+      blocks.push({ vx: x, vy: 0, vz: z, type });
     }
   }
 
-  // Defensive Perimeter Walls (vy: 1..4)
-  for (let y = 1; y <= 4; y++) {
-    // Left & Right walls (x = -10 and x = 10)
-    for (let z = -10; z <= 10; z++) {
-      blocks.push({ vx: -10, vy: y, vz: z, type: y === 4 && z % 2 === 0 ? 'obsidian' : 'stone' });
-      blocks.push({ vx: 10, vy: y, vz: z, type: y === 4 && z % 2 === 0 ? 'obsidian' : 'stone' });
+  // High Perimeter Fortress Walls (vy: 1..6)
+  for (let y = 1; y <= 6; y++) {
+    // Left & Right fortress walls
+    for (let z = -26; z <= 8; z++) {
+      blocks.push({ vx: -24, vy: y, vz: z, type: y === 6 && z % 2 === 0 ? 'obsidian' : 'stone' });
+      blocks.push({ vx: 24, vy: y, vz: z, type: y === 6 && z % 2 === 0 ? 'obsidian' : 'stone' });
     }
-    // Rear wall (z = -10)
-    for (let x = -9; x <= 9; x++) {
-      blocks.push({ vx: x, vy: y, vz: -10, type: y === 4 && x % 2 === 0 ? 'obsidian' : 'stone' });
+    // Rear fortress wall
+    for (let x = -23; x <= 23; x++) {
+      blocks.push({ vx: x, vy: y, vz: -26, type: y === 6 && x % 2 === 0 ? 'obsidian' : 'stone' });
     }
-    // Front wall with gate opening (z = 10, gate at x = -2..2)
-    for (let x = -9; x <= 9; x++) {
-      if (Math.abs(x) > 2) {
-        blocks.push({ vx: x, vy: y, vz: 10, type: y === 4 && x % 2 === 0 ? 'obsidian' : 'stone' });
+    // Front gate defense wall with 8-block gate opening at x = -4..4
+    for (let x = -23; x <= 23; x++) {
+      if (Math.abs(x) > 4) {
+        blocks.push({ vx: x, vy: y, vz: 8, type: y === 6 && x % 2 === 0 ? 'obsidian' : 'stone' });
       }
     }
   }
 
-  // Wooden Barricade / Gate defenses at z = 10
-  blocks.push({ vx: -2, vy: 1, vz: 10, type: 'wood' });
-  blocks.push({ vx: 2, vy: 1, vz: 10, type: 'wood' });
-  blocks.push({ vx: -1, vy: 1, vz: 11, type: 'wood' });
-  blocks.push({ vx: 1, vy: 1, vz: 11, type: 'wood' });
+  // Walkway parapet along the walls (vy: 5)
+  for (let z = -25; z <= 7; z++) {
+    blocks.push({ vx: -23, vy: 5, vz: z, type: 'obsidian' });
+    blocks.push({ vx: 23, vy: 5, vz: z, type: 'obsidian' });
+  }
 
-  // 4 Corner Watchtowers (vy: 1..6) with floodlights
-  const towerCorners = [
-    { x: -10, z: -10 },
-    { x: 10, z: -10 },
-    { x: -10, z: 10 },
-    { x: 10, z: 10 }
+  // 4 Massive Corner Watchtowers (vy: 1..10) with searchlights
+  const towers = [
+    { x: -24, z: -26 },
+    { x: 24, z: -26 },
+    { x: -24, z: 8 },
+    { x: 24, z: 8 }
   ];
 
-  towerCorners.forEach(corner => {
-    for (let y = 1; y <= 6; y++) {
-      blocks.push({ vx: corner.x, vy: y, vz: corner.z, type: 'obsidian' });
-    }
-    // Tower top platform
-    for (let dx = -1; dx <= 1; dx++) {
-      for (let dz = -1; dz <= 1; dz++) {
-        const tx = Math.max(-10, Math.min(10, corner.x + dx));
-        const tz = Math.max(-10, Math.min(10, corner.z + dz));
-        blocks.push({ vx: tx, vy: 7, vz: tz, type: 'stone' });
+  towers.forEach(t => {
+    // Tower core
+    for (let y = 1; y <= 10; y++) {
+      for (let dx = -1; dx <= 1; dx++) {
+        for (let dz = -1; dz <= 1; dz++) {
+          const tx = Math.max(-24, Math.min(24, t.x + dx));
+          const tz = Math.max(-26, Math.min(8, t.z + dz));
+          blocks.push({ vx: tx, vy: y, vz: tz, type: 'obsidian' });
+        }
       }
     }
-    // Tower floodlight beacon
-    blocks.push({ vx: corner.x, vy: 8, vz: corner.z, type: corner.z > 0 ? 'neon_pink' : 'neon_cyan' });
+    // High Observation Platform (vy: 11)
+    for (let dx = -2; dx <= 2; dx++) {
+      for (let dz = -2; dz <= 2; dz++) {
+        const tx = Math.max(-24, Math.min(24, t.x + dx));
+        const tz = Math.max(-26, Math.min(8, t.z + dz));
+        blocks.push({ vx: tx, vy: 11, vz: tz, type: 'stone' });
+      }
+    }
+    // Tower Searchlight Spotlight Beacon
+    blocks.push({ vx: t.x, vy: 12, vz: t.z, type: t.z > 0 ? 'neon_pink' : 'neon_cyan' });
   });
 
-  // Safehouse rear canopy shelter roof (vy: 5)
-  for (let x = -6; x <= 6; x++) {
-    for (let z = -9; z <= -4; z++) {
-      blocks.push({ vx: x, vy: 5, vz: z, type: (x === -6 || x === 6 || z === -9 || z === -4) ? 'wood' : 'glass' });
+  // Elevated Command Canopy at Rear (vy: 9 high up, open and majestic)
+  for (let x = -8; x <= 8; x++) {
+    for (let z = -26; z <= -18; z++) {
+      if (Math.abs(x) === 8 || z === -26 || z === -18) {
+        blocks.push({ vx: x, vy: 9, vz: z, type: 'wood' });
+      } else {
+        blocks.push({ vx: x, vy: 9, vz: z, type: 'glass' });
+      }
     }
   }
+  // High Support Pillars for Canopy
+  for (let y = 1; y <= 8; y++) {
+    blocks.push({ vx: -8, vy: y, vz: -18, type: 'wood' });
+    blocks.push({ vx: 8, vy: y, vz: -18, type: 'wood' });
+    blocks.push({ vx: -8, vy: y, vz: -26, type: 'wood' });
+    blocks.push({ vx: 8, vy: y, vz: -26, type: 'wood' });
+  }
 
-  // Medical Bay Station at (-5, 1, -6)
-  blocks.push({ vx: -5, vy: 1, vz: -6, type: 'brick' });
-  blocks.push({ vx: -6, vy: 1, vz: -6, type: 'brick' });
-  blocks.push({ vx: -5, vy: 2, vz: -6, type: 'crystal' }); // Medical glowing beacon
+  // Tactical War Table for Commander Vance at (8, 1, -22)
+  blocks.push({ vx: 7, vy: 1, vz: -22, type: 'obsidian' });
+  blocks.push({ vx: 8, vy: 1, vz: -22, type: 'gold' });
+  blocks.push({ vx: 9, vy: 1, vz: -22, type: 'obsidian' });
 
-  // Command War Room table at (5, 1, -6)
-  blocks.push({ vx: 5, vy: 1, vz: -6, type: 'obsidian' });
-  blocks.push({ vx: 6, vy: 1, vz: -6, type: 'obsidian' });
-  blocks.push({ vx: 5, vy: 2, vz: -6, type: 'gold' }); // Tactical radar map
+  // Medical Triage Clinic for Medic Sarah at (-8, 1, -22)
+  blocks.push({ vx: -7, vy: 1, vz: -22, type: 'brick' });
+  blocks.push({ vx: -8, vy: 1, vz: -22, type: 'crystal' }); // Glowing green medical beacon
+  blocks.push({ vx: -9, vy: 1, vz: -22, type: 'brick' });
 
-  // Central Respawn Checkpoint pad at base center
-  blocks.push({ vx: 0, vy: 1, vz: 0, type: 'checkpoint' });
+  // Gate Defense Barricades & Tank Traps (z: 9..11)
+  blocks.push({ vx: -4, vy: 1, vz: 9, type: 'wood' });
+  blocks.push({ vx: 4, vy: 1, vz: 9, type: 'wood' });
+  blocks.push({ vx: -2, vy: 1, vz: 10, type: 'wood' });
+  blocks.push({ vx: 2, vy: 1, vz: 10, type: 'wood' });
 
-  // Speed pads at the gates to dash out into battle
+  // Speed Pads to dash out of the gates into combat
+  blocks.push({ vx: 0, vy: 1, vz: 7, type: 'speed_pad' });
   blocks.push({ vx: 0, vy: 1, vz: 9, type: 'speed_pad' });
-  blocks.push({ vx: 0, vy: 1, vz: 11, type: 'speed_pad' });
 
-  // Bounce pads inside base to quickly jump onto watchtowers
-  blocks.push({ vx: -9, vy: 1, vz: -8, type: 'bounce_pad' });
-  blocks.push({ vx: 9, vy: 1, vz: -8, type: 'bounce_pad' });
-  blocks.push({ vx: -9, vy: 1, vz: 8, type: 'bounce_pad' });
-  blocks.push({ vx: 9, vy: 1, vz: 8, type: 'bounce_pad' });
+  // Super Bounce Elevator Pads launching players to watchtowers
+  blocks.push({ vx: -22, vy: 1, vz: 6, type: 'bounce_pad' });
+  blocks.push({ vx: 22, vy: 1, vz: 6, type: 'bounce_pad' });
+  blocks.push({ vx: -22, vy: 1, vz: -24, type: 'bounce_pad' });
+  blocks.push({ vx: 22, vy: 1, vz: -24, type: 'bounce_pad' });
 
   // ==========================================
-  // 2. APOCALYPTIC WASTELAND & RUINS (z: 12..50)
+  // 2. APOCALYPTIC WASTELAND (z: 12..80)
   // ==========================================
-  // Wasteland terrain floor with craters & ruins
-  for (let x = -24; x <= 24; x += 2) {
-    for (let z = 12; z <= 48; z += 2) {
-      // Toxic sludge craters
-      const inCrater1 = Math.hypot(x - (-12), z - 22) < 4.2;
-      const inCrater2 = Math.hypot(x - 14, z - 32) < 4.8;
-      const inCrater3 = Math.hypot(x - 0, z - 44) < 5.2;
+  for (let x = -28; x <= 28; x += 2) {
+    for (let z = 12; z <= 76; z += 2) {
+      // Radioactive Toxic Lava Sludge Craters
+      const inCrater1 = Math.hypot(x - (-14), z - 28) < 5.2;
+      const inCrater2 = Math.hypot(x - 16, z - 42) < 5.8;
+      const inCrater3 = Math.hypot(x - (-6), z - 60) < 6.2;
 
       if (inCrater1 || inCrater2 || inCrater3) {
-        blocks.push({ vx: x, vy: 0, vz: z, type: 'lava' }); // Toxic acid / lava pool
+        blocks.push({ vx: x, vy: 0, vz: z, type: 'lava' });
       } else {
         const rand = (Math.sin(x * 12.9898 + z * 78.233) * 43758.5453) % 1;
-        const bType = rand > 0.7 ? 'stone' : (rand > 0.4 ? 'dirt' : 'obsidian');
+        const bType = rand > 0.7 ? 'stone' : (rand > 0.35 ? 'dirt' : 'obsidian');
         blocks.push({ vx: x, vy: 0, vz: z, type: bType });
       }
     }
   }
 
-  // Ruined Building / Fallen Skyscraper A at (-14, 26)
-  for (let y = 1; y <= 6; y++) {
-    blocks.push({ vx: -16, vy: y, vz: 26, type: 'brick' });
-    blocks.push({ vx: -14, vy: y, vz: 28, type: 'obsidian' });
-    if (y < 4) {
-      blocks.push({ vx: -15, vy: y, vz: 27, type: 'glass' });
-    }
+  // Collapsed Skyscraper Ruins A at (-18, 32)
+  for (let y = 1; y <= 7; y++) {
+    blocks.push({ vx: -18, vy: y, vz: 32, type: 'brick' });
+    blocks.push({ vx: -16, vy: y, vz: 34, type: 'obsidian' });
+    if (y < 4) blocks.push({ vx: -17, vy: y, vz: 33, type: 'glass' });
   }
 
-  // Ruined Building / Bunker Checkpoint B at (15, 24)
-  for (let y = 1; y <= 5; y++) {
-    blocks.push({ vx: 16, vy: y, vz: 24, type: 'stone' });
-    blocks.push({ vx: 14, vy: y, vz: 26, type: 'brick' });
+  // Collapsed Skyscraper Ruins B at (18, 50)
+  for (let y = 1; y <= 8; y++) {
+    blocks.push({ vx: 18, vy: y, vz: 50, type: 'stone' });
+    blocks.push({ vx: 16, vy: y, vz: 52, type: 'brick' });
   }
 
-  // Abandoned Convoy & Barricade line at z = 30
-  blocks.push({ vx: -4, vy: 1, vz: 30, type: 'wood' });
-  blocks.push({ vx: -3, vy: 1, vz: 30, type: 'obsidian' });
-  blocks.push({ vx: 3, vy: 1, vz: 30, type: 'obsidian' });
-  blocks.push({ vx: 4, vy: 1, vz: 30, type: 'wood' });
+  // Abandoned Checkpoint Barricade at z = 36
+  blocks.push({ vx: -6, vy: 1, vz: 36, type: 'wood' });
+  blocks.push({ vx: -5, vy: 1, vz: 36, type: 'obsidian' });
+  blocks.push({ vx: 5, vy: 1, vz: 36, type: 'obsidian' });
+  blocks.push({ vx: 6, vy: 1, vz: 36, type: 'wood' });
 
-  // Extraction Zone / Final Victory Beacon at (0, 48)
-  for (let x = -3; x <= 3; x++) {
-    for (let z = 46; z <= 50; z++) {
+  // Extraction Zone / Final Victory Beacon at (0, 76)
+  for (let x = -4; x <= 4; x++) {
+    for (let z = 74; z <= 78; z++) {
       blocks.push({ vx: x, vy: 1, vz: z, type: 'gold' });
     }
   }
-  blocks.push({ vx: 0, vy: 2, vz: 48, type: 'finish_line' });
+  blocks.push({ vx: 0, vy: 2, vz: 76, type: 'finish_line' });
 
   // ==========================================
-  // 3. SCRIPTED ENTITIES (NPCs & ITEMS)
+  // 3. SCRIPTED SURVIVOR NPCS & MENACING ZOMBIES
   // ==========================================
   const entities = [
-    // Commander Vance (Survivor Quest Leader)
+    // Commander Vance (Survivor Military Leader)
     {
       id: 'npc_commander_vance',
       name: 'Commander Vance',
       type: 'npc' as const,
-      position: { x: 4, y: 1, z: -4 },
+      position: { x: 8, y: 1, z: -20 },
       avatarConfig: {
         headColor: '#fcd34d',
         torsoColor: '#1e293b',
@@ -313,12 +328,12 @@ function createDefaultZombieSurvivalMap(): MapData {
         equippedHat: 'cowboy',
         equippedShirt: 'flannel',
         equippedPants: 'blue_jeans',
-        equippedFace: 'chill',
+        equippedFace: 'serious',
         equippedGear: 'none'
       },
       script: {
         behavior: 'dialogue' as const,
-        dialogueText: "Pioneer! The infected breach our gates daily! Take supply caches, defend the perimeter, and eliminate the zombie horde! Visit Medic Sarah if you're injured!",
+        dialogueText: "Pioneer! The perimeter breach alarms are blaring! Arm yourself with the Skyblade, defend the outpost barricades, and clear out the infected horde! See Medic Sarah if you're injured!",
         coinAmount: 50
       }
     },
@@ -328,7 +343,7 @@ function createDefaultZombieSurvivalMap(): MapData {
       id: 'npc_medic_sarah',
       name: 'Medic Sarah',
       type: 'npc' as const,
-      position: { x: -4, y: 1, z: -4 },
+      position: { x: -8, y: 1, z: -20 },
       avatarConfig: {
         headColor: '#fde68a',
         torsoColor: '#dc2626',
@@ -344,18 +359,18 @@ function createDefaultZombieSurvivalMap(): MapData {
       },
       script: {
         behavior: 'medic' as const,
-        dialogueText: "Emergency Medic Sarah here! I've fully patched your wounds to 100 HP! Don't let the walkers bite!",
+        dialogueText: "Emergency Medic Sarah reporting! Wounds treated and health fully restored to 100 HP! Stay sharp out there!",
         health: 250,
         maxHealth: 250
       }
     },
 
-    // Sergeant Stone (Weapons & Armory Guard)
+    // Sergeant Stone (Gate Weapon Guard)
     {
       id: 'npc_sgt_stone',
       name: 'Sergeant Stone',
       type: 'npc' as const,
-      position: { x: 0, y: 1, z: 4 },
+      position: { x: 7, y: 1, z: 2 },
       avatarConfig: {
         headColor: '#f59e0b',
         torsoColor: '#047857',
@@ -366,33 +381,33 @@ function createDefaultZombieSurvivalMap(): MapData {
         equippedHat: 'beanie',
         equippedShirt: 'flannel',
         equippedPants: 'blue_jeans',
-        equippedFace: 'chill',
+        equippedFace: 'serious',
         equippedGear: 'sword'
       },
       script: {
         behavior: 'dialogue' as const,
-        dialogueText: "Hold the line! Click on the zombies to strike them with your weapon! Defeating them yields Genesis Coins!",
+        dialogueText: "Click on any zombie to strike them with your Skyblade! Headshots and melee strikes will take them down and earn you Genesis Coins!",
         coinAmount: 30
       }
     },
 
-    // Zombie 1: Shambler at Gate
+    // Zombie 1: Rotten Shambler (Outside the Gate)
     {
       id: 'npc_zombie_shambler',
       name: 'Rotten Shambler',
       type: 'npc' as const,
-      position: { x: 0, y: 1, z: 15 },
+      position: { x: 0, y: 1, z: 22 },
       avatarConfig: {
         headColor: '#4d7c0f', // Rotten Green
-        torsoColor: '#1e3a5f',
+        torsoColor: '#1c1917',
         leftArmColor: '#4d7c0f',
         rightArmColor: '#4d7c0f',
         leftLegColor: '#374151',
         rightLegColor: '#374151',
         equippedHat: 'none',
-        equippedShirt: 'none',
+        equippedShirt: 'tattered_zombie',
         equippedPants: 'blue_jeans',
-        equippedFace: 'chill',
+        equippedFace: 'zombie', // Scary glowing red eyes & fangs
         equippedGear: 'none'
       },
       script: {
@@ -400,39 +415,39 @@ function createDefaultZombieSurvivalMap(): MapData {
         health: 60,
         maxHealth: 60,
         damageAmount: 12,
-        moveSpeed: 5.8,
-        detectionRange: 26,
+        moveSpeed: 5.5,
+        detectionRange: 30,
         coinAmount: 25,
         dialogueText: "Grrrr... BRAAAINS!"
       }
     },
 
-    // Zombie 2: Fast Sprinter
+    // Zombie 2: Infected Sprinter
     {
       id: 'npc_zombie_sprinter',
       name: 'Infected Runner',
       type: 'npc' as const,
-      position: { x: 8, y: 1, z: 20 },
+      position: { x: 14, y: 1, z: 32 },
       avatarConfig: {
         headColor: '#3f6212',
-        torsoColor: '#b91c1c',
+        torsoColor: '#7f1d1d',
         leftArmColor: '#3f6212',
         rightArmColor: '#3f6212',
         leftLegColor: '#1c1917',
         rightLegColor: '#1c1917',
         equippedHat: 'none',
-        equippedShirt: 'none',
+        equippedShirt: 'tattered_zombie',
         equippedPants: 'blue_jeans',
-        equippedFace: 'chill',
+        equippedFace: 'zombie',
         equippedGear: 'none'
       },
       script: {
         behavior: 'zombie' as const,
         health: 45,
         maxHealth: 45,
-        damageAmount: 14,
-        moveSpeed: 8.6,
-        detectionRange: 32,
+        damageAmount: 15,
+        moveSpeed: 8.5,
+        detectionRange: 35,
         coinAmount: 35,
         dialogueText: "Screeechhh!"
       }
@@ -443,7 +458,7 @@ function createDefaultZombieSurvivalMap(): MapData {
       id: 'npc_zombie_toxic',
       name: 'Toxic Ghoul',
       type: 'npc' as const,
-      position: { x: -10, y: 1, z: 24 },
+      position: { x: -16, y: 1, z: 38 },
       avatarConfig: {
         headColor: '#22c55e',
         torsoColor: '#064e3b',
@@ -452,9 +467,9 @@ function createDefaultZombieSurvivalMap(): MapData {
         leftLegColor: '#022c22',
         rightLegColor: '#022c22',
         equippedHat: 'none',
-        equippedShirt: 'synthetic_skin',
+        equippedShirt: 'tattered_zombie',
         equippedPants: 'blue_jeans',
-        equippedFace: 'chill',
+        equippedFace: 'zombie',
         equippedGear: 'none'
       },
       script: {
@@ -463,93 +478,93 @@ function createDefaultZombieSurvivalMap(): MapData {
         maxHealth: 75,
         damageAmount: 16,
         moveSpeed: 6.2,
-        detectionRange: 28,
+        detectionRange: 30,
         coinAmount: 40,
         dialogueText: "Hisssss... Poison!"
       }
     },
 
-    // Zombie 4: Mutant Brute (Boss)
-    {
-      id: 'npc_zombie_brute',
-      name: 'Mutant Zombie Brute (BOSS)',
-      type: 'npc' as const,
-      position: { x: 2, y: 1, z: 36 },
-      avatarConfig: {
-        headColor: '#166534',
-        torsoColor: '#0f172a',
-        leftArmColor: '#166534',
-        rightArmColor: '#166534',
-        leftLegColor: '#000000',
-        rightLegColor: '#000000',
-        equippedHat: 'none',
-        equippedShirt: 'none',
-        equippedPants: 'blue_jeans',
-        equippedFace: 'chill',
-        equippedGear: 'none'
-      },
-      script: {
-        behavior: 'zombie' as const,
-        health: 160,
-        maxHealth: 160,
-        damageAmount: 26,
-        moveSpeed: 4.8,
-        detectionRange: 35,
-        coinAmount: 100,
-        dialogueText: "ROAAAARRRR! CRUSH HUMAN!"
-      }
-    },
-
-    // Zombie 5: Wasteland Stalker
+    // Zombie 4: Wasteland Stalker
     {
       id: 'npc_zombie_stalker',
       name: 'Wasteland Stalker',
       type: 'npc' as const,
-      position: { x: -15, y: 1, z: 38 },
+      position: { x: 10, y: 1, z: 48 },
       avatarConfig: {
-        headColor: '#4d7c0f',
-        torsoColor: '#78350f',
-        leftArmColor: '#4d7c0f',
-        rightArmColor: '#4d7c0f',
-        leftLegColor: '#451a03',
-        rightLegColor: '#451a03',
-        equippedHat: 'beanie',
-        equippedShirt: 'flannel',
+        headColor: '#365314',
+        torsoColor: '#451a03',
+        leftArmColor: '#365314',
+        rightArmColor: '#365314',
+        leftLegColor: '#292524',
+        rightLegColor: '#292524',
+        equippedHat: 'none',
+        equippedShirt: 'tattered_zombie',
         equippedPants: 'blue_jeans',
-        equippedFace: 'chill',
+        equippedFace: 'zombie',
         equippedGear: 'none'
       },
       script: {
         behavior: 'zombie' as const,
         health: 65,
         maxHealth: 65,
-        damageAmount: 15,
+        damageAmount: 18,
         moveSpeed: 7.2,
-        detectionRange: 30,
+        detectionRange: 32,
         coinAmount: 45
       }
     },
 
-    // Supply Chest 1 in Base
+    // Zombie 5: Mutant Brute (Boss)
+    {
+      id: 'npc_zombie_brute',
+      name: 'Mutant Zombie Brute (BOSS)',
+      type: 'npc' as const,
+      position: { x: 0, y: 1, z: 62 },
+      avatarConfig: {
+        headColor: '#14532d',
+        torsoColor: '#0f172a',
+        leftArmColor: '#14532d',
+        rightArmColor: '#14532d',
+        leftLegColor: '#000000',
+        rightLegColor: '#000000',
+        equippedHat: 'none',
+        equippedShirt: 'tattered_zombie',
+        equippedPants: 'blue_jeans',
+        equippedFace: 'zombie',
+        equippedGear: 'none'
+      },
+      script: {
+        behavior: 'zombie' as const,
+        health: 180,
+        maxHealth: 180,
+        damageAmount: 28,
+        moveSpeed: 4.8,
+        detectionRange: 40,
+        coinAmount: 150,
+        dialogueText: "ROAAAARRRR! CRUSH HUMAN!"
+      }
+    },
+
+    // Medical Supply Crate in Base
     {
       id: 'item_medkit_chest',
       name: 'Medical Supply Crate',
       type: 'item' as const,
       itemType: 'chest',
-      position: { x: -6, y: 1, z: -2 },
+      position: { x: -12, y: 1, z: -18 },
       script: {
         behavior: 'coin_reward' as const,
         coinAmount: 50
       }
     },
 
-    // Ammo Depot in Base
+    // Military Ammo Depot in Base
     {
       id: 'item_ammo_depot',
       name: 'Military Ammo Depot',
       type: 'item' as const,
       itemType: 'chest',
-      position: { x: 6, y: 1, z: -2 },
+      position: { x: 12, y: 1, z: -18 },
       script: {
         behavior: 'coin_reward' as const,
         coinAmount: 100
@@ -559,10 +574,10 @@ function createDefaultZombieSurvivalMap(): MapData {
     // Wasteland Hidden Cache
     {
       id: 'item_wasteland_cache',
-      name: 'Wasteland Survivor Stash',
+      name: 'Wasteland Stash',
       type: 'item' as const,
       itemType: 'chest',
-      position: { x: 15, y: 1, z: 27 },
+      position: { x: -14, y: 1, z: 34 },
       script: {
         behavior: 'coin_reward' as const,
         coinAmount: 75
@@ -575,7 +590,7 @@ function createDefaultZombieSurvivalMap(): MapData {
       name: 'Anti-Viral Decon Beacon',
       type: 'item' as const,
       itemType: 'crystal',
-      position: { x: 0, y: 1, z: -7 },
+      position: { x: 0, y: 1, z: -22 },
       script: {
         behavior: 'dialogue' as const,
         dialogueText: "⚡ Biohazard Decontamination field active! Keeps the safehouse interior virus-free."
@@ -590,7 +605,7 @@ function createDefaultZombieSurvivalMap(): MapData {
     author: 'Genesis Studio',
     createdAt: Date.now() - 250000,
     gameMode: 'survival',
-    spawnPoint: { x: 0, y: 2, z: 0 },
+    spawnPoint: { x: 0, y: 1, z: -10 },
     blocks,
     entities,
     likes: 512,

@@ -69,8 +69,8 @@ export class GameEngine3D {
   private keys: { [key: string]: boolean } = {};
 
   // NPCs & Scripted Entities
-  private adamAvatar: BlockyAvatar;
-  private eveAvatar: BlockyAvatar;
+  private adamAvatar: BlockyAvatar | null = null;
+  private eveAvatar: BlockyAvatar | null = null;
   private adamPos: THREE.Vector3 = new THREE.Vector3(14, 0, -8);
   private evePos: THREE.Vector3 = new THREE.Vector3(8, 0, 4);
   private scriptingEngine: ScriptingEngine;
@@ -185,82 +185,84 @@ export class GameEngine3D {
     this.playerAvatar.root.position.copy(this.playerPos);
     this.scene.add(this.playerAvatar.root);
 
-    // Spawn NPCs (Adam & Eve)
-    this.adamAvatar = new BlockyAvatar(
-      {
-        headColor: '#facc15',
-        torsoColor: '#16a34a',
-        leftArmColor: '#facc15',
-        rightArmColor: '#facc15',
-        leftLegColor: '#78350f',
-        rightLegColor: '#78350f',
-        equippedHat: 'none',
-        equippedShirt: 'flannel',
-        equippedPants: 'cargo_shorts',
-        equippedFace: 'smile',
-        equippedGear: 'axe'
-      },
-      'Adam (Founder)'
-    );
-    this.adamAvatar.root.position.copy(this.adamPos);
-    this.scene.add(this.adamAvatar.root);
-
-    this.eveAvatar = new BlockyAvatar(
-      {
-        headColor: '#fdba74',
-        torsoColor: '#ec4899',
-        leftArmColor: '#fdba74',
-        rightArmColor: '#fdba74',
-        leftLegColor: '#0284c7',
-        rightLegColor: '#0284c7',
-        equippedHat: 'halo',
-        equippedShirt: 'genesis_hoodie',
-        equippedPants: 'blue_jeans',
-        equippedFace: 'chill',
-        equippedGear: 'none'
-      },
-      'Eve (Founder)'
-    );
-    this.eveAvatar.root.position.copy(this.evePos);
-    this.scene.add(this.eveAvatar.root);
-
     // Initialize Scripting & Entity Engine
     this.scriptingEngine = new ScriptingEngine(this.scene, this.voxelAudio);
 
-    // Register Adam and Eve as interactive scripted NPCs
-    this.adamAvatar.root.userData = { entityId: 'npc_adam' };
-    this.adamAvatar.torsoMesh.userData = { entityId: 'npc_adam' };
-    this.scriptedEntities.set('npc_adam', {
-      entity: {
-        id: 'npc_adam',
-        name: 'Adam (Founder)',
-        type: 'npc',
-        position: { x: this.adamPos.x, y: this.adamPos.y, z: this.adamPos.z },
-        script: {
-          behavior: 'dialogue',
-          dialogueText: 'Welcome to Genesis! Use Studio mode (TAB) to build anything and attach custom code!'
-        }
-      },
-      mesh: this.adamAvatar.root,
-      avatar: this.adamAvatar
-    });
+    // Spawn Founder NPCs (Adam & Eve) ONLY in default Genesis simulation, NEVER in custom maps
+    if (!initialMap) {
+      this.adamAvatar = new BlockyAvatar(
+        {
+          headColor: '#facc15',
+          torsoColor: '#16a34a',
+          leftArmColor: '#facc15',
+          rightArmColor: '#facc15',
+          leftLegColor: '#78350f',
+          rightLegColor: '#78350f',
+          equippedHat: 'none',
+          equippedShirt: 'flannel',
+          equippedPants: 'cargo_shorts',
+          equippedFace: 'smile',
+          equippedGear: 'axe'
+        },
+        'Adam (Founder)'
+      );
+      this.adamAvatar.root.position.copy(this.adamPos);
+      this.scene.add(this.adamAvatar.root);
 
-    this.eveAvatar.root.userData = { entityId: 'npc_eve' };
-    this.eveAvatar.torsoMesh.userData = { entityId: 'npc_eve' };
-    this.scriptedEntities.set('npc_eve', {
-      entity: {
-        id: 'npc_eve',
-        name: 'Eve (Founder)',
-        type: 'npc',
-        position: { x: this.evePos.x, y: this.evePos.y, z: this.evePos.z },
-        script: {
-          behavior: 'dialogue',
-          dialogueText: 'You can create your own NPCs, items, and script their behavior just like Roblox!'
-        }
-      },
-      mesh: this.eveAvatar.root,
-      avatar: this.eveAvatar
-    });
+      this.eveAvatar = new BlockyAvatar(
+        {
+          headColor: '#fdba74',
+          torsoColor: '#ec4899',
+          leftArmColor: '#fdba74',
+          rightArmColor: '#fdba74',
+          leftLegColor: '#0284c7',
+          rightLegColor: '#0284c7',
+          equippedHat: 'halo',
+          equippedShirt: 'genesis_hoodie',
+          equippedPants: 'blue_jeans',
+          equippedFace: 'chill',
+          equippedGear: 'none'
+        },
+        'Eve (Founder)'
+      );
+      this.eveAvatar.root.position.copy(this.evePos);
+      this.scene.add(this.eveAvatar.root);
+
+      // Register Adam and Eve as interactive scripted NPCs
+      this.adamAvatar.root.userData = { entityId: 'npc_adam' };
+      this.adamAvatar.torsoMesh.userData = { entityId: 'npc_adam' };
+      this.scriptedEntities.set('npc_adam', {
+        entity: {
+          id: 'npc_adam',
+          name: 'Adam (Founder)',
+          type: 'npc',
+          position: { x: this.adamPos.x, y: this.adamPos.y, z: this.adamPos.z },
+          script: {
+            behavior: 'dialogue',
+            dialogueText: 'Welcome to Genesis! Use Studio mode (TAB) to build anything and attach custom code!'
+          }
+        },
+        mesh: this.adamAvatar.root,
+        avatar: this.adamAvatar
+      });
+
+      this.eveAvatar.root.userData = { entityId: 'npc_eve' };
+      this.eveAvatar.torsoMesh.userData = { entityId: 'npc_eve' };
+      this.scriptedEntities.set('npc_eve', {
+        entity: {
+          id: 'npc_eve',
+          name: 'Eve (Founder)',
+          type: 'npc',
+          position: { x: this.evePos.x, y: this.evePos.y, z: this.evePos.z },
+          script: {
+            behavior: 'dialogue',
+            dialogueText: 'You can create your own NPCs, items, and script their behavior just like Roblox!'
+          }
+        },
+        mesh: this.eveAvatar.root,
+        avatar: this.eveAvatar
+      });
+    }
 
     // Controls
     this.setupInputEvents();
@@ -1027,7 +1029,32 @@ export class GameEngine3D {
       });
     }
 
-    this.hud.showToast(`Loaded map: ${map.title}`);
+    // Dynamic Game Mode Atmosphere (Zombie Apocalypse vs Peaceful Obby)
+    if (map.gameMode === 'survival') {
+      this.scene.background = new THREE.Color(0x180505); // Blood dusk sky
+      this.scene.fog = new THREE.FogExp2(0x180505, 0.016); // Apocalyptic crimson fog
+      if (this.ambientLight) this.ambientLight.color.set(0x7f1d1d);
+      if (this.sunLight) {
+        this.sunLight.color.set(0xef4444);
+        this.sunLight.intensity = 1.6;
+      }
+      if (this.playerAvatar) {
+        this.playerAvatar.applyGear('sword');
+      }
+      this.hud.setSurvivalMode(true);
+      this.hud.setHealth(this.playerHealth, 100);
+      this.hud.showToast(`🧟 SURVIVAL: Defend the Outpost from the infected horde!`);
+    } else {
+      this.scene.background = new THREE.Color(0x87ceeb);
+      this.scene.fog = null;
+      if (this.ambientLight) this.ambientLight.color.set(0xffffff);
+      if (this.sunLight) {
+        this.sunLight.color.set(0xfffaed);
+        this.sunLight.intensity = 1.4;
+      }
+      this.hud.setSurvivalMode(false);
+      this.hud.showToast(`Loaded map: ${map.title}`);
+    }
   }
 
   private respawnAtCheckpoint(reason: string): void {
@@ -1376,14 +1403,17 @@ export class GameEngine3D {
       },
       damage: (amount: number) => {
         this.playerHealth = Math.max(0, this.playerHealth - amount);
+        this.hud.setHealth(this.playerHealth, 100);
         this.hud.showToast(`💔 Took ${amount} damage! (Health: ${this.playerHealth})`);
         if (this.playerHealth <= 0) {
           this.playerHealth = 100;
-          this.respawnAtCheckpoint('☠️ Defeated! Respawning at checkpoint...');
+          this.hud.setHealth(100, 100);
+          this.respawnAtCheckpoint('☠️ Defeated by infected horde! Respawning at base...');
         }
       },
       heal: (amount: number) => {
         this.playerHealth = Math.min(100, this.playerHealth + amount);
+        this.hud.setHealth(this.playerHealth, 100);
         this.hud.showToast(`💚 Health restored (+${amount} HP)! Health: ${this.playerHealth}`);
       },
       boostSpeed: (durationSec: number) => {
