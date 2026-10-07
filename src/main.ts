@@ -327,7 +327,7 @@ class GenesisGame {
 }
 
 // Direct Launch into Genesis: New Dawn (Adam & Eve Survival Simulation)
-const startApp = async () => {
+const startApp = () => {
   const urlParams = new URLSearchParams(window.location.search);
   if (urlParams.get('portal') === '1') {
     const robloxPortal = new RobloxPortal('app');
@@ -336,15 +336,17 @@ const startApp = async () => {
     return;
   }
 
-  try {
-    const currentUser = await AuthManager.getCurrentUser();
-    if (currentUser) {
-      await PersistenceManager.syncCloudSave();
-    }
-  } catch (_) {}
-
-  // Instantly start Adam and Eve survival simulation
+  // Instantly start Adam and Eve survival simulation without blocking
   new GenesisGame();
+
+  // Background non-blocking cloud save sync
+  AuthManager.getCurrentUser()
+    .then((currentUser) => {
+      if (currentUser) {
+        PersistenceManager.syncCloudSave().catch(() => {});
+      }
+    })
+    .catch(() => {});
 };
 
 startApp();
