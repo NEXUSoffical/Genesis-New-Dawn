@@ -13,7 +13,6 @@ import { PersistenceManager } from './simulation/Persistence';
 import { FaunaManager } from './simulation/Fauna';
 import { SoundEngine } from './audio/SoundEngine';
 import { AuthManager } from './auth/AuthManager';
-import { LoginModal } from './ui/LoginModal';
 
 class GenesisGame {
   private world: WorldManager;
@@ -327,23 +326,25 @@ class GenesisGame {
   }
 }
 
-// Start game when DOM is loaded
+// Direct Launch into Genesis: New Dawn (Adam & Eve Survival Simulation)
 const startApp = async () => {
-  const currentUser = await AuthManager.getCurrentUser();
-  if (!currentUser) {
-    const login = new LoginModal();
-    login.onLogin = async () => {
-      await PersistenceManager.syncCloudSave();
-      new GenesisGame();
-    };
-    login.show();
-  } else {
-    await PersistenceManager.syncCloudSave();
-    new GenesisGame();
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('portal') === '1') {
+    const robloxPortal = new RobloxPortal('app');
+    (window as any).robloxPortal = robloxPortal;
+    (window as any).startClassic2D = () => new GenesisGame();
+    return;
   }
+
+  try {
+    const currentUser = await AuthManager.getCurrentUser();
+    if (currentUser) {
+      await PersistenceManager.syncCloudSave();
+    }
+  } catch (_) {}
+
+  // Instantly start Adam and Eve survival simulation
+  new GenesisGame();
 };
 
-// Mount the Roblox Platform & Game Portal
-const robloxPortal = new RobloxPortal('app');
-(window as any).robloxPortal = robloxPortal;
-(window as any).startClassic2D = () => startApp();
+startApp();
