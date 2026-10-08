@@ -85,7 +85,8 @@ export class HUD {
 
       <!-- Top Navigation Bar -->
       <header id="top-bar" class="glass-panel">
-        <button id="btn-logout" class="nav-tab-btn" title="Logout" style="margin-left: auto; padding: 4px 10px; font-size: 11px;">🚪 Logout</button>
+        <button id="btn-fullscreen-toggle" class="nav-tab-btn" title="Toggle Fullscreen / Popout" style="margin-left: auto; padding: 4px 10px; font-size: 11px; background: rgba(56, 189, 248, 0.2); border: 1px solid #38bdf8; color: #38bdf8; font-weight: bold; border-radius: 6px; cursor: pointer;">↗️ Fullscreen</button>
+        <button id="btn-logout" class="nav-tab-btn" title="Logout" style="margin-left: 8px; padding: 4px 10px; font-size: 11px;">🚪 Logout</button>
         <button id="btn-premium-shop" class="nav-tab-btn" title="Cosmetics Store" style="margin-left: 8px; padding: 4px 10px; font-size: 11px; background: linear-gradient(135deg, #14F195, #9945FF); color: black; font-weight: bold;">🛒 Premium Store</button>
         <button id="btn-connect-wallet" class="nav-tab-btn" title="Connect Wallet" style="margin-left: 8px; padding: 4px 10px; font-size: 11px; background: #9945FF; color: white;">🪙 Connect Solana</button>
         <div class="brand-section">
@@ -485,6 +486,18 @@ export class HUD {
   }
 
   private bindEvents(): void {
+    document.getElementById('btn-fullscreen-toggle')?.addEventListener('click', () => {
+      if (window.top !== window) {
+        window.open(window.location.href, '_blank');
+      } else {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        } else {
+          document.exitFullscreen().catch(() => {});
+        }
+      }
+    });
+
     document.getElementById('btn-logout')?.addEventListener('click', () => {
       import('../auth/AuthManager').then(m => {
         m.AuthManager.logout();
